@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{030fc9c8-3b8f-4350-bba2-dab9f981c736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSource">
+      <UniqueIdentifier>{25c6154d-4114-491d-9542-1dec58df0ae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSource\NewSource">
+      <UniqueIdentifier>{5cb2a5c8-a29e-40e0-a0a4-eb251fbd36a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSource\NewSource\Common">
+      <UniqueIdentifier>{f035e761-c30e-480d-b90d-88363aa9ad44}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Shader\Shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\Material.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\ShaderAPI.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\ShaderConstantNameMap.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\ShaderResource.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\MaterialShader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\ShaderTables.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\ShaderResourceManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Shader\MaterialRenderDescription.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Shader\ShaderStages.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\Shader.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderAPI.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\Material.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderHeader.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\MaterialShader.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderConstantNameMap.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderResource.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderID.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderTables.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\ShaderResourceManager.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\MaterialResourceHandles.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shader\MaterialRenderDescription.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Assets\Shaders\Provided\animationBlendClips.comp">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\animFrameInterpolation.comp">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\animHierarchyCalculation.comp">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\blinnPhong.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\blinnPhong.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\colorPerVertex.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\colorPerVertex.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\colorSkinning.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\colorSkinning.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\constantColor.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\constantColor.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\constantColorGBuffer.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\constantColorGBuffer.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\default.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\default.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\gbuffer.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\gbuffer.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\gbufferNormalMap.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\gbufferNormalMap.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\gpuColorSkinning.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\gpuColorSkinning.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\lightingGBuffer.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\lightingGBuffer.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\normalColor.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\normalColor.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\parallaxMap.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\parallaxMap.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\phong.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\phong.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\phongMultiTex.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\phongMultiTex.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\processLocalTransforms.comp">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\screenRender.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\screenRender.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\shadowDepth.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\texture.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\texture.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\textureGBuffer.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\textureGBuffer.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\toon.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\toon.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\toonTexture.frag">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\toonTexture.vert">
+      <Filter>ShaderSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\DeferredBlinn.frag">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\DeferredViewRender.vert">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\PrimitiveRender.frag">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\PrimitiveTransform.vert">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\ScreenComposition.frag">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\ScreenTransform.vert">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\StandardLit.frag">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\StandardTransform.vert">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\StandardUnlit.frag">
+      <Filter>ShaderSource\NewSource</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaVSInputs.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaVSToFS.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\OutputColor.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\Prim.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\ScreenVSOutput.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\View.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\GBufferResources.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\GLSLVertexOutput.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\LightFSInput.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\LightProperties.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\Material.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\Musa.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaFSInput.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaGBufferOutput.hs">
+      <Filter>ShaderSource\NewSource\Common</Filter>
+    </None>
+  </ItemGroup>
+</Project>

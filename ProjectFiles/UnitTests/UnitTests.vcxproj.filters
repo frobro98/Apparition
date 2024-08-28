@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="UnitTests">
+      <UniqueIdentifier>{b60b9cfe-2a57-4af4-8119-7c2d852e01d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Memory">
+      <UniqueIdentifier>{c78d0302-facf-4022-8987-89b01d9079cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{81351b89-b679-465a-946e-1bb036c55330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Math">
+      <UniqueIdentifier>{80ed4aa4-b1c9-4e89-b4a7-89e7918cd631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\ECS">
+      <UniqueIdentifier>{8d5efb11-2330-41df-83f3-9e9c2d7d9ff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Math\Vector">
+      <UniqueIdentifier>{3232aadb-c382-4166-b935-b847a3968dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Math\Matrix">
+      <UniqueIdentifier>{a1ce3598-b163-4f98-aa2f-dc8202ce0b2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Math\Quaternion">
+      <UniqueIdentifier>{54575d7c-bfc0-4e9c-95ff-3df8bb3acd52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Math\Functions">
+      <UniqueIdentifier>{0119502e-bcb8-4b0d-a818-c195187b217b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\ECS\TestComponents">
+      <UniqueIdentifier>{95fcee8f-da54-4bbc-8cf7-344c789cd7ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTests\Containers">
+      <UniqueIdentifier>{28e69071-d203-429c-9464-8f4436350ae3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\UnitTests\UnitTestMain.cpp" />
+    <ClCompile Include="..\..\Source\UnitTests\Framework\UnitTest.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Bracket.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Constructor.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Functions.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Inverse.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Multiply.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Scale.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_set.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Special.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_unary.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Combo.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_Accessor.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Matrix\Matrix_AddSub.cpp">
+      <Filter>UnitTests\Math\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Quaternion\Quat_Constructor.cpp">
+      <Filter>UnitTests\Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Quaternion\Quat_Functions.cpp">
+      <Filter>UnitTests\Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Quaternion\Quat_SetGet.cpp">
+      <Filter>UnitTests\Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Quaternion\Quat_Slerp.cpp">
+      <Filter>UnitTests\Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Quaternion\Quat_AddSubMultDiv.cpp">
+      <Filter>UnitTests\Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Quaternion\Quat_Boolean.cpp">
+      <Filter>UnitTests\Math\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_Functions.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_Lerp.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_Matrix.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_Scale.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_unary.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_AddSub.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Math\Vector\Vect_Boolean.cpp">
+      <Filter>UnitTests\Math\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\Archetype_Create.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\World_Create.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\Entity_AddComp.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\Entity_CreateDestroy.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\Entity_RemoveComp.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\Entity_SetComponentData.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\System_CreateDestroy.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\System_Query.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\System_IterateEntities.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\World_SystemUpdate.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\System_ChunkBehaviors.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Containers\DynamicArray_AddRemove.cpp">
+      <Filter>UnitTests\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Containers\DynamicArray_InsertEmplace.cpp">
+      <Filter>UnitTests\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Containers\DynamicArray_Find.cpp">
+      <Filter>UnitTests\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Containers\DynamicArray_Query.cpp">
+      <Filter>UnitTests\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\Containers\Queue_PushPop.cpp">
+      <Filter>UnitTests\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\UnitTests\ECS\System_QueryUpdating.cpp">
+      <Filter>UnitTests\ECS</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\UnitTests\Framework\MemTracker.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UnitTests\Framework\MemTrackerMain.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UnitTests\Framework\UnitTest.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UnitTests\ECS\TestComponents\Position.hpp">
+      <Filter>UnitTests\ECS\TestComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UnitTests\ECS\TestComponents\Rotation.hpp">
+      <Filter>UnitTests\ECS\TestComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UnitTests\ECS\TestComponents\Movement.hpp">
+      <Filter>UnitTests\ECS\TestComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\UnitTests\ECS\TestComponents\FloatArray.hpp">
+      <Filter>UnitTests\ECS\TestComponents</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

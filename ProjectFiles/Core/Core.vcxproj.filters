@@ -1,0 +1,701 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{8c9820b6-d06f-44a4-a9d6-8801a1a0ab14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Algoritms">
+      <UniqueIdentifier>{a1cda217-8e8b-4591-966c-a427f5ef4139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\BasicTypes">
+      <UniqueIdentifier>{95f52f0e-c26f-46a0-a383-3a0d9c2cc2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Containers">
+      <UniqueIdentifier>{772e336a-0e89-4be6-86d9-23ee1b31e933}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Debugging">
+      <UniqueIdentifier>{39678485-22c7-4330-a667-3a294a59b843}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\fmt">
+      <UniqueIdentifier>{5b5e6b49-8ed5-4153-a192-ccd784b67c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GUID">
+      <UniqueIdentifier>{45f62ae9-afa3-4a7a-9f67-ba0919febde9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Logging">
+      <UniqueIdentifier>{770bd4f5-9bf0-4646-aba8-e471272d9960}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Path">
+      <UniqueIdentifier>{016c4d4d-cd32-4890-8b1a-4d01d63f3ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Platform">
+      <UniqueIdentifier>{a30d3e80-5bbc-4c46-9a06-59929bb65657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Serialization">
+      <UniqueIdentifier>{d452b9a7-025f-4d9c-9f22-4fe8d40341ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\String">
+      <UniqueIdentifier>{a30af29c-fb14-4840-9b56-0bff4ee11ae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Time">
+      <UniqueIdentifier>{c3021124-0265-4d60-81ba-ed68181a6179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utilities">
+      <UniqueIdentifier>{69e25d3b-ff83-4eec-9a14-44c0556c7ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Platform\Windows">
+      <UniqueIdentifier>{4ac007c1-f504-4b9b-8b16-238e5c9bf0bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Memory">
+      <UniqueIdentifier>{a449b7b5-ddb1-43f0-ac72-7d265080e1bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Memory\Internal">
+      <UniqueIdentifier>{d3d6ec9f-af8f-4e8d-ac3d-87143a68a249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Threading">
+      <UniqueIdentifier>{5216726e-ef49-44d2-a3dc-7831924580e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Threading\Windows">
+      <UniqueIdentifier>{c46bce56-b762-4761-b7bf-8fbc09c7cdb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Logging\Sinks">
+      <UniqueIdentifier>{149bfef3-f759-41a1-8923-1c581931c343}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\File">
+      <UniqueIdentifier>{386ea910-a1fb-4058-8455-9a41468bb04b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Threading\Containers">
+      <UniqueIdentifier>{d250f1e3-4b02-442f-b1b4-b5c45af1d2be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\File\Windows">
+      <UniqueIdentifier>{84a0cea5-5610-43dd-8374-675f0177504b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utilities\ThirdParty">
+      <UniqueIdentifier>{15813402-36e4-47f7-bd47-0a370d394fef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Math">
+      <UniqueIdentifier>{e8d7145a-c1c8-4ca1-bbf9-b3ad09c592cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Math\Internal">
+      <UniqueIdentifier>{e8cbeb22-1675-4d98-adb2-f3c0f2af7b41}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Core\Time\EngineTick.cpp">
+      <Filter>Source\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Time\CyclePerformance.cpp">
+      <Filter>Source\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\String\String.cpp">
+      <Filter>Source\String</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\String\CStringUtilities.cpp">
+      <Filter>Source\String</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Serialization\MemorySerializer.cpp">
+      <Filter>Source\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Serialization\SerializeBase.cpp">
+      <Filter>Source\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Serialization\DeserializeBase.cpp">
+      <Filter>Source\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Serialization\MemoryDeserializer.cpp">
+      <Filter>Source\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Path\Path.cpp">
+      <Filter>Source\Path</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\GUID\Guid.cpp">
+      <Filter>Source\GUID</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Debugging\MetricInterface.cpp">
+      <Filter>Source\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Debugging\ProfilerStatistics.cpp">
+      <Filter>Source\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Debugging\Assertion.cpp">
+      <Filter>Source\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Debugging\DebugOutput.cpp">
+      <Filter>Source\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Containers\MemoryBuffer.cpp">
+      <Filter>Source\Containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\BasicTypes\RefPtr.cpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\BasicTypes\Color.cpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Platform\Windows\Win32Memory.cpp">
+      <Filter>Source\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\CoreAPI.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Memory\MemoryAllocation.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Memory\MemoryFunctions.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Logging\LogCore.cpp">
+      <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\NativeThread.cpp">
+      <Filter>Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32NativeThread.cpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32SyncEvent.cpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32Threading.cpp">
+      <Filter>Source\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32CriticalSection.cpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32Semaphore.cpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.cpp">
+      <Filter>Source\Logging\Sinks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.cpp">
+      <Filter>Source\Logging\Sinks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\File\FileUtilities.cpp">
+      <Filter>Source\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\File\md5.cpp">
+      <Filter>Source\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\File\DirectoryUtilities.cpp">
+      <Filter>Source\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Logging\Sinks\LogFileSink.cpp">
+      <Filter>Source\Logging\Sinks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Time\Time.cpp">
+      <Filter>Source\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\File\DirectoryLocations.cpp">
+      <Filter>Source\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Logging\LoggingThread.cpp">
+      <Filter>Source\Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\IThreadExecution.cpp">
+      <Filter>Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32ReadWriteLock.cpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\File\FileSystem.cpp">
+      <Filter>Source\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Utilities\ThirdParty\farmhash.cc">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Utilities\ThirdParty\xxhash.c">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Utilities\ThirdParty\city.cc">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Platform\Platform.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\fmt\format.cc">
+      <Filter>Source\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\fmt\os.cc">
+      <Filter>Source\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Memory\Memory.cpp">
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Memory\Internal\MemoryAllocationInternal.cpp">
+      <Filter>Source\Memory\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\IntVector2.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\MathFunctions.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Matrix2.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Matrix4.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\MatrixFunctions.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Plane.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Quat.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Quat2.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Vector2.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Vector3.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Vector4.cpp">
+      <Filter>Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Internal\QuaternionImplementation.cpp">
+      <Filter>Source\Math\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Core\Math\Internal\VectorImplementation.cpp">
+      <Filter>Source\Math\Internal</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Core\Version.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\CoreAPI.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\CoreFlags.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\MacroHelpers.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\TemplateUtils.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\CompileTimeCounter.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\HashBasicTypes.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Time\EngineTick.h">
+      <Filter>Source\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Time\Timer.h">
+      <Filter>Source\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Time\CyclePerformance.hpp">
+      <Filter>Source\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\String\CStringUtilities.hpp">
+      <Filter>Source\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\String\String.h">
+      <Filter>Source\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\String\StringView.hpp">
+      <Filter>Source\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Serialization\MemoryDeserializer.hpp">
+      <Filter>Source\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Serialization\MemorySerializer.hpp">
+      <Filter>Source\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Serialization\SerializeBase.hpp">
+      <Filter>Source\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Serialization\DeserializeBase.hpp">
+      <Filter>Source\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\PlatformDefinitions.h">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\Windows\WindowsDefinitions.h">
+      <Filter>Source\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\Windows\WindowsTypes.h">
+      <Filter>Source\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\Windows\Win32InputDefinitions.h">
+      <Filter>Source\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Path\Path.hpp">
+      <Filter>Source\Path</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\GUID\Guid.hpp">
+      <Filter>Source\GUID</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Debugging\MetricInterface.hpp">
+      <Filter>Source\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Debugging\MetricsCollection.hpp">
+      <Filter>Source\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Debugging\ProfilerStatistics.hpp">
+      <Filter>Source\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\ListPair.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\Map.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\MemoryBuffer.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\Pair.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\Queue.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\Set.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\Stack.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\StaticArray.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\ArrayView.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\DynamicArray.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\FixedArray.hpp">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Containers\List.h">
+      <Filter>Source\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Extents.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\FunctionRef.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Intrinsics.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Optional.h">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Ranges.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\RefPtr.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Uncopyable.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\UniquePtr.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Unmoveable.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Color.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\ConcurrentTypes.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Algorithms\Algorithms.hpp">
+      <Filter>Source\Algoritms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Debugging\Assertion.hpp">
+      <Filter>Source\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Debugging\DebugOutput.hpp">
+      <Filter>Source\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\MemoryUtilities.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\HashFuncs.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\Platform.hpp">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\Array.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\PlatformMemory.hpp">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryCore.hpp">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryFunctions.hpp">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\BitUtilities.hpp">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryAllocationInternal.hpp">
+      <Filter>Source\Memory\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryAllocation.hpp">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryBlockInfoTable.hpp">
+      <Filter>Source\Memory\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryFixedBlock.hpp">
+      <Filter>Source\Memory\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryDefinitions.hpp">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryInternalDefinitions.hpp">
+      <Filter>Source\Memory\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LogCore.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LogSink.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Platform\PlatformThreading.hpp">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\NativeThread.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\Windows\Win32NativeThread.hpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\ISyncEvent.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\Windows\Win32SyncEvent.hpp">
+      <Filter>Source\Threading\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Limits.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LoggingThread.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\CriticalSection.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\Semaphore.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\ScopedLock.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.hpp">
+      <Filter>Source\Logging\Sinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.hpp">
+      <Filter>Source\Logging\Sinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\Sinks\LogFileSink.hpp">
+      <Filter>Source\Logging\Sinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LogLevel.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\File\FileUtilities.hpp">
+      <Filter>Source\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\File\md5.h">
+      <Filter>Source\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\File\DirectoryUtilities.hpp">
+      <Filter>Source\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Time\Time.h">
+      <Filter>Source\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryTag.hpp">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\File\DirectoryLocations.hpp">
+      <Filter>Source\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LogChannel.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\IThreadExecution.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LogLineEntry.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\Containers\ConcurrentQueue.hpp">
+      <Filter>Source\Threading\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\Containers\LockingQueue.hpp">
+      <Filter>Source\Threading\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\ReadWriteLock.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\ScopedReadLock.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Threading\ScopedWriteLock.hpp">
+      <Filter>Source\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Function.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\CoreLogChannels.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Logging\LogFunctions.hpp">
+      <Filter>Source\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\File\FileSystem.hpp">
+      <Filter>Source\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\farmhash.h">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\xxhash.h">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\city.h">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\format.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\format-inl.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\os.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\ostream.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\printf.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\ranges.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\std.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\xchar.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\args.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\chrono.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\color.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\compile.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\fmt\core.h">
+      <Filter>Source\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\String\StringUtils.hpp">
+      <Filter>Source\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Utility.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\FunctionTraits.hpp">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Memory\Memory.hpp">
+      <Filter>Source\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\3DMathUtilites.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\BitManipulation.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\BoundsVolumes.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\IntVector2.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\MathConstants.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\MathDefinitions.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\MathFunctions.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Matrix2.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Matrix4.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\MatrixFunctions.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Plane.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\PlaneFunctions.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Quat.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Quat2.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\QuatFunctions.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Rect.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Vector2.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Vector3.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Vector4.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\VectorFunctions.hpp">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Internal\QuaternionImplementation.hpp">
+      <Filter>Source\Math\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Math\Internal\VectorImplementation.h">
+      <Filter>Source\Math\Internal</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Source\Core\Utilities\ThirdParty\LICENSE">
+      <Filter>Source\Utilities\ThirdParty</Filter>
+    </None>
+  </ItemGroup>
+</Project>

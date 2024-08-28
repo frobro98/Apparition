@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development|x64">
+      <Configuration>Development</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Shader\Material.cpp" />
+    <ClCompile Include="..\..\Source\Shader\MaterialRenderDescription.cpp" />
+    <ClCompile Include="..\..\Source\Shader\MaterialShader.cpp" />
+    <ClCompile Include="..\..\Source\Shader\Shader.cpp" />
+    <ClCompile Include="..\..\Source\Shader\ShaderAPI.cpp" />
+    <ClCompile Include="..\..\Source\Shader\ShaderConstantNameMap.cpp" />
+    <ClCompile Include="..\..\Source\Shader\ShaderResourceManager.cpp" />
+    <ClCompile Include="..\..\Source\Shader\ShaderTables.cpp" />
+    <ClCompile Include="..\..\Source\Shader\ShaderResource.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Shader\Material.hpp" />
+    <ClInclude Include="..\..\Source\Shader\MaterialRenderDescription.hpp" />
+    <ClInclude Include="..\..\Source\Shader\MaterialShader.hpp" />
+    <ClInclude Include="..\..\Source\Shader\Shader.hpp" />
+    <ClInclude Include="..\..\Source\Shader\MaterialResourceHandles.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderAPI.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderHeader.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderID.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderConstantNameMap.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderResourceManager.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderTables.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderResource.hpp" />
+    <ClInclude Include="..\..\Source\Shader\ShaderStages.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Assets\Shaders\Provided\animationBlendClips.comp" />
+    <None Include="..\..\Assets\Shaders\Provided\animFrameInterpolation.comp" />
+    <None Include="..\..\Assets\Shaders\Provided\animHierarchyCalculation.comp" />
+    <None Include="..\..\Assets\Shaders\Provided\blinnPhong.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\blinnPhong.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\colorPerVertex.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\colorPerVertex.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\colorSkinning.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\colorSkinning.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\GBufferResources.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\GLSLVertexOutput.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\LightFSInput.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\LightProperties.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\Material.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\Musa.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaFSInput.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaGBufferOutput.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaVSInputs.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\MusaVSToFS.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\OutputColor.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\Prim.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\ScreenVSOutput.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\Common\View.hs" />
+    <None Include="..\..\Assets\Shaders\Provided\constantColor.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\constantColor.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\constantColorGBuffer.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\constantColorGBuffer.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\default.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\default.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\DeferredBlinn.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\DeferredViewRender.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\gbuffer.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\gbuffer.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\gbufferNormalMap.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\gbufferNormalMap.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\gpuColorSkinning.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\gpuColorSkinning.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\lightingGBuffer.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\lightingGBuffer.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\normalColor.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\normalColor.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\parallaxMap.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\parallaxMap.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\phong.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\phong.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\phongMultiTex.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\phongMultiTex.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\PrimitiveRender.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\PrimitiveTransform.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\processLocalTransforms.comp" />
+    <None Include="..\..\Assets\Shaders\Provided\ScreenComposition.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\screenRender.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\screenRender.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\ScreenTransform.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\shadowDepth.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\StandardLit.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\StandardTransform.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\StandardUnlit.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\texture.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\texture.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\textureGBuffer.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\textureGBuffer.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\toon.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\toon.vert" />
+    <None Include="..\..\Assets\Shaders\Provided\toonTexture.frag" />
+    <None Include="..\..\Assets\Shaders\Provided\toonTexture.vert" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{3BEE9CB7-EB1A-4751-9F94-B6E3ED82F710}</ProjectGuid>
+    <RootNamespace>Shader</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Shader;$(SolutionDir)\Source;$(SolutionDir)\Source\Texture;$(SolutionDir)\Source\Core;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4514;4668;4710;4711;4201;4588;4587;5039;5045;4625;5026;4251</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>SHADER_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>File_d.lib;glslangd_64.lib;mcpp_64d.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries;$(SolutionDir)\ThirdParty\lib</AdditionalLibraryDirectories>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>Core.lib;Apparition.lib;Texture.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;$(SolutionDir)ThirdParty\lib</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>MSVCRT</IgnoreSpecificDefaultLibraries>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Shader;$(SolutionDir)\Source;$(SolutionDir)\Source\Texture;$(SolutionDir)\Source\Core;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4514;4668;4710;4711;4201;4588;4587;5039;5045;4625;5026;4251</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>SHADER_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Core.lib;Apparition.lib;Texture.lib;glslang_64.lib;mcpp_64.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;$(SolutionDir)ThirdParty\lib</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>File.lib;glslang_64.lib;mcpp_64.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries;$(SolutionDir)\ThirdParty\lib</AdditionalLibraryDirectories>
+    </Lib>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Shader;$(SolutionDir)\Source;$(SolutionDir)\Source\Texture;$(SolutionDir)\Source\Core;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4514;4668;4710;4711;4201;4588;4587;5039;5045;4625;5026;4251</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>SHADER_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Core.lib;Apparition.lib;Texture.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;$(SolutionDir)ThirdParty\lib</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>File.lib;glslang_64.lib;mcpp_64.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries;$(SolutionDir)\ThirdParty\lib</AdditionalLibraryDirectories>
+    </Lib>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

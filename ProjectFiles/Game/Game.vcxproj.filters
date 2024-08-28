@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{36a9b8d1-f3fd-4d9b-b3e1-0b7929a279ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application">
+      <UniqueIdentifier>{5851e2bf-fbed-4ac6-9f5b-d3d610e984b0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Game\Application\MusaGameApp.hpp">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Game\GameAPI.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Game\Application\MusaGameApp.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

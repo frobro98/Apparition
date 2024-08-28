@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development|x64">
+      <Configuration>Development</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{5092D95D-99F5-43C8-8B0E-BFBEF6A63763}</ProjectGuid>
+    <RootNamespace>Graphics</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Apparition</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4307;4251;26812</DisableSpecificWarnings>
+      <PreprocessorDefinitions>GRAPHICS_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries;C:\VulkanSDK\1.0.39.1\Bin\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;EngineCore_d.lib</AdditionalDependencies>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>Core.lib;vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.2.170.0\Lib\</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4307;4251;26812</DisableSpecificWarnings>
+      <PreprocessorDefinitions>GRAPHICS_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Core.lib;vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.2.170.0\Lib\</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries;C:\VulkanSDK\1.0.39.1\Bin\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;EngineCore.lib</AdditionalDependencies>
+    </Lib>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4307;4251;26812</DisableSpecificWarnings>
+      <PreprocessorDefinitions>GRAPHICS_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Core.lib;vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.2.170.0\Lib\</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries;C:\VulkanSDK\1.0.39.1\Bin\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;EngineCore.lib</AdditionalDependencies>
+    </Lib>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Graphics\BatchCollection.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\GraphicsAPI.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\GraphicsInterface.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\GraphicsResourceDefinitions.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\GraphicsResourceFlags.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\RenderContextUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\RenderTarget.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\ResourceArray.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\ResourceInitializationDescriptions.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\GraphicsAPIDefinitions.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\RenderContext.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\RenderPassAttachments.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\ResourceBlob.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\ResourceLockPtr.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\UniformBuffers.h" />
+    <ClInclude Include="..\..\Source\Graphics\UniformBufferType.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\VertexInputDescription.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanAbstractions.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanAllocation.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanBufferAllocation.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanCommandBuffer.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanComputePipeline.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanCreateInfos.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDefinitions.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorLayoutManager.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorPool.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSet.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSetUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDevice.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanFence.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanFramebuffer.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanFrameTempAllocation.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanGraphicsInterface.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanImageAllocation.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanIndexBuffer.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanMemoryManager.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanPipeline.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanQueue.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderContext.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderingCloset.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderPass.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderState.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanSampler.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanShaders.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanShaderHeader.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanShaderManager.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanStagingBufferManager.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanStorageBuffer.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanSurface.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanSwapchain.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanTexture.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanUniformBuffer.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanUtilities.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanVertexBuffer.h" />
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanViewport.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Graphics\BatchCollection.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\GraphicsAPI.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\RenderContextUtilities.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\RenderTarget.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\ResourceBlob.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanAbstractions.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanBufferAllocation.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanComputePipeline.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanCreateInfos.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorLayoutManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSet.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSetUtilities.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDevice.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanFence.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanFramebuffer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanFrameTempAllocation.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanGraphicsInterface.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanImageAllocation.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanIndexBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanMemoryManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanPipeline.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanQueue.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderContext.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderingCloset.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderPass.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderState.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanSampler.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanShaders.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanShaderManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanStagingBufferManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanStorageBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanSurface.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanSwapchain.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanTexture.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanUtilities.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanVertexBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanViewport.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

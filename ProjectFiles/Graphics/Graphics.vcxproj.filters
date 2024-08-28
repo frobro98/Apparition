@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{90896e44-2786-41ab-bb9d-7e6589637206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Vulkan">
+      <UniqueIdentifier>{b770e8f9-af5c-4da8-a2af-9e03b05e0a27}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Graphics\ResourceLockPtr.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\GraphicsInterface.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\GraphicsResourceFlags.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\ResourceBlob.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanComputePipeline.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanCreateInfos.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDefinitions.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorLayoutManager.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorPool.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSet.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDevice.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanFence.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanFramebuffer.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanGraphicsInterface.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanImageAllocation.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanIndexBuffer.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanMemoryManager.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanPipeline.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanQueue.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderingCloset.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderPass.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanShaderManager.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanStagingBufferManager.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanStorageBuffer.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanSurface.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanSwapchain.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanTexture.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanUniformBuffer.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanUtilities.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanVertexBuffer.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanAbstractions.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanAllocation.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanBufferAllocation.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanCommandBuffer.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\UniformBufferType.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\VertexInputDescription.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\GraphicsResourceDefinitions.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanViewport.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\GraphicsAPIDefinitions.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderState.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSetUtilities.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanSampler.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\ResourceInitializationDescriptions.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\ResourceArray.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanFrameTempAllocation.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\UniformBuffers.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\BatchCollection.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\RenderTarget.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\RenderContext.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanRenderContext.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\RenderContextUtilities.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanShaderHeader.hpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanShaders.h">
+      <Filter>Source\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\GraphicsAPI.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\RenderPassAttachments.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\ResourceBlob.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanComputePipeline.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanCreateInfos.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorLayoutManager.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorPool.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSet.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDevice.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanFence.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanFramebuffer.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanGraphicsInterface.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanImageAllocation.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanIndexBuffer.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanMemoryManager.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanPipeline.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanQueue.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderingCloset.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderPass.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanShaderManager.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanStagingBufferManager.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanStorageBuffer.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanSurface.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanSwapchain.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanUniformBuffer.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanUtilities.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanVertexBuffer.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanAbstractions.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanBufferAllocation.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanCommandBuffer.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanViewport.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderState.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanDescriptorSetUtilities.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanSampler.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanTexture.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanFrameTempAllocation.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\BatchCollection.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\RenderTarget.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanRenderContext.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\RenderContextUtilities.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanShaders.cpp">
+      <Filter>Source\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\GraphicsAPI.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

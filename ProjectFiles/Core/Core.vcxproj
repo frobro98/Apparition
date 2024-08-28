@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development|x64">
+      <Configuration>Development</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="UnitTest|x64">
+      <Configuration>UnitTest</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Core\BasicTypes\Color.cpp" />
+    <ClCompile Include="..\..\Source\Core\BasicTypes\RefPtr.cpp" />
+    <ClCompile Include="..\..\Source\Core\Containers\MemoryBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Core\CoreAPI.cpp" />
+    <ClCompile Include="..\..\Source\Core\Debugging\Assertion.cpp" />
+    <ClCompile Include="..\..\Source\Core\Debugging\DebugOutput.cpp" />
+    <ClCompile Include="..\..\Source\Core\Debugging\MetricInterface.cpp" />
+    <ClCompile Include="..\..\Source\Core\Debugging\ProfilerStatistics.cpp" />
+    <ClCompile Include="..\..\Source\Core\File\DirectoryLocations.cpp" />
+    <ClCompile Include="..\..\Source\Core\File\DirectoryUtilities.cpp" />
+    <ClCompile Include="..\..\Source\Core\File\FileSystem.cpp" />
+    <ClCompile Include="..\..\Source\Core\File\FileUtilities.cpp" />
+    <ClCompile Include="..\..\Source\Core\File\md5.cpp" />
+    <ClCompile Include="..\..\Source\Core\fmt\format.cc" />
+    <ClCompile Include="..\..\Source\Core\fmt\os.cc" />
+    <ClCompile Include="..\..\Source\Core\GUID\Guid.cpp" />
+    <ClCompile Include="..\..\Source\Core\Logging\LogCore.cpp" />
+    <ClCompile Include="..\..\Source\Core\Logging\LoggingThread.cpp" />
+    <ClCompile Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.cpp" />
+    <ClCompile Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.cpp" />
+    <ClCompile Include="..\..\Source\Core\Logging\Sinks\LogFileSink.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Internal\QuaternionImplementation.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Internal\VectorImplementation.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\IntVector2.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\MathFunctions.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Matrix2.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\MatrixFunctions.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Plane.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Quat.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Quat2.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Vector2.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Vector3.cpp" />
+    <ClCompile Include="..\..\Source\Core\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\Source\Core\Memory\Internal\MemoryAllocationInternal.cpp" />
+    <ClCompile Include="..\..\Source\Core\Memory\Memory.cpp" />
+    <ClCompile Include="..\..\Source\Core\Memory\MemoryAllocation.cpp" />
+    <ClCompile Include="..\..\Source\Core\Memory\MemoryFunctions.cpp" />
+    <ClCompile Include="..\..\Source\Core\Path\Path.cpp" />
+    <ClCompile Include="..\..\Source\Core\Platform\Platform.cpp" />
+    <ClCompile Include="..\..\Source\Core\Platform\Windows\Win32Memory.cpp" />
+    <ClCompile Include="..\..\Source\Core\Serialization\DeserializeBase.cpp" />
+    <ClCompile Include="..\..\Source\Core\Serialization\MemoryDeserializer.cpp" />
+    <ClCompile Include="..\..\Source\Core\Serialization\MemorySerializer.cpp" />
+    <ClCompile Include="..\..\Source\Core\Serialization\SerializeBase.cpp" />
+    <ClCompile Include="..\..\Source\Core\String\CStringUtilities.cpp" />
+    <ClCompile Include="..\..\Source\Core\String\String.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\NativeThread.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\IThreadExecution.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32CriticalSection.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32NativeThread.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32ReadWriteLock.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32Semaphore.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32SyncEvent.cpp" />
+    <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32Threading.cpp" />
+    <ClCompile Include="..\..\Source\Core\Time\CyclePerformance.cpp" />
+    <ClCompile Include="..\..\Source\Core\Time\EngineTick.cpp" />
+    <ClCompile Include="..\..\Source\Core\Time\Time.cpp" />
+    <ClCompile Include="..\..\Source\Core\Utilities\ThirdParty\city.cc" />
+    <ClCompile Include="..\..\Source\Core\Utilities\ThirdParty\farmhash.cc" />
+    <ClCompile Include="..\..\Source\Core\Utilities\ThirdParty\xxhash.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Core\Algorithms\Algorithms.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Color.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\ConcurrentTypes.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Extents.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Function.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\FunctionRef.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\FunctionTraits.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Intrinsics.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Limits.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Optional.h" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Ranges.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\RefPtr.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Uncopyable.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\UniquePtr.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Unmoveable.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Utility.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\ArrayView.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\DynamicArray.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\FixedArray.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\List.h" />
+    <ClInclude Include="..\..\Source\Core\Containers\ListPair.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\Map.h" />
+    <ClInclude Include="..\..\Source\Core\Containers\MemoryBuffer.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\Pair.h" />
+    <ClInclude Include="..\..\Source\Core\Containers\Queue.h" />
+    <ClInclude Include="..\..\Source\Core\Containers\Set.h" />
+    <ClInclude Include="..\..\Source\Core\Containers\Stack.hpp" />
+    <ClInclude Include="..\..\Source\Core\Containers\StaticArray.hpp" />
+    <ClInclude Include="..\..\Source\Core\CoreAPI.hpp" />
+    <ClInclude Include="..\..\Source\Core\CoreFlags.hpp" />
+    <ClInclude Include="..\..\Source\Core\Debugging\Assertion.hpp" />
+    <ClInclude Include="..\..\Source\Core\Debugging\DebugOutput.hpp" />
+    <ClInclude Include="..\..\Source\Core\Debugging\MetricInterface.hpp" />
+    <ClInclude Include="..\..\Source\Core\Debugging\MetricsCollection.hpp" />
+    <ClInclude Include="..\..\Source\Core\Debugging\ProfilerStatistics.hpp" />
+    <ClInclude Include="..\..\Source\Core\File\DirectoryLocations.hpp" />
+    <ClInclude Include="..\..\Source\Core\File\DirectoryUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Core\File\FileSystem.hpp" />
+    <ClInclude Include="..\..\Source\Core\File\FileUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Core\File\md5.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\args.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\chrono.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\color.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\compile.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\core.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\format-inl.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\format.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\os.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\ostream.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\printf.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\ranges.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\std.h" />
+    <ClInclude Include="..\..\Source\Core\fmt\xchar.h" />
+    <ClInclude Include="..\..\Source\Core\GUID\Guid.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\CoreLogChannels.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LogCore.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LogFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LogLineEntry.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LoggingThread.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LogLevel.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LogSink.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\LogChannel.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.hpp" />
+    <ClInclude Include="..\..\Source\Core\Logging\Sinks\LogFileSink.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\3DMathUtilites.h" />
+    <ClInclude Include="..\..\Source\Core\Math\BitManipulation.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\BoundsVolumes.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Internal\QuaternionImplementation.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Internal\VectorImplementation.h" />
+    <ClInclude Include="..\..\Source\Core\Math\IntVector2.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\MathConstants.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\MathDefinitions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\MathFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Matrix2.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Matrix4.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\MatrixFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Plane.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\PlaneFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Quat.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Quat2.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\QuatFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Rect.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Vector2.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Vector3.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\Vector4.hpp" />
+    <ClInclude Include="..\..\Source\Core\Math\VectorFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryAllocationInternal.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryBlockInfoTable.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryFixedBlock.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\Internal\MemoryInternalDefinitions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\Memory.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryAllocation.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryCore.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryDefinitions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryFunctions.hpp" />
+    <ClInclude Include="..\..\Source\Core\Memory\MemoryTag.hpp" />
+    <ClInclude Include="..\..\Source\Core\Path\Path.hpp" />
+    <ClInclude Include="..\..\Source\Core\Platform\Platform.hpp" />
+    <ClInclude Include="..\..\Source\Core\Platform\PlatformDefinitions.h" />
+    <ClInclude Include="..\..\Source\Core\Platform\PlatformMemory.hpp" />
+    <ClInclude Include="..\..\Source\Core\Platform\PlatformThreading.hpp" />
+    <ClInclude Include="..\..\Source\Core\Platform\Windows\Win32InputDefinitions.h" />
+    <ClInclude Include="..\..\Source\Core\Platform\Windows\WindowsDefinitions.h" />
+    <ClInclude Include="..\..\Source\Core\Platform\Windows\WindowsTypes.h" />
+    <ClInclude Include="..\..\Source\Core\Serialization\DeserializeBase.hpp" />
+    <ClInclude Include="..\..\Source\Core\Serialization\MemoryDeserializer.hpp" />
+    <ClInclude Include="..\..\Source\Core\Serialization\MemorySerializer.hpp" />
+    <ClInclude Include="..\..\Source\Core\Serialization\SerializeBase.hpp" />
+    <ClInclude Include="..\..\Source\Core\String\CStringUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Core\String\String.h" />
+    <ClInclude Include="..\..\Source\Core\String\StringUtils.hpp" />
+    <ClInclude Include="..\..\Source\Core\String\StringView.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\Containers\ConcurrentQueue.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\Containers\LockingQueue.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\CriticalSection.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\IThreadExecution.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\NativeThread.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\ISyncEvent.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\ScopedReadLock.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\ScopedLock.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\ScopedWriteLock.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\Semaphore.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\ReadWriteLock.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\Windows\Win32NativeThread.hpp" />
+    <ClInclude Include="..\..\Source\Core\Threading\Windows\Win32SyncEvent.hpp" />
+    <ClInclude Include="..\..\Source\Core\Time\CyclePerformance.hpp" />
+    <ClInclude Include="..\..\Source\Core\Time\EngineTick.h" />
+    <ClInclude Include="..\..\Source\Core\Time\Time.h" />
+    <ClInclude Include="..\..\Source\Core\Time\Timer.h" />
+    <ClInclude Include="..\..\Source\Core\Utilities\Array.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\BitUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\CompileTimeCounter.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\HashFuncs.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\HashBasicTypes.h" />
+    <ClInclude Include="..\..\Source\Core\Utilities\MacroHelpers.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\MemoryUtilities.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\TemplateUtils.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\city.h" />
+    <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\farmhash.h" />
+    <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\xxhash.h" />
+    <ClInclude Include="..\..\Source\Core\Version.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Source\Core\Utilities\ThirdParty\LICENSE" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{B85B3691-9099-43F7-B95D-D642F9BBCEBA}</ProjectGuid>
+    <RootNamespace>EngineCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTest|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnitTest|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTest|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
+    <OutDir>Intermediate\libs\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Core;$(SolutionDir)\Source;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>CORE_EXPORT;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+    <Link>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTest|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Core;$(SolutionDir)\Source;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>CORE_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+    <Link>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Core;$(SolutionDir)\Source;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>CORE_EXPORT;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Source\Core;$(SolutionDir)\Source;$(SolutionDir)\ThirdParty\include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>CORE_EXPORT;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
+
+mkdir %targetDir% &gt; nul
+copy "$(OutputPath)\*.dll" %targetDir%
+copy "$(OutputPath)\*.lib" %targetDir%
+copy "$(OutputPath)\*.pdb" %targetDir%</Command>
+    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
