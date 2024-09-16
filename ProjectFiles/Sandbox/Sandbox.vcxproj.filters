@@ -5,10 +5,32 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source\Window">
+      <UniqueIdentifier>{8315f944-324f-4628-9858-9e7dd0993943}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Shaders">
+      <UniqueIdentifier>{016b075d-bad3-4e72-98cf-f0f24c070beb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source\Window</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Window.h">
+      <Filter>Source\Window</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="triangle.vert">
+      <Filter>Source\Shaders</Filter>
+    </None>
+    <None Include="triangle.frag">
+      <Filter>Source\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -86,7 +86,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4307;4251;26812</DisableSpecificWarnings>
-      <PreprocessorDefinitions>GRAPHICS_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>APPARITION_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Binaries;C:\VulkanSDK\1.0.39.1\Bin\</AdditionalLibraryDirectories>
@@ -116,7 +116,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4307;4251;26812</DisableSpecificWarnings>
-      <PreprocessorDefinitions>GRAPHICS_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>APPARITION_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -151,7 +151,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4307;4251;26812</DisableSpecificWarnings>
-      <PreprocessorDefinitions>GRAPHICS_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>APPARITION_EXPORT;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -175,7 +175,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Graphics\BatchCollection.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp" />
-    <ClInclude Include="..\..\Source\Graphics\GraphicsAPI.hpp" />
+    <ClInclude Include="..\..\Source\Graphics\ApparitionAPI.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GraphicsInterface.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GraphicsResourceDefinitions.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GraphicsResourceFlags.hpp" />
@@ -232,7 +232,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Graphics\BatchCollection.cpp" />
-    <ClCompile Include="..\..\Source\Graphics\GraphicsAPI.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\ApparitionAPI.cpp" />
     <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp" />
     <ClCompile Include="..\..\Source\Graphics\RenderContextUtilities.cpp" />
     <ClCompile Include="..\..\Source\Graphics\RenderTarget.cpp" />

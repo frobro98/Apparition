@@ -171,7 +171,7 @@
     <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Graphics\GraphicsAPI.hpp">
+    <ClInclude Include="..\..\Source\Graphics\ApparitionAPI.hpp">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Graphics\RenderPassAttachments.hpp">
@@ -299,7 +299,7 @@
     <ClCompile Include="..\..\Source\Graphics\Vulkan\VulkanShaders.cpp">
       <Filter>Source\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\GraphicsAPI.cpp">
+    <ClCompile Include="..\..\Source\Graphics\ApparitionAPI.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

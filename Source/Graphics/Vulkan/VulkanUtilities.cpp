@@ -544,7 +544,7 @@ VkFilter MusaFilterToVkFilter(SamplerFilter filter)
 		case SamplerFilter::Linear:
 			return VK_FILTER_LINEAR;
 		default:
-			return VK_FILTER_RANGE_SIZE;
+			return VK_FILTER_MAX_ENUM;
 	}
 }
 
@@ -559,7 +559,7 @@ VkSamplerAddressMode MusaAddressModeToVkAddressMode(SamplerAddressMode addrMode)
 		case SamplerAddressMode::Mirror:
 			return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 		default:
-			return VK_SAMPLER_ADDRESS_MODE_RANGE_SIZE;
+			return VK_SAMPLER_ADDRESS_MODE_MAX_ENUM;
 	}
 }
 
@@ -572,6 +572,6 @@ VkSamplerMipmapMode MusaMipModeToVkMipMode(SamplerMipmapMode mipMode)
 		case SamplerMipmapMode::Linear:
 			return VK_SAMPLER_MIPMAP_MODE_LINEAR;
 		default:
-			return VK_SAMPLER_MIPMAP_MODE_RANGE_SIZE;
+			return VK_SAMPLER_MIPMAP_MODE_MAX_ENUM;
 	}
 }

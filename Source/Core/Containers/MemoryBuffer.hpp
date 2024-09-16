@@ -28,7 +28,11 @@ public:
 	u8* GetData() const;
 	size_t Size() const;
 
-	void Copy(u8* data, size_t size);
+	void CopyTo(u8* data, size_t size);
+	void CopyTo(MemoryBuffer& otherbuffer);
+	void CopyFrom(u8* data, size_t size);
+	void CopyFrom(MemoryBuffer& otherbuffer);
+
 
 private:
 	void AllocMem();

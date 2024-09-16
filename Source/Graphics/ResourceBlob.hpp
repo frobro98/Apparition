@@ -3,13 +3,13 @@
 #pragma once
 
 #include "BasicTypes/Intrinsics.hpp"
-#include "Graphics/GraphicsAPI.hpp"
+#include "Graphics/ApparitionAPI.hpp"
 
 class SerializeBase;
 class DeserializeBase;
 
 // TODO - Currently, this object represents both general data, for resources such as textures, and for a collection of data, like index and vertex data. It might be good to separate this behavior
-class GRAPHICS_API ResourceBlob final
+class APPARITION_API ResourceBlob final
 {
 public:
 	ResourceBlob() = default;
@@ -27,9 +27,9 @@ public:
 	inline const u8* GetData() const { return data; }
 	inline size_t GetSize() const { return size; }
 
-	friend GRAPHICS_API ResourceBlob CombineBlobs(const ResourceBlob& blob0, const ResourceBlob& blob1);
-	friend GRAPHICS_API void Serialize(SerializeBase& ser, const ResourceBlob& blob);
-	friend GRAPHICS_API void Deserialize(DeserializeBase& ser, ResourceBlob& blob);
+	friend APPARITION_API ResourceBlob CombineBlobs(const ResourceBlob& blob0, const ResourceBlob& blob1);
+	friend APPARITION_API void Serialize(SerializeBase& ser, const ResourceBlob& blob);
+	friend APPARITION_API void Deserialize(DeserializeBase& ser, ResourceBlob& blob);
 
 private:
 	u8* data = nullptr;

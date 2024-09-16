@@ -22,7 +22,7 @@ MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
 {
 	ReallocMem(other.memSize);
 	memSize = other.memSize;
-	Copy(other.memData, other.memSize);
+	CopyFrom(other.memData, other.memSize);
 }
 
 MemoryBuffer& MemoryBuffer::operator=(const MemoryBuffer& other)
@@ -31,7 +31,7 @@ MemoryBuffer& MemoryBuffer::operator=(const MemoryBuffer& other)
 	{
 		memSize = other.memSize;
 		ReallocMem(memSize);
-		Copy(other.memData, other.memSize);
+		CopyFrom(other.memData, other.memSize);
 	}
 
 	return *this;
@@ -88,9 +88,28 @@ size_t MemoryBuffer::Size() const
 	return memSize;
 }
 
-void MemoryBuffer::Copy(u8* data, size_t size)
+void MemoryBuffer::CopyTo(u8* data, size_t size)
+{
+	Memcpy(data, memData, size);
+}
+
+void MemoryBuffer::CopyTo(MemoryBuffer& otherBuffer)
+{
+	otherBuffer.ReallocMem(memSize);
+	otherBuffer.memSize = memSize;
+	CopyTo(otherBuffer.memData, otherBuffer.memSize);
+}
+
+void MemoryBuffer::CopyFrom(u8* data, size_t size)
 {
 	Memcpy(memData, data, size);
+}
+
+void MemoryBuffer::CopyFrom(MemoryBuffer& otherBuffer)
+{
+	otherBuffer.ReallocMem(memSize);
+	otherBuffer.memSize = memSize;
+	CopyFrom(otherBuffer.memData, otherBuffer.memSize);
 }
 
 void MemoryBuffer::AllocMem()

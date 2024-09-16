@@ -2,7 +2,7 @@
 
 #include "RenderTarget.hpp"
 
-GRAPHICS_API FixedArray<ColorDescription, MaxColorTargetCount> CreateColorTargetDescriptions(const FixedArray<const RenderTarget*, MaxColorTargetCount>& colorTargets, RenderTargetAccess access)
+APPARITION_API FixedArray<ColorDescription, MaxColorTargetCount> CreateColorTargetDescriptions(const FixedArray<const RenderTarget*, MaxColorTargetCount>& colorTargets, RenderTargetAccess access)
 {
 	FixedArray<ColorDescription, MaxColorTargetCount> colorDescs(colorTargets.Size());
 	for (u32 i = 0; i < colorDescs.Size(); ++i)
@@ -18,7 +18,7 @@ GRAPHICS_API FixedArray<ColorDescription, MaxColorTargetCount> CreateColorTarget
 	return colorDescs;
 }
 
-GRAPHICS_API DepthStencilDescription CreateDepthTargetDescription(const RenderTarget* depthTarget, RenderTargetAccess access)
+APPARITION_API DepthStencilDescription CreateDepthTargetDescription(const RenderTarget* depthTarget, RenderTargetAccess access)
 {
 	DepthStencilDescription depthDesc = {};
 	depthDesc.access = access;

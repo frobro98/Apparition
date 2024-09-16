@@ -6,14 +6,14 @@
 #include "BasicTypes/Color.hpp"
 #include "Containers/DynamicArray.hpp"
 #include "Graphics/GraphicsResourceDefinitions.hpp"
-#include "Graphics/GraphicsAPI.hpp"
+#include "Graphics/ApparitionAPI.hpp"
 #include "Graphics/RenderPassAttachments.hpp"
 
 struct NativeRenderTargets;
 struct GraphicsPipelineDescription;
 struct ResourceArray;
 
-class GRAPHICS_API RenderContext
+class APPARITION_API RenderContext
 {
 public:
 	virtual ~RenderContext() = default;

@@ -7,15 +7,15 @@
 #include "BasicTypes/UniquePtr.hpp"
 #include "Graphics/RenderTarget.hpp"
 #include "Graphics/GraphicsResourceFlags.hpp"
-#include "Graphics/GraphicsAPI.hpp"
+#include "Graphics/ApparitionAPI.hpp"
 
 class RenderContext;
 struct NativeRenderTargets;
 
-GRAPHICS_API void TransitionTargetsToRead(RenderContext& renderer, NativeRenderTargets& targets);
-GRAPHICS_API void TransitionTargetsToWrite(RenderContext& renderer, NativeRenderTargets& targets);
+APPARITION_API void TransitionTargetsToRead(RenderContext& renderer, NativeRenderTargets& targets);
+APPARITION_API void TransitionTargetsToWrite(RenderContext& renderer, NativeRenderTargets& targets);
 
-GRAPHICS_API RenderTarget* CreateRenderTarget(
+APPARITION_API RenderTarget* CreateRenderTarget(
 	ImageFormat format, 
 	u32 width, u32 height,
 	LoadOperation loadOp, StoreOperation storeOp,
@@ -23,5 +23,5 @@ GRAPHICS_API RenderTarget* CreateRenderTarget(
 	TextureUsage::Type usage
 );
 
-GRAPHICS_API void DestroyRenderTarget(RenderTarget* rt);
+APPARITION_API void DestroyRenderTarget(RenderTarget* rt);
 

@@ -9,7 +9,7 @@
 #include "Containers/DynamicArray.hpp"
 #include "Containers/MemoryBuffer.hpp"
 #include "Graphics/GraphicsResourceDefinitions.hpp"
-#include "Graphics/GraphicsAPI.hpp"
+#include "Graphics/ApparitionAPI.hpp"
 
 struct Vertex;
 struct Face;
@@ -17,7 +17,7 @@ class ResourceBlob;
 class RenderContext;
 struct SamplerDescription;
 
-class GRAPHICS_API GraphicsInterface
+class APPARITION_API GraphicsInterface
 {
 public:
 
@@ -75,4 +75,4 @@ public:
 	virtual void UnlockIndexBuffer(NativeIndexBuffer* vb) = 0;
 };
 
-GRAPHICS_API GraphicsInterface& GetGraphicsInterface();
+APPARITION_API GraphicsInterface& GetGraphicsInterface();

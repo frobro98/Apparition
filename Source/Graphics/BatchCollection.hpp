@@ -7,7 +7,7 @@
 #include "Containers/DynamicArray.hpp"
 #include "GeometryPrimitives.hpp"
 #include "Graphics/GraphicsResourceDefinitions.hpp"
-#include "Graphics/GraphicsAPI.hpp"
+#include "Graphics/ApparitionAPI.hpp"
 
 class RenderContext;
 struct NativeUniformBuffer;
@@ -46,7 +46,7 @@ struct BatchedCircleDescription
 	float numSegments;
 };
 
-class GRAPHICS_API BatchCollection
+class APPARITION_API BatchCollection
 {
 public:
 	void BatchLine(const BatchedLineDescription& lineDesc);

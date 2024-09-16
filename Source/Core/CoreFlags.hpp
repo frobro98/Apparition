@@ -23,7 +23,11 @@
 	__pragma(warning( push ))		  \
 	__pragma(warning(disable : 4005)) \
 	__pragma(warning(disable : 4061)) \
+	__pragma(warning(disable : 4100)) \
+	__pragma(warning(disable : 4127)) \
+	__pragma(warning(disable : 4189)) \
 	__pragma(warning(disable : 4267)) \
+	__pragma(warning(disable : 4324)) \
 	__pragma(warning(disable : 4365)) \
 	__pragma(warning(disable : 4464)) \
 	__pragma(warning(disable : 4571)) \

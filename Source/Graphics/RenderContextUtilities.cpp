@@ -55,7 +55,7 @@ RenderTarget* CreateRenderTarget(ImageFormat format, u32 width, u32 height, Load
 	return rt;
 }
 
-GRAPHICS_API void DestroyRenderTarget(RenderTarget* rt)
+APPARITION_API void DestroyRenderTarget(RenderTarget* rt)
 {
 	GetGraphicsInterface().DestroyTexture(rt->nativeTarget);
 	delete rt;
