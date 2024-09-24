@@ -1365,6 +1365,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	//     - User defines a pass in a readable fashion
 	//     - Render pass is built and validated
 	//     - 
+	//   - Descriptors automatically managed
+	//     - There may be a reason to support custom management
+	//       - Think about this a tiny bit during architecting
+	//     - Desc pools chained together once descriptors run out
+	//     - Give user ability to control when descriptor sets are freed
+	//       - Potentially have a meaningful default, but that may be difficult
+	//       - Freeing descriptor sets may be a requirement of the library
 	// Features of this library
 	//   - Typed handles that represent the resources
 	//     - Image vs ImageView would be separate handles
