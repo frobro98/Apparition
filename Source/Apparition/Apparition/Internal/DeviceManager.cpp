@@ -295,7 +295,12 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
 	CHECK_VK(result);
 
-	return Apparition::DeviceHandle();
+	Apparition::DeviceHandle NewDeviceHandle{
+		.Handle = NextDeviceHandle++
+	};
+	vulkanDeviceDataMap.Add(NewDeviceHandle.Handle, internalDevice);
+
+	return NewDeviceHandle;
 }
 
 void DeviceManager::DestroyDevice(Apparition::DeviceHandle deviceHandle)

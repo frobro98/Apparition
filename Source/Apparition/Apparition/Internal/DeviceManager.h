@@ -50,4 +50,7 @@ private:
 	
 	VkInstance instance = VK_NULL_HANDLE;
 	VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
+
+	static const inline u32 InvalidDeviceHandle = 0;
+	static inline u32 NextDeviceHandle = 1;
 };

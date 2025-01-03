@@ -3,6 +3,7 @@
 #include "BasicTypes/Intrinsics.hpp"
 #include "BasicTypes/FunctionRef.hpp"
 #include "Containers/DynamicArray.hpp"
+#include "Apparition/ApparitionAPI.hpp"
 
 struct VkPhysicalDeviceFeatures;
 struct VkDeviceQueueCreateInfo;
@@ -40,8 +41,8 @@ struct DeviceCreationParams
 // ---- Device Functionality ----
 
 // No need to expose Vulkan Instance creation, will check upon creation of a device
-NODISCARD DeviceHandle CreateDevice(const DeviceCreationParams& Params);
-void DestroyDevice(DeviceHandle deviceHandle);
+APPARITION_API NODISCARD DeviceHandle CreateDevice(const DeviceCreationParams& Params);
+APPARITION_API void DestroyDevice(DeviceHandle deviceHandle);
 void GetPhysicalDevice(DeviceHandle deviceHandle);
 void GetDeviceFormatProperties(DeviceHandle deviceHandle);
 

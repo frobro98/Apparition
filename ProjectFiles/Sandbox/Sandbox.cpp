@@ -238,63 +238,6 @@ static VkBool32 VulkanDebugMessengerCallback(
 	return false;
 }
 
-bool IsSuitableGpu(VkPhysicalDevice physicalDevice, u32& graphicsIndex, u32& transferIndex)
-{
-	VkPhysicalDeviceProperties deviceProperties;
-
-	vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
-
-	if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-	{
-		// TODO - Check if checking version of GPU api is necessary
-
-		// TODO - Check what limits are important for a gpu
-		Assert(deviceProperties.limits.maxImageDimension2D >= 4096);
-
-		u32 queueFamilyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
-		Assert(queueFamilyCount > 0);
-		DynamicArray<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilyProperties.GetData());
-
-		for (u32 i = 0; i < queueFamilyCount; ++i)
-		{
-			VkBool32 presentationSupported = vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, i);
-
-			if (queueFamilyProperties[i].queueCount > 0 &&
-				queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT &&
-				queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
-			{
-				if (graphicsIndex == std::numeric_limits<u32>::max())
-				{
-					graphicsIndex = i;
-				}
-
-				if (presentationSupported)
-				{
-					graphicsIndex = i;
-				}
-			}
-			else if (queueFamilyProperties[i].queueCount > 0 &&
-				queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
-			{
-				if (transferIndex == std::numeric_limits<u32>::max())
-				{
-					transferIndex = i;
-				}
-			}
-		}
-
-		return true;
-	}
-	else
-	{
-		// TODO - Log that there isn't support for any other type of GPU
-
-		return false;
-	}
-}
-
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
@@ -477,148 +420,102 @@ static void CreateInstance(VkInstance& instance, VkDebugUtilsMessengerEXT& debug
 	CHECK_VK(result);
 }
 
-static void CreateDevice(VkInstance instance, Device& device)
+static void CreateDevice(VkInstance /*instance*/, Device& /*device*/)
 {
-	u32 physicalDeviceCount = 0;
-	VkResult result = vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
-	CHECK_VK(result);
-	DynamicArray<VkPhysicalDevice> physicalDevices(physicalDeviceCount);
-	result = vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.GetData());
-	CHECK_VK(result);
+	//VkPhysicalDeviceFeatures enabledGPUFeatures{};
+	//if (gpuFeatures.geometryShader)
+	//{
+	//	enabledGPUFeatures.geometryShader = VK_TRUE;
+	//}
+	//if (gpuFeatures.tessellationShader)
+	//{
+	//	enabledGPUFeatures.tessellationShader = VK_TRUE;
+	//}
+	//if (gpuFeatures.fillModeNonSolid)
+	//{
+	//	enabledGPUFeatures.fillModeNonSolid = VK_TRUE;
+	//}
+	//if (gpuFeatures.textureCompressionBC)
+	//{
+	//	enabledGPUFeatures.textureCompressionBC = VK_TRUE;
+	//}
+	//if (gpuFeatures.textureCompressionETC2)
+	//{
+	//	enabledGPUFeatures.textureCompressionETC2 = VK_TRUE;
+	//}
+	//if (gpuFeatures.textureCompressionASTC_LDR)
+	//{
+	//	enabledGPUFeatures.textureCompressionASTC_LDR = VK_TRUE;
+	//}
 
-	u32 graphicsFamilyIndex = std::numeric_limits<u32>::max();
-	u32 transferFamilyIndex = std::numeric_limits<u32>::max();
-	for (const auto& physicalDevice : physicalDevices)
-	{
-		if (IsSuitableGpu(physicalDevice, graphicsFamilyIndex, transferFamilyIndex))
-		{
-			device.vkPhysicalDevice = physicalDevice;
-			break;
-		}
-	}
+	//Assert(enabledGPUFeatures.fillModeNonSolid);
+	//Assert(enabledGPUFeatures.tessellationShader);
+	//Assert(enabledGPUFeatures.geometryShader);
+	//Assert(enabledGPUFeatures.textureCompressionBC);
 
-	Assert(graphicsFamilyIndex != std::numeric_limits<u32>::max());
-	Assert(transferFamilyIndex != std::numeric_limits<u32>::max());
+	//vkGetDeviceQueue(device.vkDevice, graphicsFamilyIndex, 0, &device.vkGraphicsQueue);
+	//vkGetDeviceQueue(device.vkDevice, transferFamilyIndex, 0, &device.vkTransferQueue);
+	//device.graphicsQueueFamilyIndex = graphicsFamilyIndex;
+	//device.transferQueueFamilyIndex = transferFamilyIndex;
 
-	f32 priorities[] = { 1.0f };
-	VkDeviceQueueCreateInfo queueInfos[] =
-	{
-		Vk::DeviceQueueInfo(graphicsFamilyIndex, 1, priorities),
-		Vk::DeviceQueueInfo(transferFamilyIndex, 1, priorities)
-	};
+	//VkCommandPoolCreateInfo cmdPoolInfo = {};
+	//cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	//cmdPoolInfo.queueFamilyIndex = device.graphicsQueueFamilyIndex;
+	//// TODO - Find out if there are any flags for creating command pools
+	//cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-	const tchar* deviceExtensions[] = {
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME
-	};
+	//result = vkCreateCommandPool(device.vkDevice, &cmdPoolInfo, nullptr, &device.vkGraphicsCmdPool);
+	//CHECK_VK(result);
 
-	// Enabling features
-	VkPhysicalDeviceFeatures gpuFeatures;
-	VkFormatProperties properties;
-	VkPhysicalDeviceProperties gpuProperties;
-	VkPhysicalDeviceMemoryProperties memoryProperties;
-	vkGetPhysicalDeviceFormatProperties(device.vkPhysicalDevice, VK_FORMAT_R8G8B8_UNORM, &properties);
-	vkGetPhysicalDeviceFeatures(device.vkPhysicalDevice, &gpuFeatures);
-	vkGetPhysicalDeviceProperties(device.vkPhysicalDevice, &gpuProperties);
-	vkGetPhysicalDeviceMemoryProperties(device.vkPhysicalDevice, &memoryProperties);
+	//cmdPoolInfo = {};
+	//cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	//cmdPoolInfo.queueFamilyIndex = device.transferQueueFamilyIndex;
+	//// TODO - Find out if there are any flags for creating command pools
+	//cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-	VkPhysicalDeviceFeatures enabledGPUFeatures{};
-	if (gpuFeatures.geometryShader)
-	{
-		enabledGPUFeatures.geometryShader = VK_TRUE;
-	}
-	if (gpuFeatures.tessellationShader)
-	{
-		enabledGPUFeatures.tessellationShader = VK_TRUE;
-	}
-	if (gpuFeatures.fillModeNonSolid)
-	{
-		enabledGPUFeatures.fillModeNonSolid = VK_TRUE;
-	}
-	if (gpuFeatures.textureCompressionBC)
-	{
-		enabledGPUFeatures.textureCompressionBC = VK_TRUE;
-	}
-	if (gpuFeatures.textureCompressionETC2)
-	{
-		enabledGPUFeatures.textureCompressionETC2 = VK_TRUE;
-	}
-	if (gpuFeatures.textureCompressionASTC_LDR)
-	{
-		enabledGPUFeatures.textureCompressionASTC_LDR = VK_TRUE;
-	}
+	//result = vkCreateCommandPool(device.vkDevice, &cmdPoolInfo, nullptr, &device.vkTransferCmdPool);
+	//CHECK_VK(result);
 
-	Assert(enabledGPUFeatures.fillModeNonSolid);
-	Assert(enabledGPUFeatures.tessellationShader);
-	Assert(enabledGPUFeatures.geometryShader);
-	Assert(enabledGPUFeatures.textureCompressionBC);
+	//VmaAllocatorCreateInfo allocatorCreateInfo{};
+	////allocatorCreateInfo.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
+	//allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
+	//allocatorCreateInfo.physicalDevice = device.vkPhysicalDevice;
+	//allocatorCreateInfo.device = device.vkDevice;
+	//allocatorCreateInfo.instance = instance;
 
-	VkDeviceCreateInfo deviceInfo = Vk::DeviceInfo(queueInfos, (u32)ArraySize(queueInfos), deviceExtensions, (u32)ArraySize(deviceExtensions), enabledGPUFeatures);
-	result = vkCreateDevice(device.vkPhysicalDevice, &deviceInfo, nullptr, &device.vkDevice);
-	CHECK_VK(result);
+	//result = vmaCreateAllocator(&allocatorCreateInfo, &device.allocator);
+	//CHECK_VK(result);
 
-	vkGetDeviceQueue(device.vkDevice, graphicsFamilyIndex, 0, &device.vkGraphicsQueue);
-	vkGetDeviceQueue(device.vkDevice, transferFamilyIndex, 0, &device.vkTransferQueue);
-	device.graphicsQueueFamilyIndex = graphicsFamilyIndex;
-	device.transferQueueFamilyIndex = transferFamilyIndex;
+	//VkPhysicalDeviceLimits limits = gpuProperties.limits;
 
-	VkCommandPoolCreateInfo cmdPoolInfo = {};
-	cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	cmdPoolInfo.queueFamilyIndex = device.graphicsQueueFamilyIndex;
-	// TODO - Find out if there are any flags for creating command pools
-	cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	//VkDescriptorPoolSize poolSizes[8] = {};
+	//poolSizes[0].descriptorCount = 10000;//maxSamplerPoolSize;
+	//poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	//poolSizes[1].descriptorCount = 10000;//maxUniformBufferPoolSize;
+	//poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	//poolSizes[2].descriptorCount = limits.maxDescriptorSetUniformBuffersDynamic;
+	//poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+	//poolSizes[3].descriptorCount = 10000;//maxStorageBufferPoolSize;
+	//poolSizes[3].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	//poolSizes[4].descriptorCount = limits.maxDescriptorSetStorageBuffersDynamic;
+	//poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+	//poolSizes[5].descriptorCount = 10000;// maxStorageImagePoolSize;
+	//poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	//poolSizes[6].descriptorCount = 10000;// maxSampledImagePoolSize;
+	//poolSizes[6].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+	//poolSizes[7].descriptorCount = 10000;// maxInputAttachmentPoolSize;
+	//poolSizes[7].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 
-	result = vkCreateCommandPool(device.vkDevice, &cmdPoolInfo, nullptr, &device.vkGraphicsCmdPool);
-	CHECK_VK(result);
-
-	cmdPoolInfo = {};
-	cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	cmdPoolInfo.queueFamilyIndex = device.transferQueueFamilyIndex;
-	// TODO - Find out if there are any flags for creating command pools
-	cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-	result = vkCreateCommandPool(device.vkDevice, &cmdPoolInfo, nullptr, &device.vkTransferCmdPool);
-	CHECK_VK(result);
-
-	VmaAllocatorCreateInfo allocatorCreateInfo{};
-	//allocatorCreateInfo.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
-	allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
-	allocatorCreateInfo.physicalDevice = device.vkPhysicalDevice;
-	allocatorCreateInfo.device = device.vkDevice;
-	allocatorCreateInfo.instance = instance;
-
-	result = vmaCreateAllocator(&allocatorCreateInfo, &device.allocator);
-	CHECK_VK(result);
-
-	VkPhysicalDeviceLimits limits = gpuProperties.limits;
-
-	VkDescriptorPoolSize poolSizes[8] = {};
-	poolSizes[0].descriptorCount = 10000;//maxSamplerPoolSize;
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = 10000;//maxUniformBufferPoolSize;
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[2].descriptorCount = limits.maxDescriptorSetUniformBuffersDynamic;
-	poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	poolSizes[3].descriptorCount = 10000;//maxStorageBufferPoolSize;
-	poolSizes[3].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	poolSizes[4].descriptorCount = limits.maxDescriptorSetStorageBuffersDynamic;
-	poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-	poolSizes[5].descriptorCount = 10000;// maxStorageImagePoolSize;
-	poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	poolSizes[6].descriptorCount = 10000;// maxSampledImagePoolSize;
-	poolSizes[6].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-	poolSizes[7].descriptorCount = 10000;// maxInputAttachmentPoolSize;
-	poolSizes[7].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-
-	VkDescriptorPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = (u32)ArraySize(poolSizes);
-	poolInfo.pPoolSizes = poolSizes;
-	// TODO - This is a horrible allocation scheme and it holds onto the memory the entire time. Must be a lot more conservative with my pools...
-	poolInfo.maxSets = 10000;//logicalDevice.GetDeviceLimits().maxBoundDescriptorSets;
-	// TODO - Figure out what this flag specifically does
-	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-	result = vkCreateDescriptorPool(device.vkDevice, &poolInfo, nullptr, &device.vkDescriptorPool);
-	CHECK_VK(result);
+	//VkDescriptorPoolCreateInfo poolInfo = {};
+	//poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	//poolInfo.poolSizeCount = (u32)ArraySize(poolSizes);
+	//poolInfo.pPoolSizes = poolSizes;
+	//// TODO - This is a horrible allocation scheme and it holds onto the memory the entire time. Must be a lot more conservative with my pools...
+	//poolInfo.maxSets = 10000;//logicalDevice.GetDeviceLimits().maxBoundDescriptorSets;
+	//// TODO - Figure out what this flag specifically does
+	//poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	//result = vkCreateDescriptorPool(device.vkDevice, &poolInfo, nullptr, &device.vkDescriptorPool);
+	//CHECK_VK(result);
 
 }
 
@@ -1125,6 +1022,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// Create Device
 	Device device{};
 	CreateDevice(instance, device);
+
+	Apparition::DeviceCreationParams createParams{
+		.computeSupport = true,
+		.transferSupport = true,
+	};
+	Apparition::DeviceHandle deviceHandle = Apparition::CreateDevice(createParams);
 
 	Surface surface = {};
 	CreateSurface(instance, hInstance, window->windowHandle, surface);
