@@ -79,7 +79,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -110,7 +110,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -145,7 +145,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -173,6 +173,11 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
     <ClInclude Include="..\..\Source\Graphics\BatchCollection.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp" />
     <ClInclude Include="..\..\Source\Graphics\ApparitionAPI.hpp" />
@@ -231,6 +236,9 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanViewport.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.cpp" />
     <ClCompile Include="..\..\Source\Graphics\BatchCollection.cpp" />
     <ClCompile Include="..\..\Source\Graphics\ApparitionAPI.cpp" />
     <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp" />

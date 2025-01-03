@@ -8,6 +8,8 @@
 
 #include <memory>
 
+/* Slightly modified version of this, from Malte Skarupke: https://github.com/skarupke/std_function/blob/master/function.h */
+
 template<typename>
 struct force_function_heap_allocation
 	: false_type

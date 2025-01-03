@@ -692,6 +692,9 @@
     <ClInclude Include="..\..\Source\Core\Math\Internal\VectorImplementation.h">
       <Filter>Source\Math\Internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Delegate.h">
+      <Filter>Source\BasicTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Core\Utilities\ThirdParty\LICENSE">

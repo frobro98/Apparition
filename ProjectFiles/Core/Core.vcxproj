@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\Source\Core\Algorithms\Algorithms.hpp" />
     <ClInclude Include="..\..\Source\Core\BasicTypes\Color.hpp" />
     <ClInclude Include="..\..\Source\Core\BasicTypes\ConcurrentTypes.hpp" />
+    <ClInclude Include="..\..\Source\Core\BasicTypes\Delegate.h" />
     <ClInclude Include="..\..\Source\Core\BasicTypes\Extents.hpp" />
     <ClInclude Include="..\..\Source\Core\BasicTypes\Function.hpp" />
     <ClInclude Include="..\..\Source\Core\BasicTypes\FunctionRef.hpp" />

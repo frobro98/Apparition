@@ -30,6 +30,10 @@ WALL_WRN_POP
 #include "Path/Path.hpp"
 #include "Utilities/Array.hpp"
 
+// Apparition
+#include "Apparition/ApparitionCore.h"
+#include "Apparition/Device.h"
+
 // Sandbox
 #include "Window.h"
 
@@ -1043,24 +1047,6 @@ void CreateCommandBuffer(const Device& device, CommandBuffer& commandBuffer)
 
 void CreateVertexBuffer(const Device& device, VertexBuffer& vertexBuffer)
 {
-	//VkBufferCreateInfo bufferInfo{};
-	//bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	//bufferInfo.size = sizeof(vertices[0]) * vertices.Size();
-	//bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	//bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	//VkResult result = vkCreateBuffer(device.vkDevice, &bufferInfo, nullptr, &vertexBuffer.vkBuffer);
-	//CHECK_VK(result);
-
-	//VkBufferMemoryRequirementsInfo2 memReqInfo = { VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR };
-	//memReqInfo.buffer = vertexBuffer.vkBuffer;
-
-	//VkMemoryDedicatedRequirementsKHR memDedicatedReq = { VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS_KHR };
-	//VkMemoryRequirements2KHR memReq2 = { VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR };
-	//memReq2.pNext = &memDedicatedReq;
-
-	//vkGetBufferMemoryRequirements2KHR(device.vkDevice, &memReqInfo, &memReq2);
-
 	// Vertex Buffer
 	VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;

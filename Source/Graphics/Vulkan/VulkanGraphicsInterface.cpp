@@ -54,7 +54,7 @@ constexpr const tchar* instanceExtensions[] = {
 	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 };
 
-static VkBool32 VulkanDebugMessengerCallback(
+/*static*/ VkBool32 VulkanDebugMessengerCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageType,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -531,55 +531,55 @@ RenderContext* VulkanGraphicsInterface::GetRenderContext()
 
 void VulkanGraphicsInterface::CreateInstance()
 {
-	MUSA_DEBUG(VulkanLog, "Instance Creation");
-
-	u32 layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-	DynamicArray<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.GetData());
-
-	for (const auto& layer : availableLayers)
-	{
-		MUSA_INFO(VulkanLog, "Instance Layer: {}", layer.layerName);
-	}
-
-	u32 extensionCount;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	DynamicArray<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.GetData());
-
-	for (const auto& extension : availableExtensions)
-	{
-		MUSA_INFO(VulkanLog, "Instance Extension: {}", extension.extensionName);
-	}
-
-	VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
-	debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-	debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	debugInfo.pUserData = this;
-	debugInfo.pfnUserCallback = &VulkanDebugMessengerCallback;
-
-
-	//VkDebugReportCallbackCreateInfoEXT debugInfo = Vk::DebugReportCallbackInfo(VulkanDebugCallback, debugFlags, this);
-	VkInstanceCreateInfo instanceInfo = Vk::InstanceInfo(validationLayers, (u32)ArraySize(validationLayers),
-		instanceExtensions, (u32)ArraySize(instanceExtensions)/*, &debugInfo*/);
-	NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
-	CHECK_VK(result);
-
-	// Trying to get around warnings
-//#if M_DEBUG
-	SetupDebugUtilsFunctions();
-
-	result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
-	CHECK_VK(result);
-
-//#endif
+//	MUSA_DEBUG(VulkanLog, "Instance Creation");
+//
+//	u32 layerCount;
+//	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+//	DynamicArray<VkLayerProperties> availableLayers(layerCount);
+//	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.GetData());
+//
+//	for (const auto& layer : availableLayers)
+//	{
+//		MUSA_INFO(VulkanLog, "Instance Layer: {}", layer.layerName);
+//	}
+//
+//	u32 extensionCount;
+//	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+//	DynamicArray<VkExtensionProperties> availableExtensions(extensionCount);
+//	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.GetData());
+//
+//	for (const auto& extension : availableExtensions)
+//	{
+//		MUSA_INFO(VulkanLog, "Instance Extension: {}", extension.extensionName);
+//	}
+//
+//	VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
+//	debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+//	debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+//		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+//		VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+//		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+//	debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+//		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+//		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+//	debugInfo.pUserData = this;
+//	debugInfo.pfnUserCallback = &VulkanDebugMessengerCallback;
+//
+//
+//	//VkDebugReportCallbackCreateInfoEXT debugInfo = Vk::DebugReportCallbackInfo(VulkanDebugCallback, debugFlags, this);
+//	VkInstanceCreateInfo instanceInfo = Vk::InstanceInfo(validationLayers, (u32)ArraySize(validationLayers),
+//		instanceExtensions, (u32)ArraySize(instanceExtensions)/*, &debugInfo*/);
+//	NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
+//	CHECK_VK(result);
+//
+//	// Trying to get around warnings
+////#if M_DEBUG
+//	SetupDebugUtilsFunctions();
+//
+//	result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
+//	CHECK_VK(result);
+//
+////#endif
 }
 
 void VulkanGraphicsInterface::SetupDebugUtilsFunctions()

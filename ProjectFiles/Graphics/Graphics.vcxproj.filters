@@ -7,6 +7,12 @@
     <Filter Include="Source\Vulkan">
       <UniqueIdentifier>{b770e8f9-af5c-4da8-a2af-9e03b05e0a27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Apparition">
+      <UniqueIdentifier>{a09978c7-02ab-445a-8f8a-5885f4eb0bf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Apparition\Internal">
+      <UniqueIdentifier>{239d2a56-6666-4aa5-a37c-48eb1896c9fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Graphics\ResourceLockPtr.hpp">
@@ -177,6 +183,21 @@
     <ClInclude Include="..\..\Source\Graphics\RenderPassAttachments.hpp">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.h">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp">
@@ -301,6 +322,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\ApparitionAPI.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

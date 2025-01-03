@@ -4,6 +4,8 @@
 #include "BasicTypes/Utility.hpp"
 #include "Utilities/MacroHelpers.hpp"
 
+#include <type_traits>
+
 #define EMIT_CDECL(func, param0, param1, param2) \
 	func(__cdecl, param0, param1, param2)
 

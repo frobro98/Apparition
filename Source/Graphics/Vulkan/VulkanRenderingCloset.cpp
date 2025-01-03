@@ -97,10 +97,10 @@ VkSampler VulkanRenderingCloset::FindOrCreateSampler(const SamplerDescription& p
 	VkSampler* foundSampler = samplerStore.Find(params);
 	if (!foundSampler)
 	{
-		VkSamplerCreateInfo samplerInfo = Vk::SamplerInfo(params);
-		VkSampler sampler;
-		vkCreateSampler(logicalDevice.GetNativeHandle(), &samplerInfo, nullptr, &sampler);
-		samplerStore.Add(params, sampler);
+		//VkSamplerCreateInfo samplerInfo = Vk::SamplerInfo(params);
+		VkSampler sampler = VK_NULL_HANDLE;
+		//vkCreateSampler(logicalDevice.GetNativeHandle(), &samplerInfo, nullptr, &sampler);
+		//samplerStore.Add(params, sampler);
 		return sampler;
 	}
 
