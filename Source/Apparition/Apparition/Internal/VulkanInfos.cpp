@@ -1,62 +1,7 @@
 // Copyright 2020, Nathan Blane
 
-#include "VulkanCreateInfos.h"
+#include "VulkanInfos.h"
 
-namespace Vk
-{
-	VkInstanceCreateInfo InstanceInfo(
-		const VkApplicationInfo& appInfo,
-		const tchar* const* instanceLayers, u32 numLayers,
-		const tchar* const* instanceExtensions, u32 numExtensions
-	)
-	{
-		VkInstanceCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-		//#if M_DEBUG
-		createInfo.enabledLayerCount = numLayers;
-		createInfo.ppEnabledLayerNames = instanceLayers;
-		//#else
-		UNUSED(numLayers, instanceLayers);
-		//#endif
-		createInfo.pApplicationInfo = &appInfo;
-		createInfo.enabledExtensionCount = numExtensions;
-		createInfo.ppEnabledExtensionNames = instanceExtensions;
-		return createInfo;
-	}
-
-	VkDeviceQueueCreateInfo DeviceQueueInfo(u32 queueFamilyIndex, u32 numQueues, const f32 * queuePriorities)
-	{
-		VkDeviceQueueCreateInfo queueInfo = {};
-		queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueInfo.queueFamilyIndex = queueFamilyIndex;
-		queueInfo.queueCount = numQueues;
-		queueInfo.pQueuePriorities = queuePriorities;
-		return queueInfo;
-	}
-
-	VkDeviceCreateInfo DeviceInfo(const VkDeviceQueueCreateInfo* queueInfo, u32 numQueueInfos, const tchar** deviceExtensions, u32 numExtensions, const VkPhysicalDeviceFeatures& deviceFeatures)
-	{
-		VkDeviceCreateInfo deviceInfo = {};
-		deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		deviceInfo.queueCreateInfoCount = numQueueInfos;
-		deviceInfo.pQueueCreateInfos = queueInfo;
-		deviceInfo.enabledExtensionCount = numExtensions;
-		deviceInfo.ppEnabledExtensionNames = deviceExtensions;
-		deviceInfo.pEnabledFeatures = &deviceFeatures;
-		return deviceInfo;
-	}
-
-//#if M_DEBUG
-	VkDebugReportCallbackCreateInfoEXT DebugReportCallbackInfo(PFN_vkDebugReportCallbackEXT debugFunc, VkDebugReportFlagsEXT debugFlags, void* userData)
-	{
-		VkDebugReportCallbackCreateInfoEXT createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-		createInfo.pfnCallback = debugFunc;
-		createInfo.flags = debugFlags;
-		createInfo.pUserData = userData;
-		return createInfo;
-	}
-//#endif // _DEBUG
 #ifdef _WIN32
 	VkWin32SurfaceCreateInfoKHR SurfaceInfo(HINSTANCE hInstance, HWND hWnd)
 	{
@@ -128,5 +73,5 @@ namespace Vk
 
 	//	return samplerInfo;
 	//}
-}
+
 

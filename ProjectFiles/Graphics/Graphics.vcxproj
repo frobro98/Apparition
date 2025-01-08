@@ -175,8 +175,9 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
     <ClInclude Include="..\..\Source\Graphics\BatchCollection.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp" />
@@ -236,9 +237,10 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Graphics\Vulkan\VulkanViewport.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\ApparitionCore.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.cpp" />
     <ClCompile Include="..\..\Source\Graphics\BatchCollection.cpp" />
     <ClCompile Include="..\..\Source\Graphics\ApparitionAPI.cpp" />
     <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp" />

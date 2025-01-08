@@ -1,25 +1,24 @@
 #pragma once
 
+#include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
 #include "BasicTypes/Function.hpp"
 #include "Containers/Map.h"
 #include "VulkanDefinitions.h"
 
-struct DeviceInternals
+namespace Apparition
 {
-	VkDevice device = VK_NULL_HANDLE;
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-	u32 graphicsFamilyIndex = 0;
-	u32 transferFamilyIndex = 0;
-	u32 computeFamilyIndex = 0;
-};
+struct InitializeParams;
+}
+
+void InitializeDeviceManager(const Apparition::InitializeParams& params);
 
 class DeviceManager
 {
 public:
 	static DeviceManager& Get();
 
-	DeviceManager();
+	DeviceManager(const Apparition::InitializeParams& params);
 
 #pragma region Device Management
 	Apparition::DeviceHandle CreateDevice(const Apparition::DeviceCreationParams& params);
@@ -28,12 +27,13 @@ public:
 
 #pragma region Debug Callback
 	template <typename Func>
-	void SetDebugCallback(Func&& func)
+	void SetDebugCallback(Func&& func, void* userData)
 	{
-		DebugCallback = FORWARD(Func, func);
+		userValidation.delegate = FORWARD(Func, func);
+		userValidation.userData = userData;
 	}
 
-	bool IsDebugFunctionSet() const { return DebugCallback; }
+	bool IsDebugFunctionSet() const { return !!userValidation.delegate; }
 
 	bool BroadcastDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -42,10 +42,24 @@ public:
 #pragma endregion
 
 private:
-	Function<bool(VkDebugUtilsMessageSeverityFlagBitsEXT,
-		VkDebugUtilsMessageTypeFlagsEXT,
-		const VkDebugUtilsMessengerCallbackDataEXT*,
-		void*)> DebugCallback;
+	struct DeviceInternals
+	{
+		VkDevice device = VK_NULL_HANDLE;
+		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+		u32 graphicsFamilyIndex = 0;
+		u32 transferFamilyIndex = 0;
+		u32 computeFamilyIndex = 0;
+	};
+
+	struct UserAllocationCallbacks;
+	struct UserValidationCallbackData
+	{
+		Apparition::ValidationDelegate delegate;
+		void* userData;
+	};
+
+private:
+	UserValidationCallbackData userValidation;
 	Map<u32, DeviceInternals> vulkanDeviceDataMap;
 	
 	VkInstance instance = VK_NULL_HANDLE;

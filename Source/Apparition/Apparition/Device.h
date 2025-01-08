@@ -12,9 +12,6 @@ struct VkQueueFamilyProperties;
 namespace Apparition
 {
 
-// TODO - Move this
-static constexpr u32 InvalidHandle = 0;
-
 struct DeviceHandle
 {
 	u32 Handle;
@@ -34,6 +31,7 @@ struct DeviceCreationParams
 		DynamicArray<VkDeviceQueueCreateInfo>
 			(const DynamicArray<VkQueueFamilyProperties>&, 
 			 u32 /*gfxQueueIdx*/, u32 /*tfrQueueIdx*/, u32 /*compQueueIdx*/)> queueCreationCallback;
+	u32 graphicsSupport : 1;
 	u32 computeSupport : 1;
 	u32 transferSupport : 1;
 };
@@ -41,9 +39,10 @@ struct DeviceCreationParams
 // ---- Device Functionality ----
 
 // No need to expose Vulkan Instance creation, will check upon creation of a device
+
+// TODO - 
 APPARITION_API NODISCARD DeviceHandle CreateDevice(const DeviceCreationParams& Params);
 APPARITION_API void DestroyDevice(DeviceHandle deviceHandle);
-void GetPhysicalDevice(DeviceHandle deviceHandle);
-void GetDeviceFormatProperties(DeviceHandle deviceHandle);
 
+// TODO - Expose native functionality of Vulkan in a separate file
 }

@@ -189,13 +189,16 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
   </ItemGroup>
@@ -329,8 +332,11 @@
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp">
       <Filter>Source\Apparition\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanCreateInfos.cpp">
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.cpp">
       <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\ApparitionCore.cpp">
+      <Filter>Source\Apparition</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

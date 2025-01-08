@@ -1,7 +1,8 @@
 
 #include "DeviceManager.h"
+
 #include "Utilities/Array.hpp"
-#include "VulkanCreateInfos.h"
+#include "VulkanInfos.h"
 
 constexpr const tchar* validationLayers[] = {
 	"VK_LAYER_KHRONOS_validation",
@@ -104,13 +105,20 @@ static VkBool32 VulkanDebugMessengerCallback(
 	return false;
 }
 
-DeviceManager& DeviceManager::Get()
+static DeviceManager* deviceManager = nullptr;
+
+void InitializeDeviceManager(const Apparition::InitializeParams& params)
 {
-	static DeviceManager deviceManager;
-	return deviceManager;
+	deviceManager = new DeviceManager(params);
 }
 
-DeviceManager::DeviceManager()
+DeviceManager& DeviceManager::Get()
+{
+	Assert(deviceManager);
+	return *deviceManager;
+}
+
+DeviceManager::DeviceManager(const Apparition::InitializeParams& params)
 {
 	u32 instanceVersion;
 	vkEnumerateInstanceVersion(&instanceVersion);
@@ -127,21 +135,27 @@ DeviceManager::DeviceManager()
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Apparition Sandbox";
-	appInfo.applicationVersion = 0;
-	appInfo.pEngineName = "Apparition";
-	appInfo.engineVersion = 0;
-	appInfo.apiVersion = VK_MAKE_VERSION(1, 2, 0);
+	appInfo.pApplicationName = params.applicationName;
+	appInfo.applicationVersion = params.applicationVersion;
+	appInfo.pEngineName = params.engineName;
+	appInfo.engineVersion = params.engineVersion;
+	appInfo.apiVersion = params.vulkanAPIVersion; //VK_MAKE_VERSION(1, 2, 0);
 
-	VkInstanceCreateInfo instanceInfo = Vk::InstanceInfo(appInfo, validationLayers, (u32)ArraySize(validationLayers),
-		instanceExtensions, (u32)ArraySize(instanceExtensions));
+	VkInstanceCreateInfo instanceInfo;
+	Vk::ZeroInfoStruct(instanceInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
+	instanceInfo.pApplicationInfo = &appInfo;
+	instanceInfo.enabledLayerCount = (u32)ArraySize(validationLayers);
+	instanceInfo.ppEnabledLayerNames = validationLayers;
+	instanceInfo.enabledExtensionCount = (u32)ArraySize(instanceExtensions);
+	instanceInfo.ppEnabledExtensionNames = instanceExtensions;
+
 	NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
 	CHECK_VK(result);
 
 	SetupDebugUtilsFunctions(instance);
 
-	VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
-	debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	VkDebugUtilsMessengerCreateInfoEXT debugInfo;
+	Vk::ZeroInfoStruct(debugInfo, VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT);
 	debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
 		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
 		VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
@@ -190,8 +204,21 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 				{
 					const VkBool32 presentationSupported = vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, i);
 
-					const u32 desiredQueues = params.computeSupport ?
-						VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT : VK_QUEUE_GRAPHICS_BIT;
+					const u32 desiredQueues = [&params]() -> u32
+						{
+							if (params.graphicsSupport)
+							{
+								return params.computeSupport ?
+									VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT : VK_QUEUE_GRAPHICS_BIT;
+							}
+							else if (params.computeSupport)
+							{
+								return VK_QUEUE_COMPUTE_BIT;
+							}
+
+							return 0;
+						}();
+
 					if (queueFamilyProperties[i].queueCount > 0 &&
 						queueFamilyProperties[i].queueFlags & desiredQueues)
 					{
@@ -233,7 +260,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		}
 	}
 
-	if (graphicsFamilyIndex == 0)
+	if (graphicsFamilyIndex == 0 && params.graphicsSupport)
 	{
 		// TODO- Assert and return
 	}
@@ -260,15 +287,23 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	else
 	{
 		f32 priorities[] = { 1.f };
+		VkDeviceQueueCreateInfo queueInfo;
+		Vk::ZeroInfoStruct(queueInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
+		queueInfo.queueFamilyIndex = graphicsFamilyIndex;
+		queueInfo.queueCount = 1;
+		queueInfo.pQueuePriorities = priorities;
+
 		queueInfos.Reserve(3);
-		queueInfos.Add(Vk::DeviceQueueInfo(graphicsFamilyIndex, 1, priorities));
+		queueInfos.Add(queueInfo);
 		if (params.transferSupport)
 		{
-			queueInfos.Add(Vk::DeviceQueueInfo(transferFamilyIndex, 1, priorities));
+			queueInfo.queueFamilyIndex = transferFamilyIndex;
+			queueInfos.Add(queueInfo);
 		}
 		if (params.computeSupport)
 		{
-			queueInfos.Add(Vk::DeviceQueueInfo(computeFamilyIndex, 1, priorities));
+			queueInfo.queueFamilyIndex = computeFamilyIndex;
+			queueInfos.Add(queueInfo);
 		}
 	}
 
@@ -291,7 +326,14 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		params.featureSetupCallback(supportedGpuFeatures, enabledDeviceFeatures);
 	}
 
-	VkDeviceCreateInfo deviceInfo = Vk::DeviceInfo(queueInfos.GetData(), queueInfos.Size(), deviceExtensions, (u32)ArraySize(deviceExtensions), enabledDeviceFeatures);
+	VkDeviceCreateInfo deviceInfo;
+	Vk::ZeroInfoStruct(deviceInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
+	deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceInfo.queueCreateInfoCount = queueInfos.Size();
+	deviceInfo.pQueueCreateInfos = queueInfos.GetData();
+	deviceInfo.enabledExtensionCount = (u32)ArraySize(deviceExtensions);
+	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
+	deviceInfo.pEnabledFeatures = &enabledDeviceFeatures;
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
 	CHECK_VK(result);
 
@@ -314,5 +356,23 @@ bool DeviceManager::BroadcastDebugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
 	void* pUserData)
 {
-	return DebugCallback(messageSeverity, messageType, pCallbackData, pUserData);
+	const ValidationSeverity severity = [messageSeverity]
+	{
+			switch (messageSeverity)
+			{
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+				return ValidationSeverity::Verbose;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+				return ValidationSeverity::Info;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+				return ValidationSeverity::Warning;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+				return ValidationSeverity::Error;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+			default:
+				return ValidationSeverity::None;
+			}
+	}();
+	const Apparition::DebugMessageTypeFlags messageTypeFlags = messageType;
+	return userValidation.delegate(severity, messageTypeFlags, pCallbackData, pUserData);
 }

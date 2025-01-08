@@ -681,6 +681,7 @@ static void CreateSwapchain(const Device& device, const Surface& surface, u32 wi
 	CHECK_VK(result);
 	result = vkCreateSemaphore(device.vkDevice, &semaphoreCreateInfo, nullptr, &swapchain.hasRenderingFinished);
 	CHECK_VK(result);
+
 }
 
 void CreateRenderPass(const Device& device, const Swapchain& swapchain, RenderPass& renderPass)
