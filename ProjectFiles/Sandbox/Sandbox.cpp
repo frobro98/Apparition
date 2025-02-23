@@ -33,6 +33,7 @@ WALL_WRN_POP
 // Apparition
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
+#include "Apparition/Backbuffer.h"
 
 // Sandbox
 #include "Window.h"
@@ -160,27 +161,27 @@ static PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
 static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
 #define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
 
-static void SetupDebugUtilsFunctions(VkInstance instance)
-{
-	vkCreateDebugUtilsMessengerEXT_ = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-	vkDestroyDebugUtilsMessengerEXT_ = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-	vkSetDebugUtilsObjectNameEXT_ = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
-	vkSetDebugUtilsObjectTagEXT_ = (PFN_vkSetDebugUtilsObjectTagEXT)vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectTagEXT");
-	vkQueueBeginDebugUtilsLabelEXT_ = (PFN_vkQueueBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueBeginDebugUtilsLabelEXT");
-	vkQueueEndDebugUtilsLabelEXT_ = (PFN_vkQueueEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueEndDebugUtilsLabelEXT");
-	vkQueueInsertDebugUtilsLabelEXT_ = (PFN_vkQueueInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueInsertDebugUtilsLabelEXT");
-	vkCmdBeginDebugUtilsLabelEXT_ = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT");
-	vkCmdEndDebugUtilsLabelEXT_ = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT");
-	vkCmdInsertDebugUtilsLabelEXT_ = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT");
-}
+//static void SetupDebugUtilsFunctions(VkInstance instance)
+//{
+//	vkCreateDebugUtilsMessengerEXT_ = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+//	vkDestroyDebugUtilsMessengerEXT_ = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+//	vkSetDebugUtilsObjectNameEXT_ = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
+//	vkSetDebugUtilsObjectTagEXT_ = (PFN_vkSetDebugUtilsObjectTagEXT)vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectTagEXT");
+//	vkQueueBeginDebugUtilsLabelEXT_ = (PFN_vkQueueBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueBeginDebugUtilsLabelEXT");
+//	vkQueueEndDebugUtilsLabelEXT_ = (PFN_vkQueueEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueEndDebugUtilsLabelEXT");
+//	vkQueueInsertDebugUtilsLabelEXT_ = (PFN_vkQueueInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueInsertDebugUtilsLabelEXT");
+//	vkCmdBeginDebugUtilsLabelEXT_ = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT");
+//	vkCmdEndDebugUtilsLabelEXT_ = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT");
+//	vkCmdInsertDebugUtilsLabelEXT_ = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT");
+//}
 
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
 static VkBool32 VulkanDebugMessengerCallback(
-	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-	VkDebugUtilsMessageTypeFlagsEXT messageType,
+	ValidationSeverity /*messageSeverity*/,
+	u32 messageType,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* /*pUserData*/
 )
@@ -216,22 +217,22 @@ static VkBool32 VulkanDebugMessengerCallback(
 				}
 			}
 
-			if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-			{
-				MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-			else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-			{
-				MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-			else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-			{
-				MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-			else // VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT 
-			{
-				MUSA_DEBUG(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
+			//if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+			//{
+			//	MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			//}
+			//else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+			//{
+			//	MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			//}
+			//else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+			//{
+			//	MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			//}
+			//else // VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT 
+			//{
+			//	MUSA_DEBUG(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			//}
 		}
 	}
 
@@ -374,53 +375,53 @@ static const StaticArray<u16, 6> indices = {
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-static void CreateInstance(VkInstance& instance, VkDebugUtilsMessengerEXT& debugMessengerHandle)
+void CreateInstance(VkInstance& /*instance*/, VkDebugUtilsMessengerEXT& /*debugMessengerHandle*/)
 {
-	u32 instanceVersion;
-	vkEnumerateInstanceVersion(&instanceVersion);
+	//u32 instanceVersion;
+	//vkEnumerateInstanceVersion(&instanceVersion);
 
-	u32 layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-	DynamicArray<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.GetData());
+	//u32 layerCount;
+	//vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+	//DynamicArray<VkLayerProperties> availableLayers(layerCount);
+	//vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.GetData());
 
-	u32 extensionCount;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	DynamicArray<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.GetData());
+	//u32 extensionCount;
+	//vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+	//DynamicArray<VkExtensionProperties> availableExtensions(extensionCount);
+	//vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.GetData());
 
-	VkApplicationInfo appInfo = {};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Apparition Sandbox";
-	appInfo.applicationVersion = 0;
-	appInfo.pEngineName = "Apparition";
-	appInfo.engineVersion = 0;
-	appInfo.apiVersion = VK_MAKE_VERSION(1, 2, 0);
+	//VkApplicationInfo appInfo = {};
+	//appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	//appInfo.pApplicationName = "Apparition Sandbox";
+	//appInfo.applicationVersion = 0;
+	//appInfo.pEngineName = "Apparition";
+	//appInfo.engineVersion = 0;
+	//appInfo.apiVersion = VK_MAKE_VERSION(1, 2, 0);
 
-	VkInstanceCreateInfo instanceInfo = Vk::InstanceInfo(appInfo, validationLayers, (u32)ArraySize(validationLayers),
-		instanceExtensions, (u32)ArraySize(instanceExtensions)/*, &debugInfo*/);
-	NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
-	CHECK_VK(result);
+	//VkInstanceCreateInfo instanceInfo = Vk::InstanceInfo(appInfo, validationLayers, (u32)ArraySize(validationLayers),
+	//	instanceExtensions, (u32)ArraySize(instanceExtensions)/*, &debugInfo*/);
+	//NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
+	//CHECK_VK(result);
 
-	SetupDebugUtilsFunctions(instance);
+	//SetupDebugUtilsFunctions(instance);
 
-	VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
-	debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-	debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	//debugInfo.pUserData = this;
-	debugInfo.pfnUserCallback = &VulkanDebugMessengerCallback;
+	//VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
+	//debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	//debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+	//	VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+	//	VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+	//	VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+	//debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+	//	VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+	//	VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	////debugInfo.pUserData = this;
+	//debugInfo.pfnUserCallback = &VulkanDebugMessengerCallback;
 
-	result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
-	CHECK_VK(result);
+	//result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
+	//CHECK_VK(result);
 }
 
-static void CreateDevice(VkInstance /*instance*/, Device& /*device*/)
+void CreateDevice(VkInstance /*instance*/, Device& /*device*/)
 {
 	//VkPhysicalDeviceFeatures enabledGPUFeatures{};
 	//if (gpuFeatures.geometryShader)
@@ -519,7 +520,7 @@ static void CreateDevice(VkInstance /*instance*/, Device& /*device*/)
 
 }
 
-static void CreateSurface(VkInstance vkInstance, void* hInstance, void* wndHandle, Surface& surface)
+void CreateSurface(VkInstance vkInstance, void* hInstance, void* wndHandle, Surface& surface)
 {
 	VkWin32SurfaceCreateInfoKHR surfaceInfo = Vk::SurfaceInfo((HINSTANCE)hInstance, (HWND)wndHandle);
 	VkResult result = vkCreateWin32SurfaceKHR(vkInstance, &surfaceInfo, nullptr, &surface.vkSurface);
@@ -528,7 +529,7 @@ static void CreateSurface(VkInstance vkInstance, void* hInstance, void* wndHandl
 	surface.wndHandle = wndHandle;
 }
 
-static void CreateSwapchain(const Device& device, const Surface& surface, u32 width, u32 height, Swapchain& swapchain)
+void CreateSwapchain(const Device& device, const Surface& surface, u32 width, u32 height, Swapchain& swapchain)
 {
 	// Get Surface Information Using Device
 	VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
@@ -1016,13 +1017,25 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	window = CreateSandboxWindow(hInstance, 0, 0, windowWidth, windowHeight);
 
 	// Create Vulkan Instance
-	VkInstance instance = VK_NULL_HANDLE;
-	VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
-	CreateInstance(instance, debugMessengerHandle);
+	NOT_USED VkInstance instance = VK_NULL_HANDLE;
+	//VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
+	//CreateInstance(instance, debugMessengerHandle);
+
+	Apparition::InitializeParams initParams{
+		.applicationName = "Apparition Sandbox",
+		.engineName = "Apparition",
+		.applicationVersion = 0,
+		.engineVersion = 0,
+		.vulkanAPIVersion = APPARITION_MAKE_VERSION(1,2,0)
+	};
+
+	Apparition::ValidationDelegate debugCallback = &VulkanDebugMessengerCallback;
+	Apparition::SetErrorLogCallback(MOVE(debugCallback), nullptr);
+	Apparition::InitializeApparition(initParams);
 
 	// Create Device
-	Device device{};
-	CreateDevice(instance, device);
+	NOT_USED Device device{};
+	//CreateDevice(instance, device);
 
 	Apparition::DeviceCreationParams createParams{
 		.computeSupport = true,
@@ -1030,15 +1043,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	};
 	Apparition::DeviceHandle deviceHandle = Apparition::CreateDevice(createParams);
 
-	Surface surface = {};
-	CreateSurface(instance, hInstance, window->windowHandle, surface);
+	Apparition::BackbufferSetupParams backbufferSetupParams{
+		.wndHandle = window->windowHandle,
+		.wndWidth = windowWidth,
+		.wndHeight = windowHeight
+	};
+	Apparition::SetupBackbuffer(deviceHandle, backbufferSetupParams);
 
-	VkBool32 presentationSupported = VK_FALSE;
-	vkGetPhysicalDeviceSurfaceSupportKHR(device.vkPhysicalDevice, device.graphicsQueueFamilyIndex, surface.vkSurface, &presentationSupported);
-	Assert(presentationSupported == VK_TRUE);
-
-	Swapchain swapchain = {};
-	CreateSwapchain(device, surface, windowWidth, windowHeight, swapchain);
+	NOT_USED Swapchain swapchain = {};
+	//CreateSwapchain(device, surface, windowWidth, windowHeight, swapchain);
 
 	RenderPass renderPass = {};
 	CreateRenderPass(device, swapchain, renderPass);

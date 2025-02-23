@@ -201,6 +201,12 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp">
@@ -337,6 +343,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Apparition\Apparition\ApparitionCore.cpp">
       <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Backbuffer.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

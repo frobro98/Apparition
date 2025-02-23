@@ -1,9 +1,14 @@
 #pragma once
 
 #include "BasicTypes/Delegate.h"
+#include "Apparition/ApparitionAPI.hpp"
 #include "Apparition/EnumDefinitions.h"
 
 struct VkDebugUtilsMessengerCallbackDataEXT;
+
+// Using similar version definition as Vulkan
+#define APPARITION_MAKE_VERSION(major, minor, patch) \
+	((((u32)(major)) << 22) | (((u32)(minor)) << 12) | ((u32)(patch)))
 
 namespace Apparition
 {
@@ -39,8 +44,8 @@ struct InitializeParams
 	const u32 vulkanAPIVersion = 0;
 };
 
-void SetAllocationCallbacks(const AllocationCallbacks& memoryCallbacks);
-void SetErrorLogCallback();
+APPARITION_API void SetAllocationCallbacks(const AllocationCallbacks& memoryCallbacks);
+APPARITION_API void SetErrorLogCallback(ValidationDelegate&& validationDelegate, void* userData);
 
-void InitializeApparition(const InitializeParams& initParams);
+APPARITION_API void InitializeApparition(const InitializeParams& initParams);
 }

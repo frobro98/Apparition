@@ -2,6 +2,7 @@
 
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
+#include "Apparition/Backbuffer.h"
 #include "BasicTypes/Function.hpp"
 #include "Containers/Map.h"
 #include "VulkanDefinitions.h"
@@ -11,18 +12,49 @@ namespace Apparition
 struct InitializeParams;
 }
 
-void InitializeDeviceManager(const Apparition::InitializeParams& params);
+// TODO - Move these to separate header
+struct Backbuffer
+{
+	DynamicArray<VkImageView> views;
+	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
+	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
+	VkExtent2D extents = {};
+	VkFormat format = VK_FORMAT_UNDEFINED;
+	VkSemaphore isImageAvailableSem = VK_NULL_HANDLE;
+	VkSemaphore hasRenderingFinishedSem = VK_NULL_HANDLE;
+};
 
-class DeviceManager
+struct DeviceInternals
+{
+	Backbuffer backbuffer{};
+	VkDevice device = VK_NULL_HANDLE;
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	u32 graphicsFamilyIndex = 0;
+	u32 transferFamilyIndex = 0;
+	u32 computeFamilyIndex = 0;
+};
+
+class DeviceManager final
 {
 public:
-	static DeviceManager& Get();
+	struct UserAllocationCallbacks;
+	struct UserValidationCallbackData
+	{
+		Apparition::ValidationDelegate delegate;
+		void* userData;
+	};
 
-	DeviceManager(const Apparition::InitializeParams& params);
+public:
+	~DeviceManager();
+
+	void Initialize(const Apparition::InitializeParams& params);
+	void Deinitialize();
 
 #pragma region Device Management
 	Apparition::DeviceHandle CreateDevice(const Apparition::DeviceCreationParams& params);
 	void DestroyDevice(Apparition::DeviceHandle deviceHandle);
+
+	DeviceInternals* GetDeviceInternals(Apparition::DeviceHandle deviceHandle);
 #pragma endregion
 
 #pragma region Debug Callback
@@ -41,22 +73,10 @@ public:
 		void* pUserData);
 #pragma endregion
 
-private:
-	struct DeviceInternals
-	{
-		VkDevice device = VK_NULL_HANDLE;
-		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		u32 graphicsFamilyIndex = 0;
-		u32 transferFamilyIndex = 0;
-		u32 computeFamilyIndex = 0;
-	};
-
-	struct UserAllocationCallbacks;
-	struct UserValidationCallbackData
-	{
-		Apparition::ValidationDelegate delegate;
-		void* userData;
-	};
+#pragma region Swapchain
+	void SetupBackbuffer(Apparition::DeviceHandle device, const Apparition::BackbufferSetupParams& params);
+	void TeardownBackbuffer(Apparition::DeviceHandle device);
+#pragma endregion
 
 private:
 	UserValidationCallbackData userValidation;

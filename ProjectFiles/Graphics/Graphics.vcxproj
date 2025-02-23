@@ -111,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
@@ -146,7 +146,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Source;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)Source\Graphics;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
@@ -177,8 +177,10 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h" />
     <ClInclude Include="..\..\Source\Graphics\BatchCollection.hpp" />
     <ClInclude Include="..\..\Source\Graphics\GeometryPrimitives.hpp" />
     <ClInclude Include="..\..\Source\Graphics\ApparitionAPI.hpp" />
@@ -240,7 +242,10 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\ApparitionCore.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Backbuffer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\BatchCollection.cpp" />
     <ClCompile Include="..\..\Source\Graphics\ApparitionAPI.cpp" />
     <ClCompile Include="..\..\Source\Graphics\GraphicsInterface.cpp" />

@@ -105,20 +105,15 @@ static VkBool32 VulkanDebugMessengerCallback(
 	return false;
 }
 
-static DeviceManager* deviceManager = nullptr;
-
-void InitializeDeviceManager(const Apparition::InitializeParams& params)
+DeviceManager::~DeviceManager()
 {
-	deviceManager = new DeviceManager(params);
+	// Assert that there are no devices that still exist(?)
+	// TODO - We have an initialize, we should have a deinitialize instead of having this destructor
+	vkDestroyDebugUtilsMessengerEXT(instance, debugMessengerHandle, nullptr);
+	vkDestroyInstance(instance, nullptr);
 }
 
-DeviceManager& DeviceManager::Get()
-{
-	Assert(deviceManager);
-	return *deviceManager;
-}
-
-DeviceManager::DeviceManager(const Apparition::InitializeParams& params)
+void DeviceManager::Initialize(const Apparition::InitializeParams& params)
 {
 	u32 instanceVersion;
 	vkEnumerateInstanceVersion(&instanceVersion);
@@ -139,7 +134,7 @@ DeviceManager::DeviceManager(const Apparition::InitializeParams& params)
 	appInfo.applicationVersion = params.applicationVersion;
 	appInfo.pEngineName = params.engineName;
 	appInfo.engineVersion = params.engineVersion;
-	appInfo.apiVersion = params.vulkanAPIVersion; //VK_MAKE_VERSION(1, 2, 0);
+	appInfo.apiVersion = params.vulkanAPIVersion;
 
 	VkInstanceCreateInfo instanceInfo;
 	Vk::ZeroInfoStruct(instanceInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
@@ -168,6 +163,12 @@ DeviceManager::DeviceManager(const Apparition::InitializeParams& params)
 
 	result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
 	CHECK_VK(result);
+}
+
+void DeviceManager::Deinitialize()
+{
+	// NOTE - This will be removed once we have actual deinit and not use the destructor...
+	this->~DeviceManager();
 }
 
 Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCreationParams& params)
@@ -338,9 +339,9 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	CHECK_VK(result);
 
 	Apparition::DeviceHandle NewDeviceHandle{
-		.Handle = NextDeviceHandle++
+		.handle = NextDeviceHandle++
 	};
-	vulkanDeviceDataMap.Add(NewDeviceHandle.Handle, internalDevice);
+	vulkanDeviceDataMap.Add(NewDeviceHandle.handle, internalDevice);
 
 	return NewDeviceHandle;
 }
@@ -348,6 +349,11 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 void DeviceManager::DestroyDevice(Apparition::DeviceHandle deviceHandle)
 {
 	UNUSED(deviceHandle);
+}
+
+DeviceInternals* DeviceManager::GetDeviceInternals(Apparition::DeviceHandle deviceHandle)
+{
+	return vulkanDeviceDataMap.Find(deviceHandle.handle);
 }
 
 bool DeviceManager::BroadcastDebugCallback(
