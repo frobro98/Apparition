@@ -40,4 +40,8 @@
 #define XXH_STATIC_LINKING_ONLY   /* access advanced declarations */
 #define XXH_IMPLEMENTATION   /* access definitions */
 
+ // Modification(Nathan) - DISABLE WARNING
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
 #include "xxhash.h"
+#pragma clang diagnostic pop

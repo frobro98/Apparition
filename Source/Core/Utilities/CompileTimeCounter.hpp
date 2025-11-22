@@ -2,7 +2,11 @@
 
 #pragma once
 
+#include "CoreFlags.hpp"
+
+WALL_WRN_PUSH
 #include <utility>
+WALL_WRN_POP
 
 #define counter_read_crumb( TAG, RANK, ACC ) counter_crumb( TAG(), constant_index< RANK >(), constant_index< ACC >() )
 #define read_counter( TAG ) counter_read_crumb( TAG, 1, counter_read_crumb( TAG, 2, counter_read_crumb( TAG, 4, counter_read_crumb( TAG, 8, \

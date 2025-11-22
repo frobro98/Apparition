@@ -2,12 +2,16 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "BasicTypes/Intrinsics.hpp"
+WALL_WRN_PUSH
 #include "Utilities/ThirdParty/xxhash.h"
 #include "Utilities/ThirdParty/farmhash.h"
 #include "Utilities/ThirdParty/city.h"
+WALL_WRN_POP
+
+WALL_WRN_PUSH
+#include <type_traits>
+WALL_WRN_POP
 
 template <typename T>
 forceinline void HashCombine(u32& hash, const T& obj)

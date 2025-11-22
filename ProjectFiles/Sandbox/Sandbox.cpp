@@ -113,53 +113,53 @@ VkImageViewCreateInfo ImageViewInfo(VkImage image, u32 mipLevels, VkFormat forma
 }
 }
 
-constexpr const tchar* validationLayers[] = {
-	"VK_LAYER_KHRONOS_validation",
-	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_object_tracker"
-	//, "VK_LAYER_LUNARG_standard_validation"
-	//, "VK_LAYER_LUNARG_parameter_validation"
-	//, "VK_LAYER_GOOGLE_threading"
-	//, "VK_LAYER_GOOGLE_unique_objects"
-};
+//constexpr const tchar* validationLayers[] = {
+//	"VK_LAYER_KHRONOS_validation",
+//	//"VK_LAYER_LUNARG_api_dump",
+//	//"VK_LAYER_LUNARG_object_tracker"
+//	//, "VK_LAYER_LUNARG_standard_validation"
+//	//, "VK_LAYER_LUNARG_parameter_validation"
+//	//, "VK_LAYER_GOOGLE_threading"
+//	//, "VK_LAYER_GOOGLE_unique_objects"
+//};
 
-constexpr const tchar* instanceExtensions[] = {
-	VK_KHR_SURFACE_EXTENSION_NAME,
-	VK_PLATFORM_SURFACE_EXTENSION,
-	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
-};
+//constexpr const tchar* instanceExtensions[] = {
+//	VK_KHR_SURFACE_EXTENSION_NAME,
+//	VK_PLATFORM_SURFACE_EXTENSION,
+//	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+//};
 
 #define CHECK_VK(expression) Assert(expression == VK_SUCCESS)
 
-static PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_ = nullptr;
-#define vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_
-
-static PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_ = nullptr;
-#define vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_
-
-static PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_ = nullptr;
-#define vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_
-
-static PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_ = nullptr;
-#define vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_
-
-static PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_ = nullptr;
-#define vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_
-
-static PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_ = nullptr;
-#define vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
-
-static PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT_ = nullptr;
-#define vkQueueInsertDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
-
-static PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_ = nullptr;
-#define vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_
-
-static PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
-#define vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_
-
-static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
-#define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
+//static PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_ = nullptr;
+//#define vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_
+//
+//static PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_ = nullptr;
+//#define vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_
+//
+//static PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_ = nullptr;
+//#define vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_
+//
+//static PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_ = nullptr;
+//#define vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_
+//
+//static PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_ = nullptr;
+//#define vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_
+//
+//static PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_ = nullptr;
+//#define vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
+//
+//static PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT_ = nullptr;
+//#define vkQueueInsertDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
+//
+//static PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_ = nullptr;
+//#define vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_
+//
+//static PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
+//#define vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_
+//
+//static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
+//#define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
 
 //static void SetupDebugUtilsFunctions(VkInstance instance)
 //{
@@ -180,7 +180,7 @@ static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullpt
 //////////////////////////////////////////////////////
 
 static VkBool32 VulkanDebugMessengerCallback(
-	ValidationSeverity /*messageSeverity*/,
+	ValidationSeverity messageSeverity,
 	u32 messageType,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* /*pUserData*/
@@ -217,22 +217,22 @@ static VkBool32 VulkanDebugMessengerCallback(
 				}
 			}
 
-			//if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-			//{
-			//	MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			//}
-			//else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-			//{
-			//	MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			//}
-			//else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-			//{
-			//	MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			//}
-			//else // VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT 
-			//{
-			//	MUSA_DEBUG(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			//}
+			if (messageSeverity == ValidationSeverity::Error)
+			{
+				MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			}
+			else if (messageSeverity == ValidationSeverity::Warning)
+			{
+				MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			}
+			else if (messageSeverity == ValidationSeverity::Info)
+			{
+				MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			}
+			else // VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT 
+			{
+				MUSA_DEBUG(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+			}
 		}
 	}
 
@@ -1038,6 +1038,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	//CreateDevice(instance, device);
 
 	Apparition::DeviceCreationParams createParams{
+		.graphicsSupport = true,
 		.computeSupport = true,
 		.transferSupport = true,
 	};
@@ -1253,6 +1254,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 
 	vkDeviceWaitIdle(device.vkDevice);
+
+	Apparition::TeardownBackbuffer(deviceHandle);
+	Apparition::DestroyDevice(deviceHandle);
 
 	// Things that are needed for support
 	//   - Function-based api

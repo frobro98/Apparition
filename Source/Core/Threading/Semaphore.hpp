@@ -6,9 +6,6 @@
 #include "BasicTypes/Limits.hpp"
 
 // TODO - This isn't the optimal way to actually define a primitive without inheritance...
-
-constexpr
-
 class Semaphore final : private Uncopyable
 {
 public:

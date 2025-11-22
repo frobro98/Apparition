@@ -24,11 +24,11 @@ f32 Fmod(f32 x, f32 y)
 	i64 hx, hy, hz, sx, i;
 	hx = AsInt64(x);
 	hy = AsInt64(y);
-	sx = hx & UINT64_C(0x8000000000000000);        /* sign of x */
+	sx = hx & INT64_C(0x8000000000000000);        /* sign of x */
 	hx ^= sx;                                /* |x| */
-	hy &= UINT64_C(0x7fffffffffffffff);        /* |y| */
+	hy &= INT64_C(0x7fffffffffffffff);        /* |y| */
 /* purge off exception values */
-	if (unlikely(hy == 0 || hx >= UINT64_C(0x7ff0000000000000) || hy > UINT64_C(0x7ff0000000000000)))
+	if (unlikely(hy == 0 || hx >= INT64_C(0x7ff0000000000000) || hy > INT64_C(0x7ff0000000000000)))
 	{
 		/* y=0,or x not finite or y is NaN */
 		return (x*y) / (x*y);
@@ -38,7 +38,7 @@ f32 Fmod(f32 x, f32 y)
 		return (f32)ZeroArr[(uint64_t)sx >> 63];        /* |x|=|y| return x*0*/
 	}
 	/* determine ix = ilogb(x) */
-	if (unlikely(hx < UINT64_C(0x0010000000000000)))
+	if (unlikely(hx < INT64_C(0x0010000000000000)))
 	{
 		/* subnormal x */
 		for (ix = -1022, i = (hx << 11); i > 0; i <<= 1) ix -= 1;
@@ -48,7 +48,7 @@ f32 Fmod(f32 x, f32 y)
 		ix = (hx >> 52) - 1023;
 	}
 	/* determine iy = ilogb(y) */
-	if (unlikely(hy < UINT64_C(0x0010000000000000))) {        /* subnormal y */
+	if (unlikely(hy < INT64_C(0x0010000000000000))) {        /* subnormal y */
 		for (iy = -1022, i = (hy << 11); i > 0; i <<= 1) iy -= 1;
 	}
 	else
@@ -58,7 +58,7 @@ f32 Fmod(f32 x, f32 y)
 	/* set up hx, hy and align y to x */
 	if (likely(ix >= -1022))
 	{
-		hx = UINT64_C(0x0010000000000000) | (UINT64_C(0x000fffffffffffff)&hx);
+		hx = INT64_C(0x0010000000000000) | (INT64_C(0x000fffffffffffff) & hx);
 	}
 	else {                /* subnormal x, shift x to normal */
 		n = -1022 - ix;
@@ -66,7 +66,7 @@ f32 Fmod(f32 x, f32 y)
 	}
 	if (likely(iy >= -1022))
 	{
-		hy = UINT64_C(0x0010000000000000) | (UINT64_C(0x000fffffffffffff)&hy);
+		hy = INT64_C(0x0010000000000000) | (INT64_C(0x000fffffffffffff) & hy);
 	}
 	else                 /* subnormal y, shift y to normal */
 	{
@@ -98,7 +98,7 @@ f32 Fmod(f32 x, f32 y)
 		return (f32)ZeroArr[(u64)sx >> 63];
 	}
 
-	while (hx < UINT64_C(0x0010000000000000))         /* normalize x */
+	while (hx < INT64_C(0x0010000000000000))         /* normalize x */
 	{
 		hx = hx + hx;
 		iy -= 1;
@@ -106,7 +106,7 @@ f32 Fmod(f32 x, f32 y)
 
 	if (likely(iy >= -1022))         /* normalize output */
 	{
-		hx = ((hx - UINT64_C(0x0010000000000000)) | ((u64)(iy + 1023) << 52));
+		hx = ((hx - INT64_C(0x0010000000000000)) | ((i64)(iy + 1023) << 52));
 		x = (f32)AsFloat64(hx | sx);
 	}
 	else                 /* subnormal output */

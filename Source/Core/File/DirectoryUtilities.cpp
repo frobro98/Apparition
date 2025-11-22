@@ -65,7 +65,6 @@ u32 NumberOfFileTypesInCurrentDirectory(const char* fileExt)
 	HANDLE findHandle;
 	WIN32_FIND_DATA data;
 	u32 fileCount = 0;
-	DWORD error = 0;
 
 	findHandle = FindFirstFile(fileExt, &data);
 	if (findHandle != INVALID_HANDLE_VALUE)
@@ -74,7 +73,6 @@ u32 NumberOfFileTypesInCurrentDirectory(const char* fileExt)
 			++fileCount;
 		} while (FindNextFile(findHandle, &data));
 		FindClose(findHandle);
-		error = GetLastError();
 	}
 
 	return fileCount;

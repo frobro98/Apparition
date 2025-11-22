@@ -1,10 +1,13 @@
 #pragma once
 
+WALL_WRN_PUSH
+#include <type_traits>
+WALL_WRN_POP
+
 #include "CoreFlags.hpp"
 #include "BasicTypes/Utility.hpp"
 #include "Utilities/MacroHelpers.hpp"
 
-#include <type_traits>
 
 #define EMIT_CDECL(func, param0, param1, param2) \
 	func(__cdecl, param0, param1, param2)

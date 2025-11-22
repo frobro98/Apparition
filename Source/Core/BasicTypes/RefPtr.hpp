@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BasicTypes/ConcurrentTypes.hpp"
+#include "BasicTypes/Utility.hpp"
 #include "CoreAPI.hpp"
 
 class CORE_API Counter

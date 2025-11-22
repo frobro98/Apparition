@@ -5,7 +5,10 @@
 //---------------------------------------------------------------------------
 #include "Time.h"
 #include "Debugging/Assertion.hpp"
+
+WALL_WRN_PUSH
 #include <limits>   // For numeric_limits< Time::Representation >.
+WALL_WRN_POP
 
 //---------------------------------------------------------------------------
 // FRIENDS:

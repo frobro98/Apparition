@@ -1,10 +1,12 @@
 
+#include "Win32SyncEvent.hpp"
+#include "Debugging/Assertion.hpp"
+
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#include "Win32SyncEvent.hpp"
-#include "Debugging/Assertion.hpp"
+WALL_WRN_POP
 
 Win32SyncEvent::~Win32SyncEvent()
 {

@@ -1,10 +1,12 @@
 
+#include "Threading/Semaphore.hpp"
+#include "Debugging/Assertion.hpp"
+
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#include "Threading/Semaphore.hpp"
-#include "Debugging/Assertion.hpp"
+WALL_WRN_POP
 
 static bool WaitOnSemaphore(HANDLE semaphore, u32 msWait)
 {

@@ -2,11 +2,11 @@
 
 #include "Debugging/DebugOutput.hpp"
 
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-constexpr u32 DebugBufferSize = 256;
+WALL_WRN_POP
 
 namespace Debug
 {

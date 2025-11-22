@@ -3,6 +3,12 @@
 
 #include "Internal/ApparitionInternals.h"
 
+WALL_WRN_PUSH
+#define VMA_VULKAN_VERSION 1002000
+#define VMA_IMPLEMENTATION
+#include "vma/vk_mem_alloc.h"
+WALL_WRN_POP
+
 namespace Apparition
 {
 

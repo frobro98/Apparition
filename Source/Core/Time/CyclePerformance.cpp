@@ -1,11 +1,13 @@
 // Copyright 2020, Nathan Blane
 
+#include "CyclePerformance.hpp"
+#include "Platform/Windows/WindowsDefinitions.h"
+
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#include "CyclePerformance.hpp"
-#include "Platform/Windows/WindowsDefinitions.h"
+WALL_WRN_POP
 
 static f64 InvCyclesPerSec = 0.0;
 

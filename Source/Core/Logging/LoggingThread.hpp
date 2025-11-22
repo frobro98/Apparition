@@ -44,9 +44,8 @@ private:
 
 	Semaphore* linePushedSemaphore;
 
-	Timer loggingTimings;
-
-	FileSystem::Handle logFileHandle;
+	//Timer loggingTimings;
+	//FileSystem::Handle logFileHandle;
 
 	// TODO - This needs to be an atomic type of some sort
 	volatile bool stopRequested = false;

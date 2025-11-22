@@ -2,8 +2,12 @@
 
 #pragma once
 
-#include <atomic>
 #include "BasicTypes/Intrinsics.hpp"
+
+WALL_WRN_PUSH
+#include <atomic>
+WALL_WRN_POP
+
 
 using uatom64 = std::atomic<u64>;
 using atom64 = std::atomic<i64>;

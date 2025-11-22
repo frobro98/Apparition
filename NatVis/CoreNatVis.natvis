@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  
+  <!--
+  * Nathan's Array types
+  -->
+  <Type Name="DynamicArray&lt;*&gt;">
+    <DisplayString>{{ size={arraySize} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>arraySize</Size>
+        <ValuePointer>data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <!--
+  * Nathan's string types
+  -->
+  <Type Name="String">
+    <DisplayString>{{ length={stringData.arraySize} }}</DisplayString>
+    <StringView>stringData.data,na</StringView>
+    <Expand>
+      <ArrayItems>
+        <Size>stringData.arraySize</Size>
+        <ValuePointer>stringData.data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="StringView">
+    <DisplayString>{string, [stringLen]}</DisplayString>
+    <StringView>string, [stringLen]</StringView>
+    <Expand>
+      <ArrayItems>
+        <Size>stringLen</Size>
+        <ValuePointer>string</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

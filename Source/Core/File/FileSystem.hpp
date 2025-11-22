@@ -36,7 +36,8 @@ public:
    static bool FlushFile( FileSystem::Handle fh );
 
    static bool MakeDirectory(const Path& path);
-   static bool RemoveDirectory(const Path& path);
+   static bool DeleteDirectory(const Path& path);
+   static bool RemoveDirectory(const Path& path) { return DeleteDirectory(path); }
 
    static bool DoesDirectoryExist(const Path& path);
    static bool DoesFileExist(const Path& path);

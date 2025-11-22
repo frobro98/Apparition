@@ -5,9 +5,11 @@
 #include "String/CStringUtilities.hpp"
 #include "Utilities/Array.hpp"
 
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+WALL_WRN_POP
 
 const tchar* EngineExeFullPath()
 {

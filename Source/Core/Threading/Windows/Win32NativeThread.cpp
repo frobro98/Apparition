@@ -1,12 +1,14 @@
 
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "Win32NativeThread.hpp"
 #include "Threading/IThreadExecution.hpp"
 #include "Threading/ISyncEvent.hpp"
 #include "Platform/PlatformThreading.hpp"
+
+WALL_WRN_PUSH
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+WALL_WRN_POP
 
 namespace
 {

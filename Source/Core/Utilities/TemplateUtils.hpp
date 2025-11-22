@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "CoreFlags.hpp"
+
+WALL_WRN_PUSH
+#include <type_traits>
+WALL_WRN_POP
 
 template <typename Type, typename... Types>
 struct all_same_type
@@ -56,7 +58,7 @@ inline constexpr bool all_convertable_to_v = all_convertable_to<ConvertTo, Conve
 template <typename Src, typename Dst>
 struct is_memcpy_constructable
 {
-	static_assert(std::conjunction_v<all_same_type_v<Src, Dst>>, "Can't memcpy an object into a different typed object");
+	static_assert(all_same_type_v<Src, Dst>, "Can't memcpy an object into a different typed object");
 	static_assert(!std::is_reference_v<Src> && !std::is_reference_v<Dst>, "References can't be used with memcpy");
 
 	static constexpr bool value = false;

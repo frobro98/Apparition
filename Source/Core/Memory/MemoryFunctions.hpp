@@ -2,11 +2,13 @@
 
 #pragma once
 
-// TODO - Remove this by implementing your own versions of memcpy, memset, etc.
-#include <cstring>
-
 #include "BasicTypes/Intrinsics.hpp"
 #include "CoreAPI.hpp"
+
+// TODO - Remove this by implementing your own versions of memcpy, memset, etc.
+WALL_WRN_PUSH
+#include <cstring>
+WALL_WRN_POP
 
 namespace Memory
 {

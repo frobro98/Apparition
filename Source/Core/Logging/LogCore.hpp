@@ -9,8 +9,6 @@
 // Needs to initialize specific "sinks" e.g. allocate console, debug window output,
 // open file for writing, in-game console, etc.
 
-#include <iterator>
-
 #include "BasicTypes/Intrinsics.hpp"
 WALL_WRN_PUSH
 #include "fmt/format.h"
@@ -20,6 +18,11 @@ WALL_WRN_POP
 #include "Logging/LogChannel.hpp"
 #include "Logging/LogLevel.hpp"
 #include "Logging/LogSink.hpp"
+
+WALL_WRN_PUSH
+#include <iterator>
+WALL_WRN_POP
+
 
 class LoggingThread;
 

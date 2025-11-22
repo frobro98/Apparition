@@ -27,6 +27,6 @@ private:
 	String threadName;
 	Win32::HANDLE threadHandle = nullptr;
 	ISyncEvent* syncEvent = nullptr;
-	bool running = false;
+	//bool running = false;
 };
 

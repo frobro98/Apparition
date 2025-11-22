@@ -1,8 +1,11 @@
 #pragma once
 
 // For atomic_thread_fence...
-#include <atomic>
 #include "BasicTypes/Intrinsics.hpp"
+
+WALL_WRN_PUSH
+#include <atomic>
+WALL_WRN_POP
 
 class NativeThread;
 class ISyncEvent;

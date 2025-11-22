@@ -1,10 +1,12 @@
 // Copyright 2020, Nathan Blane
 
-#include <objbase.h>
-
 #include "Guid.hpp"
 #include "Debugging/Assertion.hpp"
 #include "Utilities/HashFuncs.hpp"
+
+WALL_WRN_PUSH
+#include <objbase.h>
+WALL_WRN_POP
 
 Guid::Guid()
 {

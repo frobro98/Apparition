@@ -100,51 +100,51 @@ public:
 	template <typename Pred>
 	void Sort(const Pred& predicate);
 
-	inline NODISCARD Type* GetData()
+	inline Type* GetData()
 	{
 		return data;
 	}
 
-	inline NODISCARD const Type* GetData() const
+	inline const Type* GetData() const
 	{
 		return data;
 	}
 
-	inline NODISCARD u32 Size() const
+	inline u32 Size() const
 	{
 		return arraySize;
 	}
 
-	inline NODISCARD u32 SizeInBytes() const
+	inline u32 SizeInBytes() const
 	{
 		return arraySize * sizeof(valueType);
 	}
 
-	inline NODISCARD u32 Capacity() const
+	inline u32 Capacity() const
 	{
 		return arrayCapacity;
 	}
 
 	// Accessors
-	inline NODISCARD Type& operator[](u32 index)
+	inline Type& operator[](u32 index)
 	{
 		Assert(index < arraySize);
 		return GetData()[index];
 	}
 
-	inline NODISCARD const Type& operator[](u32 index) const
+	inline const Type& operator[](u32 index) const
 	{
 		Assert(index < arraySize);
 		return GetData()[index];
 	}
 
-	inline NODISCARD valueType& First() const
+	inline valueType& First() const
 	{
 		Assert(arraySize > 0);
 		return data[0];
 	}
 
-	inline NODISCARD valueType& Last() const
+	inline valueType& Last() const
 	{
 		Assert(arraySize > 0);
 		return data[arraySize - 1];

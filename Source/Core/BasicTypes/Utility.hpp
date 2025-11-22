@@ -353,7 +353,7 @@ template <class T, typename... Args>
 using is_constructible = Internal::is_constructible_<void_t<>, T, Args...>;
 
 template <class T, typename... Args>
-inline constexpr bool is_constructible_v = is_constructible<T, Args...>
+inline constexpr bool is_constructible_v = is_constructible<T, Args...>::value;
 
 /* is_nothrow_constructible */
 // namespace Interenal
@@ -395,7 +395,7 @@ inline constexpr bool is_constructible_v = is_constructible<T, Args...>
 // {
 // };
 
-template<class T, typename... Args>
+template <class T, typename... Args>
 struct is_nothrow_constructible;
 
 template<class T, typename... Args>

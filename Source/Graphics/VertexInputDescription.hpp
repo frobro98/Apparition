@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "BasicTypes/Intrinsics.hpp"
 #include "Containers/StaticArray.hpp"
 #include "GeometryPrimitives.hpp"
 #include "Utilities/TemplateUtils.hpp"
+
+WALL_WRN_PUSH
+#include <type_traits>
+WALL_WRN_POP
 
 enum class VertexInputType : u16
 {

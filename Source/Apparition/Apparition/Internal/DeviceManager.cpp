@@ -51,57 +51,7 @@ static VkBool32 VulkanDebugMessengerCallback(
 		}
 	}
 
-	// We want default behavior to be logged in case the user opts to not set callback
-	if (pCallbackData->pMessageIdName)
-	{
-		bool shouldLog = Strncmp(pCallbackData->pMessageIdName, "UNASSIGNED", 10) != 0 &&
-			Strncmp(pCallbackData->pMessageIdName, "Loader", 6) != 0;
-		if (shouldLog)
-		{
-			UNUSED(messageType);
-			const char* typeStr = "";
-			if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
-			{
-				typeStr = "GEN";
-			}
-			else
-			{
-				if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
-				{
-					typeStr = "VALID";
-				}
-				if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)
-				{
-					if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
-					{
-						typeStr = "VALID|PERF";
-					}
-					else
-					{
-						typeStr = "PERF";
-					}
-				}
-			}
-
-			if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-			{
-				//MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-			else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-			{
-				//MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-			else if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-			{
-				//MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-			else // VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT 
-			{
-				//MUSA_DEBUG(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
-			}
-		}
-	}
-
+	
 	return false;
 }
 
@@ -180,9 +130,10 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	result = vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.GetData());
 	CHECK_VK(result);
 
-	u32 graphicsFamilyIndex = std::numeric_limits<u32>::max();
-	u32 transferFamilyIndex = std::numeric_limits<u32>::max();
-	u32 computeFamilyIndex = std::numeric_limits<u32>::max();
+	constexpr u32 invalidFamilyIndex = std::numeric_limits<u32>::max();
+	u32 graphicsFamilyIndex = invalidFamilyIndex;
+	u32 transferFamilyIndex = invalidFamilyIndex;
+	u32 computeFamilyIndex = invalidFamilyIndex;
 
 	const auto IsGpuSuitable = [&params, &graphicsFamilyIndex, &transferFamilyIndex, &computeFamilyIndex](VkPhysicalDevice physicalDevice)
 		{
@@ -232,8 +183,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 							}
 						}
 					}
-
-					if (params.transferSupport &&
+					else if (params.transferSupport &&
 						queueFamilyProperties[i].queueCount > 0 &&
 						queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
 					{
@@ -261,17 +211,17 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		}
 	}
 
-	if (graphicsFamilyIndex == 0 && params.graphicsSupport)
+	if (graphicsFamilyIndex == invalidFamilyIndex && params.graphicsSupport)
 	{
 		// TODO- Assert and return
 	}
 
-	if (transferFamilyIndex == 0 && params.transferSupport)
+	if (transferFamilyIndex == invalidFamilyIndex && params.transferSupport)
 	{
 		// TODO- Assert and return
 	}
 
-	if (computeFamilyIndex == 0 && params.computeSupport)
+	if (computeFamilyIndex == invalidFamilyIndex && params.computeSupport)
 	{
 		// TODO- Assert and return
 	}
@@ -290,9 +240,12 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		f32 priorities[] = { 1.f };
 		VkDeviceQueueCreateInfo queueInfo;
 		Vk::ZeroInfoStruct(queueInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
-		queueInfo.queueFamilyIndex = graphicsFamilyIndex;
-		queueInfo.queueCount = 1;
-		queueInfo.pQueuePriorities = priorities;
+		if (params.graphicsSupport)
+		{
+			queueInfo.queueFamilyIndex = graphicsFamilyIndex;
+			queueInfo.queueCount = 1;
+			queueInfo.pQueuePriorities = priorities;
+		}
 
 		queueInfos.Reserve(3);
 		queueInfos.Add(queueInfo);
@@ -303,14 +256,52 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		}
 		if (params.computeSupport)
 		{
-			queueInfo.queueFamilyIndex = computeFamilyIndex;
-			queueInfos.Add(queueInfo);
+			if (!params.graphicsSupport || computeFamilyIndex != graphicsFamilyIndex)
+			{
+				queueInfo.queueFamilyIndex = computeFamilyIndex;
+				queueInfos.Add(queueInfo);
+			}
 		}
 	}
 
 	const tchar* deviceExtensions[] = {
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
+		VK_KHR_MAINTENANCE_4_EXTENSION_NAME,
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+		VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME,
+		VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME,
+		"VK_EXT_swapchain_maintenance1",
+		"VK_EXT_host_image_copy",
+		"VK_EXT_scalar_block_layout"
 	};
+	u32 deviceExtensionCount = ArraySize(deviceExtensions);
+
+#if 1 // TODO - Find a specific kind of preprocessor flag that allows for validating that device extensions exist
+	u32 deviceLayerCount;
+	vkEnumerateDeviceLayerProperties(selectedGpu, &deviceLayerCount, nullptr);
+	DynamicArray<VkLayerProperties> deviceLayers(deviceLayerCount);
+	vkEnumerateDeviceLayerProperties(selectedGpu, &deviceLayerCount, deviceLayers.GetData());
+
+	u32 extensionCount;
+	vkEnumerateDeviceExtensionProperties(selectedGpu, nullptr, &extensionCount, nullptr);
+	DynamicArray<VkExtensionProperties> defaultDeviceExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(selectedGpu, nullptr, &extensionCount, defaultDeviceExtensions.GetData());
+
+	DynamicArray<const tchar*> availableDeviceExtensions;
+	availableDeviceExtensions.Reserve(ArraySize(deviceExtensions));
+	for (const tchar* extension : deviceExtensions)
+	{
+		if (defaultDeviceExtensions.FindFirstIndexUsing([extension](const VkExtensionProperties& prop) {
+				return Strcmp(prop.extensionName, extension) == 0;
+			}) >= 0)
+		{
+			availableDeviceExtensions.Add(extension);
+		}
+	}
+
+	Memcpy(deviceExtensions, availableDeviceExtensions.GetData(), availableDeviceExtensions.SizeInBytes());
+	deviceExtensionCount = availableDeviceExtensions.Size();
+#endif
 
 	DeviceInternals internalDevice = {
 		.physicalDevice = selectedGpu,
@@ -332,7 +323,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	deviceInfo.queueCreateInfoCount = queueInfos.Size();
 	deviceInfo.pQueueCreateInfos = queueInfos.GetData();
-	deviceInfo.enabledExtensionCount = (u32)ArraySize(deviceExtensions);
+	deviceInfo.enabledExtensionCount = deviceExtensionCount;
 	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
 	deviceInfo.pEnabledFeatures = &enabledDeviceFeatures;
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
@@ -342,6 +333,82 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		.handle = NextDeviceHandle++
 	};
 	vulkanDeviceDataMap.Add(NewDeviceHandle.handle, internalDevice);
+
+	// Device's command pool
+	VkCommandPoolCreateInfo cmdPoolInfo;
+	Vk::ZeroInfoStruct(cmdPoolInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
+
+	if (internalDevice.graphicsFamilyIndex != invalidFamilyIndex)
+	{
+		cmdPoolInfo.queueFamilyIndex = internalDevice.graphicsFamilyIndex;
+		// TODO - Find out if there are any flags for creating command pools
+		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.graphicsCmdPool);
+		CHECK_VK(result);
+	}
+
+	if (internalDevice.transferFamilyIndex != invalidFamilyIndex)
+	{
+		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		cmdPoolInfo.queueFamilyIndex = internalDevice.transferFamilyIndex;
+		// TODO - Find out if there are any flags for creating command pools
+		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.transferCmdPool);
+		CHECK_VK(result);
+	}
+
+	if (internalDevice.computeFamilyIndex != invalidFamilyIndex)
+	{
+		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		cmdPoolInfo.queueFamilyIndex = internalDevice.computeFamilyIndex;
+		// TODO - Find out if there are any flags for creating command pools
+		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.computeCmdPool);
+		CHECK_VK(result);
+	}
+
+	const VmaAllocatorCreateInfo allocatorCreateInfo{
+		//.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
+		.physicalDevice = internalDevice.physicalDevice,
+		.device = internalDevice.device,
+		.instance = instance,
+		.vulkanApiVersion = VK_API_VERSION_1_2
+	};
+	result = vmaCreateAllocator(&allocatorCreateInfo, &internalDevice.allocator);
+	CHECK_VK(result);
+
+	VkPhysicalDeviceProperties gpuProperties;
+	vkGetPhysicalDeviceProperties(internalDevice.physicalDevice, &gpuProperties);
+	const VkPhysicalDeviceLimits limits = gpuProperties.limits;
+
+	VkDescriptorPoolSize poolSizes[8] = {};
+	poolSizes[0].descriptorCount = 10000;//maxSamplerPoolSize;
+	poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	poolSizes[1].descriptorCount = 10000;//maxUniformBufferPoolSize;
+	poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolSizes[2].descriptorCount = limits.maxDescriptorSetUniformBuffersDynamic;
+	poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+	poolSizes[3].descriptorCount = 10000;//maxStorageBufferPoolSize;
+	poolSizes[3].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	poolSizes[4].descriptorCount = limits.maxDescriptorSetStorageBuffersDynamic;
+	poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+	poolSizes[5].descriptorCount = 10000;// maxStorageImagePoolSize;
+	poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	poolSizes[6].descriptorCount = 10000;// maxSampledImagePoolSize;
+	poolSizes[6].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+	poolSizes[7].descriptorCount = 10000;// maxInputAttachmentPoolSize;
+	poolSizes[7].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = (u32)ArraySize(poolSizes);
+	poolInfo.pPoolSizes = poolSizes;
+	// TODO - This is a horrible allocation scheme and it holds onto the memory the entire time. Must be a lot more conservative with my pools...
+	poolInfo.maxSets = 10000;//logicalDevice.GetDeviceLimits().maxBoundDescriptorSets;
+	// TODO - Figure out what this flag specifically does
+	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	result = vkCreateDescriptorPool(internalDevice.device, &poolInfo, nullptr, &internalDevice.descriptorPool);
+	CHECK_VK(result);
 
 	return NewDeviceHandle;
 }

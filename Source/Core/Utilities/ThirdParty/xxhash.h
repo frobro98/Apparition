@@ -4158,7 +4158,6 @@ XXH3_scrambleAcc_vsx(void* XXH_RESTRICT acc, const void* XXH_RESTRICT secret)
 #endif
 
 /* scalar variants - universal */
-
 XXH_FORCE_INLINE void
 XXH3_accumulate_512_scalar(void* XXH_RESTRICT acc,
                      const void* XXH_RESTRICT input,
@@ -4257,7 +4256,6 @@ XXH3_initCustomSecret_scalar(void* XXH_RESTRICT customSecret, xxh_u64 seed64)
             XXH_writeLE64((xxh_u8*)customSecret + 16*i + 8, hi);
     }   }
 }
-
 
 typedef void (*XXH3_f_accumulate_512)(void* XXH_RESTRICT, const void*, const void*);
 typedef void (*XXH3_f_scrambleAcc)(void* XXH_RESTRICT, const void*);

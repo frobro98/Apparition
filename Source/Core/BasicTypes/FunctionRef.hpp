@@ -2,7 +2,9 @@
 
 #pragma once
 
+WALL_WRN_PUSH
 #include <type_traits>
+WALL_WRN_POP
 
 #include "BasicTypes/Utility.hpp"
 

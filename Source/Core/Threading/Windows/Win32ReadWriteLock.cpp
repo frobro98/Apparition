@@ -1,9 +1,11 @@
 
+#include "Threading/ReadWriteLock.hpp"
+
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#include "Threading/ReadWriteLock.hpp"
+WALL_WRN_POP
 
 ReadWriteLock::ReadWriteLock()
 {

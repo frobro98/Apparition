@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include <cmath>
-
 #include "CoreFlags.hpp"
 #include "Math/MathConstants.hpp"
 #include "Math/BitManipulation.hpp"
 #include "CoreAPI.hpp"
+
+WALL_WRN_PUSH
+#include <cmath>
+WALL_WRN_POP
 
 namespace Math
 {

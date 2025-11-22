@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "BasicTypes/Intrinsics.hpp"
 #include "Utilities/MemoryUtilities.hpp"
 #include "String/String.h"
 #include "CoreAPI.hpp"
+
+WALL_WRN_PUSH
+#include <type_traits>
+WALL_WRN_POP
 
 constexpr u32 GuidSize = 16;
 

@@ -62,7 +62,7 @@ using namespace Memory::Internal;
 
 namespace Memory
 {
-void* Memory::Malloc(size_t size, size_t alignment)
+void* Malloc(size_t size, size_t alignment)
 {
 #if USE_MALLOC
 	return _aligned_malloc(size, alignment);
@@ -89,7 +89,7 @@ void* Memory::Malloc(size_t size, size_t alignment)
 // Checks the actual size of the memory within the ptrs current allocation
 // If it can fit the new size within the current block, it just returns that ptr
 // else it uses Malloc and Free to get a new allocation
-void* Memory::Realloc(void* ptr, size_t size, size_t alignment)
+void* Realloc(void* ptr, size_t size, size_t alignment)
 {
 #if USE_MALLOC
 	return _aligned_realloc(ptr, size, alignment);
@@ -171,7 +171,7 @@ void* Memory::Realloc(void* ptr, size_t size, size_t alignment)
 #endif
 }
 
-void Memory::Free(void* p)
+void Free(void* p)
 {
 #if USE_MALLOC
 	_aligned_free(p);

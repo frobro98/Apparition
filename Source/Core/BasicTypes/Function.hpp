@@ -2,11 +2,13 @@
 
 #pragma once
 
+WALL_WRN_PUSH
+#include <memory>
+WALL_WRN_POP
+
 #include "BasicTypes/Intrinsics.hpp"
 #include "BasicTypes/FunctionTraits.hpp"
 #include "Debugging/Assertion.hpp"
-
-#include <memory>
 
 /* Slightly modified version of this, from Malte Skarupke: https://github.com/skarupke/std_function/blob/master/function.h */
 

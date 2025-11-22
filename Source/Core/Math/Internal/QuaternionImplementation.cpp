@@ -33,7 +33,7 @@ void  QuaternionSetMatrix(Quat& q, const Matrix4& mat)
 		q.y = -(mat[m2] - mat[m8]) / s;
 		q.z = -(mat[m4] - mat[m1]) / s;
 	}
-	else if (!!((mat[m0] > mat[m5]) & (mat[m0] > mat[m10])))
+	else if (((mat[m0] > mat[m5]) && (mat[m0] > mat[m10])))
 	{
 		s = 2.f * Math::Sqrt(1.f + mat[m0] - mat[m5] - mat[m10]);
 		q.w = -(mat[m9] - mat[m6]) / s;

@@ -2,12 +2,15 @@
 
 #pragma once
 
-#include <iterator>
-
 #include "BasicTypes/Intrinsics.hpp"
 #include "Platform/Platform.hpp"
 #include "Logging/LogFunctions.hpp"
 #include "Logging/CoreLogChannels.hpp"
+
+WALL_WRN_PUSH
+#include <iterator>
+WALL_WRN_POP
+
 
 namespace Debug
 {
@@ -36,11 +39,14 @@ namespace Debug
 		Platform::DebugBreak();
 	}
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-undefined-compare"
 	template <typename Ref>
 	inline bool RefIsNotNull(Ref& ref)
 	{
 		return &ref != nullptr;
 	}
+#pragma clang diagnostic pop
 
 	template <typename Ref, typename... RefArgs>
 	inline bool RefIsNotNull(Ref& ref, RefArgs&&... args)

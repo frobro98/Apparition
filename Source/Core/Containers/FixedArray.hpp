@@ -2,7 +2,10 @@
 
 #pragma once
 
+WALL_WRN_PUSH
 #include <type_traits>
+WALL_WRN_POP
+
 #include "BasicTypes/Intrinsics.hpp"
 #include "Debugging/Assertion.hpp"
 #include "Utilities/MemoryUtilities.hpp"

@@ -7,6 +7,9 @@
 #include "Containers/Map.h"
 #include "VulkanDefinitions.h"
 
+// VMA
+#include "vma/vk_mem_alloc.h"
+
 namespace Apparition
 {
 struct InitializeParams;
@@ -29,6 +32,11 @@ struct DeviceInternals
 	Backbuffer backbuffer{};
 	VkDevice device = VK_NULL_HANDLE;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	VmaAllocator allocator = VK_NULL_HANDLE;
+	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+	VkCommandPool graphicsCmdPool = VK_NULL_HANDLE;
+	VkCommandPool transferCmdPool = VK_NULL_HANDLE;
+	VkCommandPool computeCmdPool = VK_NULL_HANDLE;
 	u32 graphicsFamilyIndex = 0;
 	u32 transferFamilyIndex = 0;
 	u32 computeFamilyIndex = 0;
@@ -86,5 +94,5 @@ private:
 	VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
 
 	static const inline u32 InvalidDeviceHandle = 0;
-	static inline u32 NextDeviceHandle = 1;
+	static inline u64 NextDeviceHandle = 1;
 };

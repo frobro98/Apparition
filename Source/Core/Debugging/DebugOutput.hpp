@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include <iterator>
-
 #include "BasicTypes/Intrinsics.hpp"
+
+WALL_WRN_PUSH
+#include <iterator>
+WALL_WRN_POP
+
 #include "CoreAPI.hpp"
 WALL_WRN_PUSH
 #include "fmt/format.h"

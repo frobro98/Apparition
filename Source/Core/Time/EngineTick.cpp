@@ -1,10 +1,12 @@
 // Copyright 2020, Nathan Blane
 
+#include "EngineTick.h"
+
+WALL_WRN_PUSH
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#include "EngineTick.h"
+WALL_WRN_POP
 
 float EngineTick::CountsPerSec = 0.f;
 

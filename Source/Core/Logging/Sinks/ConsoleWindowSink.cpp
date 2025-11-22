@@ -1,10 +1,13 @@
 
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 #include "ConsoleWindowSink.hpp"
 #include "Logging/LogLineEntry.hpp"
+
+WALL_WRN_PUSH
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+WALL_WRN_POP
 
 // TODO - There is a memory_buffer for each sink so far. That isn't a good thing. Fix this!
 static fmt::memory_buffer logLineEntryBuffer;

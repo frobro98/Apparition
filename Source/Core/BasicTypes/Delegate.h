@@ -2,13 +2,14 @@
 
 // Taken from https://codereview.stackexchange.com/questions/14730/impossibly-fast-delegate-in-c11
 
+#include "BasicTypes/Utility.hpp"
 
+WALL_WRN_PUSH
 #include <memory>
 #include <new>
 #include <type_traits>
 #include <utility>
-
-#include "BasicTypes/Utility.hpp"
+WALL_WRN_POP
 
 template <typename T> 
 class Delegate;
@@ -119,7 +120,9 @@ public:
     {
         using functor_type = typename std::decay<Func>::type;
 
-        if ((sizeof(functor_type) > store_size_) || !store_.unique())
+        // NOTE(nblane): shared_ptr->unique was deprecated due to race condition potential. use_count() == 1 is 
+        // the same kind of thing, so this may be an issue down the road
+        if ((sizeof(functor_type) > store_size_) || (store_.use_count() == 1))
         {
             store_.reset(operator new(sizeof(functor_type)),
                 functor_deleter<functor_type>);

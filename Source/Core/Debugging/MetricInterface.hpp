@@ -2,15 +2,17 @@
 
 #pragma once
 
-#include <limits>
-#include <intrin.h>
-
 #include "BasicTypes/Intrinsics.hpp"
 #include "Containers/StaticArray.hpp"
 #include "Containers/DynamicArray.hpp"
 #include "Time/CyclePerformance.hpp"
 #include "Utilities/MacroHelpers.hpp"
 #include "CoreAPI.hpp"
+
+WALL_WRN_PUSH
+#include <limits>
+#include <intrin.h>
+WALL_WRN_POP
 
 enum class MetricType : u32
 {

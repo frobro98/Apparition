@@ -14,7 +14,7 @@ namespace Apparition
 
 struct DeviceHandle
 {
-	u32 handle;
+	u64 handle;
 };
 
 // ONLY SUPPORTS DISCRETE GPUS CURRENTLY. WILL CHANGE TO PRIORITIZING DISCRETE
@@ -41,7 +41,7 @@ struct DeviceCreationParams
 // No need to expose Vulkan Instance creation, will check upon creation of a device
 
 // TODO - 
-APPARITION_API NODISCARD DeviceHandle CreateDevice(const DeviceCreationParams& params);
+NODISCARD APPARITION_API DeviceHandle CreateDevice(const DeviceCreationParams& params);
 APPARITION_API void DestroyDevice(DeviceHandle deviceHandle);
 
 // TODO - Expose native functionality of Vulkan in a separate file

@@ -10,14 +10,39 @@
 #define likely(x) (x)
 #define unlikely(x) (x)
 
+#ifdef __clang__
+#define UNUSED(...)											\
+	_Pragma("clang diagnostic push")						\
+	_Pragma("clang diagnostic ignored \"-Wunused-value\"")	\
+	(__VA_ARGS__)											\
+	_Pragma("clang diagnostic pop")
+#else
 #define UNUSED(...)						\
 	__pragma(warning(push))				\
 	__pragma(warning(disable : 4548))	\
 	(__VA_ARGS__)						\
 	__pragma(warning(pop))
+#endif
 
 #define NOT_USED [[maybe_unused]]
 #define NODISCARD [[nodiscard]]
+
+#ifdef __clang__
+
+#pragma clang diagnostic ignored "-Wmissing-designated-field-initializers"
+
+#define WALL_WRN_PUSH														\
+	_Pragma("clang diagnostic push")										\
+	_Pragma("clang diagnostic ignored \"-Wunused-function\"")				\
+	_Pragma("clang diagnostic ignored \"-Wnullability-completeness\"")		\
+	_Pragma("clang diagnostic ignored \"-Wmissing-field-initializers\"")	\
+	_Pragma("clang diagnostic ignored \"-Wunused-parameter\"")				\
+	_Pragma("clang diagnostic ignored \"-Wunused-variable\"")				
+
+#define WALL_WRN_POP \
+	_Pragma("clang diagnostic pop")
+
+#else
 
 #define WALL_WRN_PUSH				  \
 	__pragma(warning( push ))		  \
@@ -44,4 +69,4 @@
 
 #define WALL_WRN_POP \
 	__pragma(warning( pop ))
-
+#endif

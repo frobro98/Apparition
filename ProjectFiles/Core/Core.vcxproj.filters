@@ -701,4 +701,7 @@
       <Filter>Source\Utilities\ThirdParty</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\..\NatVis\CoreNatVis.natvis" />
+  </ItemGroup>
 </Project>

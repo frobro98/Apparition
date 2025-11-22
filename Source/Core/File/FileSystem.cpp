@@ -1,12 +1,14 @@
 // Copyright 2020, Nathan Blane
 
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "Platform/PlatformDefinitions.h"
 #include "FileSystem.hpp"
 #include "Debugging/Assertion.hpp"
+
+WALL_WRN_PUSH
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+WALL_WRN_POP
 
 unsigned int FileModeToWin32Access(FileMode mode)
 {
@@ -135,7 +137,7 @@ bool FileSystem::MakeDirectory(const Path& path)
 	return ::CreateDirectory(path.GetString(), nullptr);
 }
 
-bool FileSystem::RemoveDirectory(const Path& path)
+bool FileSystem::DeleteDirectory(const Path& path)
 {
 	return ::RemoveDirectory(path.GetString());
 }

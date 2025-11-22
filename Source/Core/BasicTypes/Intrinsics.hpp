@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "CoreFlags.hpp"
+
+WALL_WRN_PUSH
+#include <cstdint>
+WALL_WRN_POP
 
 using u64 = uint64_t;
 using u32 = uint32_t;
