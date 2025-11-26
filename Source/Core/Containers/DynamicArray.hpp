@@ -91,8 +91,10 @@ public:
 	// TODO - Figure out a better way of going about implementing this resize function...
 	void Resize(u32 newSize);
 	void Clear();
-	bool IsEmpty() const;
 	void ShrinkToFit();
+
+	bool IsIndexValid(u32 index) const;
+	bool IsEmpty() const;
 
 	template <typename CompareType>
 	bool Contains(const CompareType& obj) const;
@@ -832,6 +834,12 @@ inline void DynamicArray<Type>::Clear()
 		Destroy(0, arraySize);
 		arraySize = 0;
 	}
+}
+
+template<class Type>
+inline bool DynamicArray<Type>::IsIndexValid(u32 index) const
+{
+	return index < arraySize;
 }
 
 template<class Type>

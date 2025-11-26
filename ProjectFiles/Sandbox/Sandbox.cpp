@@ -40,6 +40,19 @@ WALL_WRN_POP
 
 DEFINE_LOG_CHANNEL(VkValidation);
 
+// Required due to not using 1.3 where VK_KHR_dynamic_rendering is part of core
+static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_ = nullptr;
+#define vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_
+
+static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR_ = nullptr;
+#define vkCmdEndRenderingKHR vkCmdEndRenderingKHR_
+
+static void SetupDynamicRenderingFunctions(VkDevice device)
+{
+	vkCmdBeginRenderingKHR_ = (PFN_vkCmdBeginRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR");
+	vkCmdEndRenderingKHR_ = (PFN_vkCmdEndRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdEndRenderingKHR");
+}
+
 namespace Vk
 {
 VkInstanceCreateInfo InstanceInfo(
@@ -727,7 +740,7 @@ void CreateRenderPass(const Device& device, const Swapchain& swapchain, RenderPa
 	CHECK_VK(result);
 }
 
-void CreateBasicGraphicsPipeline(const Device& device, const RenderPass& renderPass, Pipeline& pipeline)
+void CreateBasicGraphicsPipeline(VkDevice device, VkFormat swapchainFormat, Pipeline& pipeline)
 {
 	MemoryBuffer vertShaderCode;
 	MemoryBuffer fragShaderCode;
@@ -767,12 +780,12 @@ void CreateBasicGraphicsPipeline(const Device& device, const RenderPass& renderP
 	shaderInfo.codeSize = vertShaderCode.Size();
 	// Careful with this...
 	shaderInfo.pCode = (const u32*)vertShaderCode.GetData();
-	VkResult result = vkCreateShaderModule(device.vkDevice, &shaderInfo, nullptr, &vertexShaderModule);
+	VkResult result = vkCreateShaderModule(device, &shaderInfo, nullptr, &vertexShaderModule);
 
 	shaderInfo.codeSize = fragShaderCode.Size();
 	// Careful with this...
 	shaderInfo.pCode = (const u32*)fragShaderCode.GetData();
-	result = vkCreateShaderModule(device.vkDevice, &shaderInfo, nullptr, &fragmentShaderModule);
+	result = vkCreateShaderModule(device, &shaderInfo, nullptr, &fragmentShaderModule);
 
 	////////////////////////
 	// Pipeline Creation
@@ -881,7 +894,14 @@ void CreateBasicGraphicsPipeline(const Device& device, const RenderPass& renderP
 	pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
 	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-	result = vkCreatePipelineLayout(device.vkDevice, &pipelineLayoutInfo, nullptr, &pipeline.vkPipelineLayout);
+	result = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipeline.vkPipelineLayout);
+
+	// Dynamic Rendering Setup
+	VkPipelineRenderingCreateInfoKHR pipelineRenderingCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR,
+		.colorAttachmentCount = 1,
+		.pColorAttachmentFormats = &swapchainFormat
+	};
 
 	// Graphics Pipeline
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -898,14 +918,17 @@ void CreateBasicGraphicsPipeline(const Device& device, const RenderPass& renderP
 	pipelineInfo.pDynamicState = &dynamicState;
 
 	pipelineInfo.layout = pipeline.vkPipelineLayout;
-	pipelineInfo.renderPass = renderPass.vkRenderPass;
+	// Using dynamic rendering, no need for render passes
+	pipelineInfo.renderPass = VK_NULL_HANDLE; //renderPass.vkRenderPass;
 	pipelineInfo.subpass = 0;
 
 	// These will most likely never be used in reality
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
-	result = vkCreateGraphicsPipelines(device.vkDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline.vkPipeline);
+	pipelineInfo.pNext = &pipelineRenderingCreateInfo;
+
+	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline.vkPipeline);
 	CHECK_VK(result);
 }
 
@@ -1026,7 +1049,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		.engineName = "Apparition",
 		.applicationVersion = 0,
 		.engineVersion = 0,
-		.vulkanAPIVersion = APPARITION_MAKE_VERSION(1,2,0)
+		.vulkanAPIVersion = APPARITION_MAKE_VERSION(1,3,290)
 	};
 
 	Apparition::ValidationDelegate debugCallback = &VulkanDebugMessengerCallback;
@@ -1051,16 +1074,23 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	};
 	Apparition::SetupBackbuffer(deviceHandle, backbufferSetupParams);
 
-	NOT_USED Swapchain swapchain = {};
-	//CreateSwapchain(device, surface, windowWidth, windowHeight, swapchain);
+	// >>>>> Temporary behavior BEGIN
+	{
+		VkDevice vkDevice = Apparition::GetVulkanDevice(deviceHandle);
+		SetupDynamicRenderingFunctions(vkDevice);
+	}
+	// <<<<< Temporary behavior END
 
-	RenderPass renderPass = {};
-	CreateRenderPass(device, swapchain, renderPass);
+	NOT_USED Swapchain swapchain = {};
+	////CreateSwapchain(device, surface, windowWidth, windowHeight, swapchain);
+
+	NOT_USED RenderPass renderPass = {};
+	//CreateRenderPass(device, swapchain, renderPass);
 
 	Pipeline pipeline = {};
-	CreateBasicGraphicsPipeline(device, renderPass, pipeline);
+	CreateBasicGraphicsPipeline(Apparition::GetVulkanDevice(deviceHandle), (VkFormat)Apparition::GetBackbufferVkFormat(deviceHandle), pipeline);
 
-	CreateSwapchainFramebuffers(device, renderPass, swapchain);
+	//CreateSwapchainFramebuffers(device, renderPass, swapchain);
 
 	CommandBuffer commandBuffer = {};
 	CreateCommandBuffer(device, commandBuffer);
@@ -1174,16 +1204,35 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		CHECK_VK(result);
 
 		// Begin Render Pass
-		VkRenderPassBeginInfo renderPassInfo = {};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = renderPass.vkRenderPass;
-		renderPassInfo.framebuffer = swapchain.framebuffers[imageIndex];
-		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = swapchain.extents;
 		VkClearValue clearColor = { { {0.5f, 0.5f, 0.5f, 1.f} } };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
-		vkCmdBeginRenderPass(commandBuffer.vkCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		//VkRenderPassBeginInfo renderPassInfo = {};
+		//renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		//renderPassInfo.renderPass = renderPass.vkRenderPass;
+		//renderPassInfo.framebuffer = swapchain.framebuffers[imageIndex];
+		//renderPassInfo.renderArea.offset = { 0, 0 };
+		//renderPassInfo.renderArea.extent = swapchain.extents;
+		//renderPassInfo.clearValueCount = 1;
+		//renderPassInfo.pClearValues = &clearColor;
+		//vkCmdBeginRenderPass(commandBuffer.vkCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		VkRenderingAttachmentInfoKHR colorAttachInfo = {
+			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
+			.imageView = swapchain.imageViews[imageIndex],
+			.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.clearValue = clearColor
+		};
+
+		VkRenderingInfoKHR renderingInfo = {};
+		renderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+		renderingInfo.renderArea.extent = swapchain.extents;
+		renderingInfo.renderArea.offset = { 0, 0 };
+		renderingInfo.layerCount = 1;
+		renderingInfo.colorAttachmentCount = 1;
+		renderingInfo.pColorAttachments = &colorAttachInfo;
+		//renderingInfo.pDepthAttachment;
+		vkCmdBeginRenderingKHR(commandBuffer.vkCommandBuffer, &renderingInfo);
 
 		vkCmdBindPipeline(commandBuffer.vkCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.vkPipeline);
 
@@ -1208,6 +1257,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		vkCmdDrawIndexed(commandBuffer.vkCommandBuffer, (u32)indices.Size(), 1, 0, 0, 0);
 
+		vkCmdEndRenderingKHR(commandBuffer.vkCommandBuffer);
 		vkCmdEndRenderPass(commandBuffer.vkCommandBuffer);
 
 		result = vkEndCommandBuffer(commandBuffer.vkCommandBuffer);

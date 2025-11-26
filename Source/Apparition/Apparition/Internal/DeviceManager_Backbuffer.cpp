@@ -1,22 +1,24 @@
 
 #include "DeviceManager.h"
 
-#include "Apparition/Internal/VulkanInfos.h"
+#include "ApparitionInternals.h"
+#include "Containers/DynamicArray.hpp"
+#include "VulkanInfos.h"
+
 
 void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Apparition::BackbufferSetupParams& params)
 {
     using namespace Apparition;
 
-    DeviceInternals* internals = GetDeviceInternals(device);
-    Assert(internals);
+    DeviceInternal& internals = GetDeviceInternals(device);
 
-    if (internals->backbuffer.swapchainHandle != VK_NULL_HANDLE)
+    if (internals.backbuffer.swapchainHandle != VK_NULL_HANDLE)
     {
 		// TODO - Log that backbuffer is already set up
 		return;
     }
 
-	Backbuffer& backbuffer = internals->backbuffer;
+	Backbuffer& backbuffer = internals.backbuffer;
     // Create surface
     
     // NOTE - Only supports Windows surfaces right now. No need for anything else atm
@@ -28,7 +30,7 @@ void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Appar
     CHECK_VK(result);
 
     VkBool32 presentationSupported = VK_FALSE;
-    vkGetPhysicalDeviceSurfaceSupportKHR(internals->physicalDevice, internals->graphicsFamilyIndex, backbuffer.surfaceHandle, &presentationSupported);
+    vkGetPhysicalDeviceSurfaceSupportKHR(internals.physicalDevice, internals.graphicsFamilyIndex, backbuffer.surfaceHandle, &presentationSupported);
     if (presentationSupported != VK_TRUE)
     {
         // Error and return
@@ -37,23 +39,23 @@ void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Appar
 
     // Needs surface information for swapchain setup
     VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
-    result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(internals->physicalDevice, backbuffer.surfaceHandle, &surfaceCapabilities);
+    result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(internals.physicalDevice, backbuffer.surfaceHandle, &surfaceCapabilities);
     CHECK_VK(result);
 
     DynamicArray<VkSurfaceFormatKHR> surfaceFormats;
     u32 formatCount = 0;
-    result = vkGetPhysicalDeviceSurfaceFormatsKHR(internals->physicalDevice, backbuffer.surfaceHandle, &formatCount, nullptr);
+    result = vkGetPhysicalDeviceSurfaceFormatsKHR(internals.physicalDevice, backbuffer.surfaceHandle, &formatCount, nullptr);
     CHECK_VK(result);
     surfaceFormats.Resize(formatCount);
-    result = vkGetPhysicalDeviceSurfaceFormatsKHR(internals->physicalDevice, backbuffer.surfaceHandle, &formatCount, surfaceFormats.GetData());
+    result = vkGetPhysicalDeviceSurfaceFormatsKHR(internals.physicalDevice, backbuffer.surfaceHandle, &formatCount, surfaceFormats.GetData());
     CHECK_VK(result);
 
     DynamicArray<VkPresentModeKHR> presentModes;
     u32 presentModeCount;
-    result = vkGetPhysicalDeviceSurfacePresentModesKHR(internals->physicalDevice, backbuffer.surfaceHandle, &presentModeCount, nullptr);
+    result = vkGetPhysicalDeviceSurfacePresentModesKHR(internals.physicalDevice, backbuffer.surfaceHandle, &presentModeCount, nullptr);
     CHECK_VK(result);
     presentModes.Resize(presentModeCount);
-    result = vkGetPhysicalDeviceSurfacePresentModesKHR(internals->physicalDevice, backbuffer.surfaceHandle, &presentModeCount, presentModes.GetData());
+    result = vkGetPhysicalDeviceSurfacePresentModesKHR(internals.physicalDevice, backbuffer.surfaceHandle, &presentModeCount, presentModes.GetData());
     CHECK_VK(result);
 
     // Create swapchain
@@ -153,14 +155,14 @@ void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Appar
 	swapchainInfo.clipped = VK_TRUE;
 	swapchainInfo.oldSwapchain = VK_NULL_HANDLE; // No need for this sandbox atm
 
-	result = vkCreateSwapchainKHR(internals->device, &swapchainInfo, nullptr, &backbuffer.swapchainHandle);
+	result = vkCreateSwapchainKHR(internals.device, &swapchainInfo, nullptr, &backbuffer.swapchainHandle);
 	CHECK_VK(result);
 
 	// Creating image views for consistent use
 	u32 imageCount;
-	vkGetSwapchainImagesKHR(internals->device, backbuffer.swapchainHandle, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(internals.device, backbuffer.swapchainHandle, &imageCount, nullptr);
 	DynamicArray<VkImage> backbufferImages(imageCount);
-	vkGetSwapchainImagesKHR(internals->device, backbuffer.swapchainHandle, &imageCount, backbufferImages.GetData());
+	vkGetSwapchainImagesKHR(internals.device, backbuffer.swapchainHandle, &imageCount, backbufferImages.GetData());
 
 	backbuffer.views.Reserve(imageCount);
 	for (VkImage image : backbufferImages)
@@ -183,7 +185,7 @@ void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Appar
 		viewInfo.subresourceRange.levelCount = 1;
 		
 		VkImageView backbufferView = VK_NULL_HANDLE;
-		result = vkCreateImageView(internals->device, &viewInfo, nullptr, &backbufferView);
+		result = vkCreateImageView(internals.device, &viewInfo, nullptr, &backbufferView);
 		CHECK_VK(result);
 
 		backbuffer.views.Add(backbufferView);
@@ -191,9 +193,9 @@ void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Appar
 
 	VkSemaphoreCreateInfo semaphoreCreateInfo;
 	Vk::ZeroInfoStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-	result = vkCreateSemaphore(internals->device, &semaphoreCreateInfo, nullptr, &backbuffer.isImageAvailableSem);
+	result = vkCreateSemaphore(internals.device, &semaphoreCreateInfo, nullptr, &backbuffer.isImageAvailableSem);
 	CHECK_VK(result);
-	result = vkCreateSemaphore(internals->device, &semaphoreCreateInfo, nullptr, &backbuffer.hasRenderingFinishedSem);
+	result = vkCreateSemaphore(internals.device, &semaphoreCreateInfo, nullptr, &backbuffer.hasRenderingFinishedSem);
 	CHECK_VK(result);
 
 	// TODO - Log that backbuffer data has been created
@@ -203,20 +205,20 @@ void DeviceManager::TeardownBackbuffer(Apparition::DeviceHandle device)
 {
 	using namespace Apparition;
 
-	DeviceInternals* internals = GetDeviceInternals(device);
-	Assert(internals);
+	DeviceInternal& internals = GetDeviceInternals(device);
 
-	Backbuffer& backbuffer = internals->backbuffer;
+	Backbuffer& backbuffer = internals.backbuffer;
 
-	vkDestroySemaphore(internals->device, backbuffer.isImageAvailableSem, nullptr);
-	vkDestroySemaphore(internals->device, backbuffer.hasRenderingFinishedSem, nullptr);
+	vkDestroySemaphore(internals.device, backbuffer.isImageAvailableSem, nullptr);
+	vkDestroySemaphore(internals.device, backbuffer.hasRenderingFinishedSem, nullptr);
 
 	for (VkImageView backbufferView : backbuffer.views)
 	{
-		vkDestroyImageView(internals->device, backbufferView, nullptr);
+		vkDestroyImageView(internals.device, backbufferView, nullptr);
 	}
 	backbuffer.views.Clear();
 
-	vkDestroySwapchainKHR(internals->device, backbuffer.swapchainHandle, nullptr);
+	vkDestroySwapchainKHR(internals.device, backbuffer.swapchainHandle, nullptr);
 	vkDestroySurfaceKHR(instance, backbuffer.surfaceHandle, nullptr);
 }
+

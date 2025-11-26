@@ -8,6 +8,8 @@
 struct VkPhysicalDeviceFeatures;
 struct VkDeviceQueueCreateInfo;
 struct VkQueueFamilyProperties;
+struct VkDevice_T;
+typedef struct VkDevice_T* VkDevice;
 
 namespace Apparition
 {
@@ -43,6 +45,9 @@ struct DeviceCreationParams
 // TODO - 
 NODISCARD APPARITION_API DeviceHandle CreateDevice(const DeviceCreationParams& params);
 APPARITION_API void DestroyDevice(DeviceHandle deviceHandle);
-
+APPARITION_API u32 GetGraphicsQueueIndex(DeviceHandle deviceHandle);
+APPARITION_API u32 GetComputeQueueIndex(DeviceHandle deviceHandle);
+APPARITION_API u32 GetTransferQueueIndex(DeviceHandle deviceHandle);
 // TODO - Expose native functionality of Vulkan in a separate file
+APPARITION_API VkDevice GetVulkanDevice(DeviceHandle deviceHandle);
 }

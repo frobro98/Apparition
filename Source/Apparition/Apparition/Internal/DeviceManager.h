@@ -3,44 +3,15 @@
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
 #include "Apparition/Backbuffer.h"
+#include "Apparition/CommandBuffer.h"
 #include "BasicTypes/Function.hpp"
 #include "Containers/Map.h"
 #include "VulkanDefinitions.h"
 
-// VMA
-#include "vma/vk_mem_alloc.h"
+using namespace Apparition;
 
-namespace Apparition
-{
-struct InitializeParams;
-}
-
-// TODO - Move these to separate header
-struct Backbuffer
-{
-	DynamicArray<VkImageView> views;
-	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
-	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
-	VkExtent2D extents = {};
-	VkFormat format = VK_FORMAT_UNDEFINED;
-	VkSemaphore isImageAvailableSem = VK_NULL_HANDLE;
-	VkSemaphore hasRenderingFinishedSem = VK_NULL_HANDLE;
-};
-
-struct DeviceInternals
-{
-	Backbuffer backbuffer{};
-	VkDevice device = VK_NULL_HANDLE;
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-	VmaAllocator allocator = VK_NULL_HANDLE;
-	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-	VkCommandPool graphicsCmdPool = VK_NULL_HANDLE;
-	VkCommandPool transferCmdPool = VK_NULL_HANDLE;
-	VkCommandPool computeCmdPool = VK_NULL_HANDLE;
-	u32 graphicsFamilyIndex = 0;
-	u32 transferFamilyIndex = 0;
-	u32 computeFamilyIndex = 0;
-};
+class CommandBufferManager;
+struct DeviceInternal;
 
 class DeviceManager final
 {
@@ -48,21 +19,21 @@ public:
 	struct UserAllocationCallbacks;
 	struct UserValidationCallbackData
 	{
-		Apparition::ValidationDelegate delegate;
+		ValidationDelegate delegate;
 		void* userData;
 	};
 
 public:
 	~DeviceManager();
 
-	void Initialize(const Apparition::InitializeParams& params);
+	void Initialize(const InitializeParams& params);
 	void Deinitialize();
 
 #pragma region Device Management
-	Apparition::DeviceHandle CreateDevice(const Apparition::DeviceCreationParams& params);
-	void DestroyDevice(Apparition::DeviceHandle deviceHandle);
+	Apparition::DeviceHandle CreateDevice(const DeviceCreationParams& params);
+	void DestroyDevice(DeviceHandle deviceHandle);
 
-	DeviceInternals* GetDeviceInternals(Apparition::DeviceHandle deviceHandle);
+	DeviceInternal& GetDeviceInternals(DeviceHandle deviceHandle);
 #pragma endregion
 
 #pragma region Debug Callback
@@ -81,18 +52,25 @@ public:
 		void* pUserData);
 #pragma endregion
 
-#pragma region Swapchain
-	void SetupBackbuffer(Apparition::DeviceHandle device, const Apparition::BackbufferSetupParams& params);
-	void TeardownBackbuffer(Apparition::DeviceHandle device);
+#pragma region Backbuffer
+	void SetupBackbuffer(DeviceHandle device, const BackbufferSetupParams& params);
+	void TeardownBackbuffer(DeviceHandle device);
+#pragma endregion
+
+#pragma region Command Buffer Manager
+	CommandPoolHandle CreateCommandPool(DeviceHandle deviceHandle, const CommandPoolCreationParams& params);
+	void DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHandle commandPoolHandle);
+	CommandBufferManager& GetCommandBufferManager();
 #pragma endregion
 
 private:
 	UserValidationCallbackData userValidation;
-	Map<u32, DeviceInternals> vulkanDeviceDataMap;
+	DynamicArray<DeviceInternal> deviceInternals;
 	
 	VkInstance instance = VK_NULL_HANDLE;
 	VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
 
-	static const inline u32 InvalidDeviceHandle = 0;
+	CommandBufferManager* cmdBufferManager = nullptr;
+
 	static inline u64 NextDeviceHandle = 1;
 };

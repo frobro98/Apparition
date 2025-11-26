@@ -58,7 +58,7 @@
 
 using namespace Memory::Internal;
 
-#define USE_MALLOC 0
+#define USE_MALLOC 1
 
 namespace Memory
 {

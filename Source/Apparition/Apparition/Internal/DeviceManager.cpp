@@ -1,6 +1,8 @@
 
 #include "DeviceManager.h"
 
+#include "CommandBufferManager.h"
+#include "HandleDefinitions.h"
 #include "Utilities/Array.hpp"
 #include "VulkanInfos.h"
 
@@ -16,8 +18,10 @@ constexpr const tchar* validationLayers[] = {
 
 constexpr const tchar* instanceExtensions[] = {
 	VK_KHR_SURFACE_EXTENSION_NAME,
+	VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME,
 	VK_PLATFORM_SURFACE_EXTENSION,
-	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+	VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+	VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
 };
 
 static void SetupDebugUtilsFunctions(VkInstance instance)
@@ -32,6 +36,12 @@ static void SetupDebugUtilsFunctions(VkInstance instance)
 	vkCmdBeginDebugUtilsLabelEXT_ = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT");
 	vkCmdEndDebugUtilsLabelEXT_ = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT");
 	vkCmdInsertDebugUtilsLabelEXT_ = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT");
+}
+
+static void SetupDynamicRenderingFunctions(VkDevice device)
+{
+	vkCmdBeginRenderingKHR_ = (PFN_vkCmdBeginRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR");
+	vkCmdEndRenderingKHR_ = (PFN_vkCmdEndRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdEndRenderingKHR");
 }
 
 static VkBool32 VulkanDebugMessengerCallback(
@@ -67,6 +77,9 @@ void DeviceManager::Initialize(const Apparition::InitializeParams& params)
 {
 	u32 instanceVersion;
 	vkEnumerateInstanceVersion(&instanceVersion);
+//	instanceVersion = instanceVersion & 0xFFFFF000;
+	NOT_USED u32 minorVersion = VK_API_VERSION_MINOR(instanceVersion);
+	NOT_USED u32 patchVersion = VK_API_VERSION_PATCH(instanceVersion);
 
 	u32 layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -86,6 +99,13 @@ void DeviceManager::Initialize(const Apparition::InitializeParams& params)
 	appInfo.engineVersion = params.engineVersion;
 	appInfo.apiVersion = params.vulkanAPIVersion;
 
+	// Disables Shader Validation Feature, due to warning
+	VkValidationFeatureDisableEXT disabledFeatures[] = { VkValidationFeatureDisableEXT::VK_VALIDATION_FEATURE_DISABLE_SHADER_VALIDATION_CACHE_EXT };
+	VkValidationFeaturesEXT validationFeatures = {};
+	validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+	validationFeatures.disabledValidationFeatureCount = ArraySize(disabledFeatures);
+	validationFeatures.pDisabledValidationFeatures = disabledFeatures;
+
 	VkInstanceCreateInfo instanceInfo;
 	Vk::ZeroInfoStruct(instanceInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
 	instanceInfo.pApplicationInfo = &appInfo;
@@ -93,6 +113,7 @@ void DeviceManager::Initialize(const Apparition::InitializeParams& params)
 	instanceInfo.ppEnabledLayerNames = validationLayers;
 	instanceInfo.enabledExtensionCount = (u32)ArraySize(instanceExtensions);
 	instanceInfo.ppEnabledExtensionNames = instanceExtensions;
+	//instanceInfo.pNext = &validationFeatures;
 
 	NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
 	CHECK_VK(result);
@@ -265,14 +286,14 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	}
 
 	const tchar* deviceExtensions[] = {
-		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
+		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME, // Eliminates the need for render pass begin/end
 		VK_KHR_MAINTENANCE_4_EXTENSION_NAME,
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 		VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME,
 		VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME,
-		"VK_EXT_swapchain_maintenance1",
-		"VK_EXT_host_image_copy",
-		"VK_EXT_scalar_block_layout"
+		VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME,
+		VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME,
+		VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME
 	};
 	u32 deviceExtensionCount = ArraySize(deviceExtensions);
 
@@ -303,20 +324,31 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	deviceExtensionCount = availableDeviceExtensions.Size();
 #endif
 
-	DeviceInternals internalDevice = {
+	DeviceInternal internalDevice = {
 		.physicalDevice = selectedGpu,
 		.graphicsFamilyIndex = graphicsFamilyIndex,
 		.transferFamilyIndex = transferFamilyIndex,
 		.computeFamilyIndex = computeFamilyIndex
 	};
 
-	VkPhysicalDeviceFeatures supportedGpuFeatures;
-	vkGetPhysicalDeviceFeatures(internalDevice.physicalDevice, &supportedGpuFeatures);
+
+	// Initialize dynamic rendering extension
+	VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeature;
+	Vk::ZeroInfoStruct(dynamicRenderingFeature, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR);
+	//dynamicRenderingFeature.dynamicRendering = VK_TRUE;
+
+	VkPhysicalDeviceFeatures2 supportedGpuFeatures;
+	supportedGpuFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+	supportedGpuFeatures.pNext = &dynamicRenderingFeature;
+	vkGetPhysicalDeviceFeatures2(internalDevice.physicalDevice, &supportedGpuFeatures);
+
 	VkPhysicalDeviceFeatures enabledDeviceFeatures;
+	/*
 	if (params.featureSetupCallback.IsValid())
 	{
 		params.featureSetupCallback(supportedGpuFeatures, enabledDeviceFeatures);
 	}
+	//*/
 
 	VkDeviceCreateInfo deviceInfo;
 	Vk::ZeroInfoStruct(deviceInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
@@ -326,13 +358,16 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	deviceInfo.enabledExtensionCount = deviceExtensionCount;
 	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
 	deviceInfo.pEnabledFeatures = &enabledDeviceFeatures;
+	deviceInfo.pNext = &dynamicRenderingFeature;
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
 	CHECK_VK(result);
 
+	u64 handleIndex = deviceInternals.Size();
+	u64 handleValue = ((NextDeviceHandle++) << RESOURCE_GEN_SHIFT) | (handleIndex & RESOURCE_INDEX_MASK);
 	Apparition::DeviceHandle NewDeviceHandle{
-		.handle = NextDeviceHandle++
+		.handle = handleValue
 	};
-	vulkanDeviceDataMap.Add(NewDeviceHandle.handle, internalDevice);
+	deviceInternals.Add(internalDevice);
 
 	// Device's command pool
 	VkCommandPoolCreateInfo cmdPoolInfo;
@@ -372,7 +407,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		.physicalDevice = internalDevice.physicalDevice,
 		.device = internalDevice.device,
 		.instance = instance,
-		.vulkanApiVersion = VK_API_VERSION_1_2
+		.vulkanApiVersion = VK_VERSION_1_3
 	};
 	result = vmaCreateAllocator(&allocatorCreateInfo, &internalDevice.allocator);
 	CHECK_VK(result);
@@ -410,6 +445,9 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	result = vkCreateDescriptorPool(internalDevice.device, &poolInfo, nullptr, &internalDevice.descriptorPool);
 	CHECK_VK(result);
 
+	// Sets up extention functionality
+	SetupDynamicRenderingFunctions(internalDevice.device);
+
 	return NewDeviceHandle;
 }
 
@@ -418,9 +456,11 @@ void DeviceManager::DestroyDevice(Apparition::DeviceHandle deviceHandle)
 	UNUSED(deviceHandle);
 }
 
-DeviceInternals* DeviceManager::GetDeviceInternals(Apparition::DeviceHandle deviceHandle)
+DeviceInternal& DeviceManager::GetDeviceInternals(Apparition::DeviceHandle deviceHandle)
 {
-	return vulkanDeviceDataMap.Find(deviceHandle.handle);
+	Assert(deviceHandle.handle != Apparition::InvalidHandle);
+	u32 deviceIndex = deviceHandle.handle & RESOURCE_INDEX_MASK;
+	return deviceInternals[deviceIndex];
 }
 
 bool DeviceManager::BroadcastDebugCallback(
@@ -448,4 +488,27 @@ bool DeviceManager::BroadcastDebugCallback(
 	}();
 	const Apparition::DebugMessageTypeFlags messageTypeFlags = messageType;
 	return userValidation.delegate(severity, messageTypeFlags, pCallbackData, pUserData);
+}
+
+CommandPoolHandle DeviceManager::CreateCommandPool(DeviceHandle deviceHandle, const CommandPoolCreationParams& params)
+{
+	UNUSED(deviceHandle, params);
+	//vkCreateCommandPool();
+
+	return CommandPoolHandle{};
+}
+
+void DeviceManager::DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHandle commandPoolHandle)
+{
+	UNUSED(deviceHandle, commandPoolHandle);
+}
+
+CommandBufferManager& DeviceManager::GetCommandBufferManager()
+{
+	if (cmdBufferManager == nullptr)
+	{
+		cmdBufferManager = new CommandBufferManager;
+	}
+
+	return *cmdBufferManager;
 }

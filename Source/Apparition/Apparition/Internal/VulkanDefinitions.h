@@ -6,6 +6,9 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 
+// VMA
+#include "vma/vk_mem_alloc.h"
+
 #define CHECK_VK(expression) Assert(expression == VK_SUCCESS)
 
 static PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_ = nullptr;
@@ -38,3 +41,9 @@ static PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
 static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
 #define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
 
+// Required due to not using 1.3 where VK_KHR_dynamic_rendering is part of core
+static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_ = nullptr;
+#define vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_
+
+static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR_ = nullptr;
+#define vkCmdEndRenderingKHR vkCmdEndRenderingKHR_

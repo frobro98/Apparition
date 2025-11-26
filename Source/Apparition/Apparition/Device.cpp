@@ -20,4 +20,38 @@ void DestroyDevice(DeviceHandle deviceHandle)
 	deviceManager.DestroyDevice(deviceHandle);
 }
 
+u32 GetGraphicsQueueIndex(DeviceHandle deviceHandle)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	return deviceInternals.graphicsFamilyIndex;
+
+	return 0;
+}
+
+u32 GetComputeQueueIndex(DeviceHandle deviceHandle)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	return deviceInternals.computeFamilyIndex;
+}
+
+u32 GetTransferQueueIndex(DeviceHandle deviceHandle)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	return deviceInternals.transferFamilyIndex;
+}
+
+VkDevice GetVulkanDevice(DeviceHandle deviceHandle)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	return deviceInternals.device;
+}
+
 }
