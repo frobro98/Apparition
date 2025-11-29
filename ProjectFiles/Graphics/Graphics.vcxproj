@@ -178,10 +178,10 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\ImageFormat.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\CommandBufferManager.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
@@ -191,10 +191,10 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\ApparitionCore.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBuffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\CommandBufferManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Backbuffer.cpp" />

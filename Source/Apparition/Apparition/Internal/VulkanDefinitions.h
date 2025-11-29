@@ -42,8 +42,8 @@ static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullpt
 #define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
 
 // Required due to not using 1.3 where VK_KHR_dynamic_rendering is part of core
-static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_ = nullptr;
-#define vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_
-
-static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR_ = nullptr;
-#define vkCmdEndRenderingKHR vkCmdEndRenderingKHR_
+//static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_ = nullptr;
+//#define vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_
+//
+//static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR_ = nullptr;
+//#define vkCmdEndRenderingKHR vkCmdEndRenderingKHR_

@@ -34,6 +34,7 @@ WALL_WRN_POP
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
 #include "Apparition/Backbuffer.h"
+#include "Apparition/CommandBuffer.h"
 
 // Sandbox
 #include "Window.h"
@@ -1060,12 +1061,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	NOT_USED Device device{};
 	//CreateDevice(instance, device);
 
-	Apparition::DeviceCreationParams createParams{
-		.graphicsSupport = true,
-		.computeSupport = true,
-		.transferSupport = true,
-	};
-	Apparition::DeviceHandle deviceHandle = Apparition::CreateDevice(createParams);
+	Apparition::DeviceHandle deviceHandle;
+	{
+		Apparition::DeviceCreationParams createParams{
+			.graphicsSupport = true,
+			.computeSupport = true,
+			.transferSupport = true,
+		};
+		deviceHandle = Apparition::CreateDevice(createParams);
+	}
 
 	Apparition::BackbufferSetupParams backbufferSetupParams{
 		.wndHandle = window->windowHandle,
@@ -1090,10 +1094,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Pipeline pipeline = {};
 	CreateBasicGraphicsPipeline(Apparition::GetVulkanDevice(deviceHandle), (VkFormat)Apparition::GetBackbufferVkFormat(deviceHandle), pipeline);
 
-	//CreateSwapchainFramebuffers(device, renderPass, swapchain);
+	Apparition::CommandPoolHandle cmdPoolHandle;
+	{
+		Apparition::CommandPoolCreationParams createParams{
+			.queueIndex = Apparition::GetGraphicsQueueIndex(deviceHandle)
+		};
+		cmdPoolHandle = Apparition::CreateCommandPool(deviceHandle, createParams);
+	}
 
-	CommandBuffer commandBuffer = {};
-	CreateCommandBuffer(device, commandBuffer);
+	Apparition::CommandBufferHandle cmdBufferHandle;
+	{
+		Apparition::CommandBufferAllocParams allocParams{
+			.isSecondary = false
+		};
+		cmdBufferHandle = Apparition::AllocateCommandBuffer(cmdPoolHandle, allocParams);
+	}
+
+	CommandBuffer commandBuffer{
+		.vkCommandBuffer = Apparition::GetVulkanHandle(cmdBufferHandle)
+	};
+	//CreateCommandBuffer(device, commandBuffer);
 
 	VertexBuffer vertexBuffer = {};
 	IndexBuffer indexBuffer = {};

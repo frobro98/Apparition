@@ -48,10 +48,10 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBuffer.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\CommandBufferManager.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,7 +83,7 @@
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBuffer.cpp">
       <Filter>Source\Apparition</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\CommandBufferManager.cpp">
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp">
       <Filter>Source\Apparition\Internal</Filter>
     </ClCompile>
   </ItemGroup>

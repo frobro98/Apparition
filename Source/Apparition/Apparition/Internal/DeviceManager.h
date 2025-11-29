@@ -34,9 +34,12 @@ public:
 	void DestroyDevice(DeviceHandle deviceHandle);
 
 	DeviceInternal& GetDeviceInternals(DeviceHandle deviceHandle);
+private:
+	void InitializeDeviceHandlePools(DeviceInternal& deviceInternal);
 #pragma endregion
 
 #pragma region Debug Callback
+public:
 	template <typename Func>
 	void SetDebugCallback(Func&& func, void* userData)
 	{
@@ -57,10 +60,15 @@ public:
 	void TeardownBackbuffer(DeviceHandle device);
 #pragma endregion
 
-#pragma region Command Buffer Manager
+#pragma region Command Buffer
 	CommandPoolHandle CreateCommandPool(DeviceHandle deviceHandle, const CommandPoolCreationParams& params);
-	void DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHandle commandPoolHandle);
-	CommandBufferManager& GetCommandBufferManager();
+	void DestroyCommandPool(CommandPoolHandle commandPoolHandle);
+
+	CommandBufferHandle AllocateCommandBuffer(CommandPoolHandle commandPoolHandle, const CommandBufferAllocParams& params);
+	void FreeCommandBuffer(CommandBufferHandle commandBufferHandle);
+
+	// TEMP
+	VkCommandBuffer GetCommandBufferHandle(CommandBufferHandle cbHandle);
 #pragma endregion
 
 private:

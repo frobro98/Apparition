@@ -25,12 +25,21 @@
 *     | device and pool data | handle generation | index into resource array  |
 */
 
+// Bits per section of data within a handle
+#define DEVICE_DATA_TOTAL_BITS      2ull
+#define POOL_DATA_TOTAL_BITS        6ull
+#define RESOURCE_GEN_TOTAL_BITS     24ull
+#define RESOURCE_INDEX_TOTAL_BITS   32ull
+
 // 2 bits of device index, which supports 4 total devices, due to 0 being invalid
-#define DEVICE_INDEX_SHIFT 62ull
+#define DEVICE_INDEX_SHIFT          62ull
 // 6 bits of pool index, which support 63 pools a single resource type could belong to, due to 0 being invalid
-#define POOL_INDEX_SHIFT   56ull
+#define POOL_INDEX_SHIFT            56ull
 // 24 bits of resource handle generation, which supports 16,777,215 generations of a resource, due to 0 being invalid
-#define RESOURCE_GEN_SHIFT 32ull
+#define RESOURCE_GEN_SHIFT          32ull
+
+#define POOL_INDEX_MASK             ((1ull << POOL_DATA_TOTAL_BITS) - 1ull)
+#define RESOURCE_GEN_MASK           ((1ull << RESOURCE_GEN_TOTAL_BITS) - 1ull)
 // 32 bits of resource handles, which supprots 4,294,967,295, due to 0 being invalid
-#define RESOURCE_INDEX_MASK ((1ull << RESOURCE_GEN_SHIFT) - 1ull)
+#define RESOURCE_INDEX_MASK         ((1ull << RESOURCE_GEN_SHIFT) - 1ull)
 

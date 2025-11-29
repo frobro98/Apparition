@@ -25,7 +25,7 @@ APPARITION_API void DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHan
 
 struct CommandBufferHandle
 {
-    u32 handle;
+    u64 handle;
 };
 
 struct CommandBufferAllocParams
@@ -35,8 +35,8 @@ struct CommandBufferAllocParams
 };
 
 NODISCARD APPARITION_API CommandBufferHandle AllocateCommandBuffer(CommandPoolHandle commandPoolHandle, const CommandBufferAllocParams& params);
-APPARITION_API void FreeCommandBuffer(CommandPoolHandle commandPoolHandle, CommandBufferHandle commandBufferHandle);
+APPARITION_API void FreeCommandBuffer(CommandBufferHandle commandBufferHandle);
 
 // TEMPORARILY HERE
-APPARITION_API VkCommandBuffer GetVulkanHandle(DeviceHandle deviceHandle, CommandBufferHandle commandBufferHandle);
+APPARITION_API VkCommandBuffer GetVulkanHandle(CommandBufferHandle commandBufferHandle);
 }

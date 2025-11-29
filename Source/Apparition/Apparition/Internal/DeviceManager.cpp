@@ -1,7 +1,7 @@
 
 #include "DeviceManager.h"
 
-#include "CommandBufferManager.h"
+#include "ApparitionInternals.h"
 #include "HandleDefinitions.h"
 #include "Utilities/Array.hpp"
 #include "VulkanInfos.h"
@@ -38,11 +38,11 @@ static void SetupDebugUtilsFunctions(VkInstance instance)
 	vkCmdInsertDebugUtilsLabelEXT_ = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT");
 }
 
-static void SetupDynamicRenderingFunctions(VkDevice device)
-{
-	vkCmdBeginRenderingKHR_ = (PFN_vkCmdBeginRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR");
-	vkCmdEndRenderingKHR_ = (PFN_vkCmdEndRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdEndRenderingKHR");
-}
+//static void SetupDynamicRenderingFunctions(VkDevice device)
+//{
+//	vkCmdBeginRenderingKHR_ = (PFN_vkCmdBeginRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR");
+//	vkCmdEndRenderingKHR_ = (PFN_vkCmdEndRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdEndRenderingKHR");
+//}
 
 static VkBool32 VulkanDebugMessengerCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -64,6 +64,8 @@ static VkBool32 VulkanDebugMessengerCallback(
 	
 	return false;
 }
+
+static u32 initialPoolSize = 128;
 
 DeviceManager::~DeviceManager()
 {
@@ -335,14 +337,14 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	// Initialize dynamic rendering extension
 	VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeature;
 	Vk::ZeroInfoStruct(dynamicRenderingFeature, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR);
-	//dynamicRenderingFeature.dynamicRendering = VK_TRUE;
+	dynamicRenderingFeature.dynamicRendering = VK_TRUE;
 
 	VkPhysicalDeviceFeatures2 supportedGpuFeatures;
 	supportedGpuFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 	supportedGpuFeatures.pNext = &dynamicRenderingFeature;
 	vkGetPhysicalDeviceFeatures2(internalDevice.physicalDevice, &supportedGpuFeatures);
 
-	VkPhysicalDeviceFeatures enabledDeviceFeatures;
+	//VkPhysicalDeviceFeatures enabledDeviceFeatures;
 	/*
 	if (params.featureSetupCallback.IsValid())
 	{
@@ -357,18 +359,21 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	deviceInfo.pQueueCreateInfos = queueInfos.GetData();
 	deviceInfo.enabledExtensionCount = deviceExtensionCount;
 	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
-	deviceInfo.pEnabledFeatures = &enabledDeviceFeatures;
-	deviceInfo.pNext = &dynamicRenderingFeature;
+	deviceInfo.pEnabledFeatures = nullptr;//&enabledDeviceFeatures;
+	deviceInfo.pNext = &supportedGpuFeatures;
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
 	CHECK_VK(result);
 
-	u64 handleIndex = deviceInternals.Size();
-	u64 handleValue = ((NextDeviceHandle++) << RESOURCE_GEN_SHIFT) | (handleIndex & RESOURCE_INDEX_MASK);
+	// We want zero to be reserved, since that's the "invalid handle" value
+	u64 handleIndex = deviceInternals.Size() + 1;
+	u64 handleValue = ((NextDeviceHandle++) << DEVICE_INDEX_SHIFT) | (handleIndex & RESOURCE_INDEX_MASK);
 	Apparition::DeviceHandle NewDeviceHandle{
 		.handle = handleValue
 	};
+	InitializeDeviceHandlePools(internalDevice);
 	deviceInternals.Add(internalDevice);
 
+	/*
 	// Device's command pool
 	VkCommandPoolCreateInfo cmdPoolInfo;
 	Vk::ZeroInfoStruct(cmdPoolInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
@@ -401,13 +406,14 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.computeCmdPool);
 		CHECK_VK(result);
 	}
+	//*/
 
 	const VmaAllocatorCreateInfo allocatorCreateInfo{
 		//.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
 		.physicalDevice = internalDevice.physicalDevice,
 		.device = internalDevice.device,
 		.instance = instance,
-		.vulkanApiVersion = VK_VERSION_1_3
+		.vulkanApiVersion = VK_API_VERSION_1_3
 	};
 	result = vmaCreateAllocator(&allocatorCreateInfo, &internalDevice.allocator);
 	CHECK_VK(result);
@@ -446,7 +452,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	CHECK_VK(result);
 
 	// Sets up extention functionality
-	SetupDynamicRenderingFunctions(internalDevice.device);
+	//SetupDynamicRenderingFunctions(internalDevice.device);
 
 	return NewDeviceHandle;
 }
@@ -459,8 +465,29 @@ void DeviceManager::DestroyDevice(Apparition::DeviceHandle deviceHandle)
 DeviceInternal& DeviceManager::GetDeviceInternals(Apparition::DeviceHandle deviceHandle)
 {
 	Assert(deviceHandle.handle != Apparition::InvalidHandle);
-	u32 deviceIndex = deviceHandle.handle & RESOURCE_INDEX_MASK;
+	// Adjust for incremented index when handle was created
+	u32 deviceIndex = (deviceHandle.handle & RESOURCE_INDEX_MASK) - 1;
+	Assert(deviceInternals.IsIndexValid(deviceIndex));
 	return deviceInternals[deviceIndex];
+}
+
+void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
+{
+	{
+		HandlePool& commandPoolHandlePool = deviceInternal.commandPoolsHandlePool;
+		Assert(commandPoolHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.commandPoolsHandlePool = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.commandPools.Resize(initialPoolSize);
+	}
+
+	{
+		HandlePool& commandBufferHandlePool = deviceInternal.commandBufferHandlePool;
+		Assert(commandBufferHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.commandBufferHandlePool = CreateHandlePool(initialPoolSize);
+		
+		deviceInternal.commandBuffers.Resize(initialPoolSize);
+	}
 }
 
 bool DeviceManager::BroadcastDebugCallback(
@@ -490,25 +517,131 @@ bool DeviceManager::BroadcastDebugCallback(
 	return userValidation.delegate(severity, messageTypeFlags, pCallbackData, pUserData);
 }
 
+template <typename Handle>
+u32 GetDeviceIndexFromHandle(Handle handle)
+{
+	Assert(handle.handle != InvalidHandle);
+	const u64 handleData = handle.handle;
+	return (handleData >> DEVICE_INDEX_SHIFT);
+}
+
+template <typename Handle>
+u32 GetResourcePoolIndexFromHandle(Handle handle)
+{
+	Assert(handle.handle != InvalidHandle);
+	const u64 poolIndexDataShifted = (handle.handle >> POOL_INDEX_SHIFT);
+	return (poolIndexDataShifted & POOL_INDEX_MASK);
+}
+
+template <typename Handle>
+inline u32 GetHandleIndex(Handle handle)
+{
+	Assert(handle.handle != InvalidHandle);
+	return (handle.handle & RESOURCE_INDEX_MASK);
+}
+
 CommandPoolHandle DeviceManager::CreateCommandPool(DeviceHandle deviceHandle, const CommandPoolCreationParams& params)
 {
-	UNUSED(deviceHandle, params);
-	//vkCreateCommandPool();
+	DeviceInternal& deviceInternal = GetDeviceInternals(deviceHandle);
 
-	return CommandPoolHandle{};
-}
-
-void DeviceManager::DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHandle commandPoolHandle)
-{
-	UNUSED(deviceHandle, commandPoolHandle);
-}
-
-CommandBufferManager& DeviceManager::GetCommandBufferManager()
-{
-	if (cmdBufferManager == nullptr)
+	VkCommandPoolCreateInfo createInfo;
+	Vk::ZeroInfoStruct(createInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
+	createInfo.queueFamilyIndex = params.queueIndex;
+	VkCommandPool cmdPool;
+	VkResult result = vkCreateCommandPool(deviceInternal.device, &createInfo, nullptr, &cmdPool);
+	CHECK_VK(result);
+	if (result == VK_SUCCESS)
 	{
-		cmdBufferManager = new CommandBufferManager;
-	}
+		CommandPoolInternal commandPoolInternal = {};
+		commandPoolInternal.cmdPool = cmdPool;
+		commandPoolInternal.queueFamilyIndex = params.queueIndex;
+		u32 handleIndex = PopFreeHandleIndex(deviceInternal.commandPoolsHandlePool);
+		if (handleIndex != InvalidHandleIndex)
+		{
+			// Set the internal index to be the current data
+			// handleIndex is valid, so we want to point to the "previous" element
+			deviceInternal.commandPools[handleIndex-1] = commandPoolInternal;
 
-	return *cmdBufferManager;
+			u32 indexGeneration = TakeHandleIndex(deviceInternal.commandPoolsHandlePool, handleIndex);
+			// TODO(nblane): this MUST be moved so that it can be reused
+			u64 handleData = (deviceHandle.handle << DEVICE_INDEX_SHIFT) 
+				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT) 
+				| (handleIndex & RESOURCE_INDEX_MASK);
+			return CommandPoolHandle{handleData};
+		}
+	}
+	return {InvalidHandle};
+}
+
+void DeviceManager::DestroyCommandPool(CommandPoolHandle commandPoolHandle)
+{
+	u32 deviceIndex = GetDeviceIndexFromHandle(commandPoolHandle);
+	DeviceInternal deviceInternal = deviceInternals[deviceIndex-1];
+	u32 handleIndex = GetHandleIndex(commandPoolHandle);
+	VkCommandPool cmdPool = deviceInternal.commandPools[handleIndex-1].cmdPool;
+	vkDestroyCommandPool(deviceInternal.device, cmdPool, nullptr);
+}
+
+CommandBufferHandle DeviceManager::AllocateCommandBuffer(CommandPoolHandle commandPoolHandle, const CommandBufferAllocParams& params)
+{
+	// TODO: having to REMEMBER to subtract 1 from the index is error prone. It might be better to have
+	// accessors to this for you when passing in the index that's from the handle
+	// 
+	// NOTE: there currently isn't a reason other than array management to have access to these arrays. It might
+	// make sense to prevent this from being allowed outside of resizing/deallocation
+	u32 deviceIndex = GetDeviceIndexFromHandle(commandPoolHandle);
+	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];
+	u32 cmdPoolIndex = GetHandleIndex(commandPoolHandle);
+	CommandPoolInternal& commandPoolInternal = deviceInternal.commandPools[cmdPoolIndex-1];
+
+	VkCommandBufferAllocateInfo allocInfo;
+	Vk::ZeroInfoStruct(allocInfo, VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
+	allocInfo.commandBufferCount = 1;
+	allocInfo.commandPool = commandPoolInternal.cmdPool;
+	allocInfo.level = !params.isSecondary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+	VkCommandBuffer cmdBuffer;
+	VkResult result = vkAllocateCommandBuffers(deviceInternal.device, &allocInfo, &cmdBuffer);
+	CHECK_VK(result);
+	if (result == VK_SUCCESS)
+	{
+		CommandBufferInternal commandBufferInternal = {};
+		commandBufferInternal.commandBuffer = cmdBuffer;
+		u32 handleIndex = PopFreeHandleIndex(deviceInternal.commandBufferHandlePool);
+		if (handleIndex != InvalidHandleIndex)
+		{
+			// Set the internal index to be the current data
+			deviceInternal.commandBuffers[handleIndex-1] = commandBufferInternal;
+
+			u32 indexGeneration = TakeHandleIndex(deviceInternal.commandBufferHandlePool, handleIndex);
+			// TODO(nblane): this MUST be moved so that it can be reused
+			u64 handleData = ((u64)deviceIndex << DEVICE_INDEX_SHIFT)
+				| ((u64)cmdPoolIndex << POOL_INDEX_SHIFT)
+				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+				| (handleIndex & RESOURCE_INDEX_MASK);
+			return CommandBufferHandle{ handleData };
+		}
+	}
+	return { InvalidHandle };
+}
+
+void DeviceManager::FreeCommandBuffer(CommandBufferHandle commandBufferHandle)
+{
+	u32 deviceIndex = GetDeviceIndexFromHandle(commandBufferHandle);
+	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];
+	u32 cmdPoolIndex = GetResourcePoolIndexFromHandle(commandBufferHandle);
+	CommandPoolInternal& commandPoolInternal = deviceInternal.commandPools[cmdPoolIndex-1];
+	u32 cmdBufferIndex = GetHandleIndex(commandBufferHandle);
+	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex-1];
+
+	vkFreeCommandBuffers(deviceInternal.device, commandPoolInternal.cmdPool, 1, &commandBufferInternal.commandBuffer);
+}
+
+VkCommandBuffer DeviceManager::GetCommandBufferHandle(CommandBufferHandle cbHandle)
+{
+	u32 deviceIndex = GetDeviceIndexFromHandle(cbHandle);
+	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];
+	u32 cmdBufferIndex = GetHandleIndex(cbHandle);
+	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex-1];
+
+	return commandBufferInternal.commandBuffer;
 }

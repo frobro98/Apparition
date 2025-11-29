@@ -3,7 +3,7 @@
 
 #include "Internal/ApparitionInternals.h"
 #include "Internal/DeviceManager.h"
-#include "Internal/CommandBufferManager.h"
+#include "Internal/VulkanDefinitions.h"
 
 namespace Apparition
 {
@@ -15,11 +15,11 @@ CommandPoolHandle CreateCommandPool(DeviceHandle deviceHandle, const CommandPool
 	return deviceManager.CreateCommandPool(deviceHandle, params);
 }
 
-void DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHandle commandPoolHandle)
+void DestroyCommandPool(CommandPoolHandle commandPoolHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	deviceManager.DestroyCommandPool(deviceHandle, commandPoolHandle);
+	deviceManager.DestroyCommandPool(commandPoolHandle);
 }
 
 
@@ -27,18 +27,21 @@ CommandBufferHandle AllocateCommandBuffer(CommandPoolHandle commandPoolHandle, c
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	CommandBufferManager& cmdBufferManager = deviceManager.GetCommandBufferManager();
-	return cmdBufferManager.AllocateCommandBuffer(commandPoolHandle, params);
+	return deviceManager.AllocateCommandBuffer(commandPoolHandle, params);
 }
 
-void FreeCommandBuffer(CommandPoolHandle commandPoolHandle, CommandBufferHandle commandBufferHandle)
+void FreeCommandBuffer(CommandBufferHandle commandBufferHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	CommandBufferManager& cmdBufferManager = deviceManager.GetCommandBufferManager();
-	return cmdBufferManager.FreeCommandBuffer(commandPoolHandle, commandBufferHandle);
+	deviceManager.FreeCommandBuffer(commandBufferHandle);
 }
 
-
+VkCommandBuffer GetVulkanHandle(CommandBufferHandle commandBufferHandle)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	return deviceManager.GetCommandBufferHandle(commandBufferHandle);
+}
 
 }
