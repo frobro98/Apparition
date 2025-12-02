@@ -144,7 +144,7 @@ void DeviceManager::Deinitialize()
 	this->~DeviceManager();
 }
 
-Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCreationParams& params)
+Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationParams& params)
 {
 	u32 physicalDeviceCount = 0;
 	VkResult result = vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
@@ -249,6 +249,9 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		// TODO- Assert and return
 	}
 
+	u32 graphicsQueueCount = 0;
+	u32 transferQueueCount = 0;
+	NOT_USED u32 computeQueueCount = 0;
 	DynamicArray<VkDeviceQueueCreateInfo> queueInfos;
 	if (params.queueCreationCallback.IsValid())
 	{
@@ -257,6 +260,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 		Assert(queueFamilyCount > 0);
 		DynamicArray<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
 		queueInfos = params.queueCreationCallback(queueFamilyProperties, graphicsFamilyIndex, transferFamilyIndex, computeFamilyIndex);
+		Assertf(false, "We currently don't support custom queue setup due to the handle pooling system. This will be supported soon");
 	}
 	else
 	{
@@ -272,10 +276,12 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 
 		queueInfos.Reserve(3);
 		queueInfos.Add(queueInfo);
+		graphicsQueueCount = 1;
 		if (params.transferSupport)
 		{
 			queueInfo.queueFamilyIndex = transferFamilyIndex;
 			queueInfos.Add(queueInfo);
+			transferQueueCount = 1;
 		}
 		if (params.computeSupport)
 		{
@@ -283,6 +289,7 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 			{
 				queueInfo.queueFamilyIndex = computeFamilyIndex;
 				queueInfos.Add(queueInfo);
+				computeQueueCount = 1;
 			}
 		}
 	}
@@ -364,14 +371,22 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
 	CHECK_VK(result);
 
+	{
+		internalDevice.graphicsQueueHandlePool = CreateHandlePool(graphicsQueueCount);
+		internalDevice.graphicsQueues.Resize(graphicsQueueCount);
+	}
+	{
+		internalDevice.transferQueueHandlePool = CreateHandlePool(transferQueueCount);
+		internalDevice.transferQueues.Resize(transferQueueCount);
+	}
+
 	// We want zero to be reserved, since that's the "invalid handle" value
 	u64 handleIndex = deviceInternals.Size() + 1;
 	u64 handleValue = ((NextDeviceHandle++) << DEVICE_INDEX_SHIFT) | (handleIndex & RESOURCE_INDEX_MASK);
-	Apparition::DeviceHandle NewDeviceHandle{
+	Apparition::Device NewDeviceHandle{
 		.handle = handleValue
 	};
 	InitializeDeviceHandlePools(internalDevice);
-	deviceInternals.Add(internalDevice);
 
 	/*
 	// Device's command pool
@@ -451,22 +466,29 @@ Apparition::DeviceHandle DeviceManager::CreateDevice(const Apparition::DeviceCre
 	result = vkCreateDescriptorPool(internalDevice.device, &poolInfo, nullptr, &internalDevice.descriptorPool);
 	CHECK_VK(result);
 
+	deviceInternals.Add(internalDevice);
 	// Sets up extention functionality
 	//SetupDynamicRenderingFunctions(internalDevice.device);
 
 	return NewDeviceHandle;
 }
 
-void DeviceManager::DestroyDevice(Apparition::DeviceHandle deviceHandle)
+void DeviceManager::DestroyDevice(Apparition::Device deviceHandle)
 {
 	UNUSED(deviceHandle);
 }
 
-DeviceInternal& DeviceManager::GetDeviceInternals(Apparition::DeviceHandle deviceHandle)
+DeviceInternal& DeviceManager::GetDeviceInternals(Apparition::Device deviceHandle)
 {
 	Assert(deviceHandle.handle != Apparition::InvalidHandle);
 	// Adjust for incremented index when handle was created
-	u32 deviceIndex = (deviceHandle.handle & RESOURCE_INDEX_MASK) - 1;
+	u32 deviceIndex = (deviceHandle.handle & RESOURCE_INDEX_MASK);
+	return GetDeviceInternals(deviceIndex);
+}
+
+DeviceInternal& DeviceManager::GetDeviceInternals(u32 deviceIndex)
+{
+	deviceIndex -= 1;
 	Assert(deviceInternals.IsIndexValid(deviceIndex));
 	return deviceInternals[deviceIndex];
 }
@@ -488,6 +510,153 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 		
 		deviceInternal.commandBuffers.Resize(initialPoolSize);
 	}
+
+	{
+		HandlePool& bufferResourceHandlePool = deviceInternal.bufferResourceHandlePool;
+		Assert(bufferResourceHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.bufferResourceHandlePool = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.bufferResources.Resize(initialPoolSize);
+	}
+}
+
+Queue DeviceManager::AllocateGraphicsQueue(Device device)
+{
+	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+	Assert(deviceInternal.graphicsQueues.Size() > 0);
+	u32 handleIndex = PopFreeHandleIndex(deviceInternal.graphicsQueueHandlePool);
+	if (handleIndex != InvalidHandleIndex)
+	{
+		const u32 queueIndex = handleIndex - 1;
+		VkQueue queue = VK_NULL_HANDLE;
+		vkGetDeviceQueue(deviceInternal.device, deviceInternal.graphicsFamilyIndex, queueIndex, &queue);
+
+		QueueInternal queueInternal{
+			.queue = queue
+		};
+		deviceInternal.graphicsQueues[queueIndex] = queueInternal;
+
+		const u32 indexGeneration = GetHandleGeneration(deviceInternal.graphicsQueueHandlePool, handleIndex);
+		// TODO(nblane): this MUST be moved so that it can be reused
+		const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+			| (((u64)deviceInternal.graphicsFamilyIndex) << POOL_INDEX_SHIFT)
+			| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+			| (handleIndex & RESOURCE_INDEX_MASK);
+		return Queue{ handleData };
+	}
+
+	return { InvalidHandle };
+}
+
+Queue DeviceManager::AllocateTransferQueue(Device device)
+{
+	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+	Assert(deviceInternal.transferQueues.Size() > 0);
+	const u32 handleIndex = PopFreeHandleIndex(deviceInternal.transferQueueHandlePool);
+	if (handleIndex != InvalidHandleIndex)
+	{
+		const u32 queueIndex = handleIndex - 1;
+		VkQueue queue = VK_NULL_HANDLE;
+		vkGetDeviceQueue(deviceInternal.device, deviceInternal.transferFamilyIndex, queueIndex, &queue);
+
+		QueueInternal queueInternal{
+			.queue = queue
+		};
+		deviceInternal.transferQueues[queueIndex] = queueInternal;
+
+		const u32 indexGeneration = GetHandleGeneration(deviceInternal.transferQueueHandlePool, handleIndex);
+		// TODO(nblane): this MUST be moved so that it can be reused
+		const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+			| (((u64)deviceInternal.transferFamilyIndex) << POOL_INDEX_SHIFT)
+			| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+			| (handleIndex & RESOURCE_INDEX_MASK);
+		return Queue{ handleData };
+	}
+
+	// Here we need to log an error, since all queues are taken at this point
+	return { InvalidHandle };
+}
+
+// NOTE: Graphics and compute queues are the same queue as of right now. Having them be the same queue and support handles will happen soon
+//Queue DeviceManager::AllocateComputeQueue(Device device)
+//{
+//	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+//	Assert(deviceInternal.computeQueues.Size() > 0);
+//	u32 handleIndex = PopFreeHandleIndex(deviceInternal.computeQueueHandlePool);
+//	if (handleIndex != InvalidHandleIndex)
+//	{
+//		const u32 queueIndex = handleIndex - 1;
+//		VkQueue queue = VK_NULL_HANDLE;
+//		vkGetDeviceQueue(deviceInternal.device, deviceInternal.computeFamilyIndex, queueIndex, &queue);
+//
+//		QueueInternal queueInternal{
+//			.queue = queue
+//		};
+//		deviceInternal.computeQueues[queueIndex] = queueInternal;
+//
+//		const u32 indexGeneration = GetHandleGeneration(deviceInternal.computeQueueHandlePool, handleIndex);
+//		// TODO(nblane): this MUST be moved so that it can be reused
+//		const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+//			| (((u64)deviceInternal.computeFamilyIndex) << POOL_INDEX_SHIFT)
+//			| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+//			| (handleIndex & RESOURCE_INDEX_MASK);
+//		return Queue{ handleData };
+//	}
+//
+//	return { InvalidHandle };
+//}
+
+HandlePool& DeviceManager::GetQueueHandlePool(DeviceInternal& deviceInternal, u32 queueFamilyIndex)
+{
+	if (queueFamilyIndex == deviceInternal.graphicsFamilyIndex)
+	{
+		return deviceInternal.graphicsQueueHandlePool;
+	}
+	else if (queueFamilyIndex == deviceInternal.transferFamilyIndex)
+	{
+		return deviceInternal.transferQueueHandlePool;
+	}
+	else if (queueFamilyIndex == deviceInternal.computeFamilyIndex)
+	{
+		return deviceInternal.computeQueueHandlePool;
+	}
+	else
+	{
+		Assertf(false, "Unknown queueFamilyIndex value: {}", queueFamilyIndex);
+		return deviceInternal.graphicsQueueHandlePool;
+	}
+}
+
+const DynamicArray<QueueInternal>& DeviceManager::GetQueueArray(DeviceInternal& deviceInternal, u32 queueFamilyIndex)
+{
+	if (queueFamilyIndex == deviceInternal.graphicsFamilyIndex)
+	{
+		return deviceInternal.graphicsQueues;
+	}
+	else if (queueFamilyIndex == deviceInternal.transferFamilyIndex)
+	{
+		return deviceInternal.transferQueues;
+	}
+	else if (queueFamilyIndex == deviceInternal.computeFamilyIndex)
+	{
+		return deviceInternal.computeQueues;
+	}
+	else
+	{
+		Assertf(false, "Unknown queueFamilyIndex value: {}", queueFamilyIndex);
+		return deviceInternal.graphicsQueues;
+	}
+}
+
+void DeviceManager::FreeQueue(Queue queue)
+{
+	// TODO: Assert handle is valid AND handle generation is correct
+	u32 deviceIndex = GetDeviceIndexFromHandle(queue);
+	DeviceInternal deviceInternal = deviceInternals[deviceIndex - 1];
+	u32 queueFamilyIndex = GetResourcePoolIndexFromHandle(queue);
+	HandlePool& queueHandlePool = GetQueueHandlePool(deviceInternal, queueFamilyIndex);
+	const u32 handleIndex = GetHandleIndex(queue);
+	PushFreedHandleIndex(queueHandlePool, handleIndex);
 }
 
 bool DeviceManager::BroadcastDebugCallback(
@@ -517,30 +686,7 @@ bool DeviceManager::BroadcastDebugCallback(
 	return userValidation.delegate(severity, messageTypeFlags, pCallbackData, pUserData);
 }
 
-template <typename Handle>
-u32 GetDeviceIndexFromHandle(Handle handle)
-{
-	Assert(handle.handle != InvalidHandle);
-	const u64 handleData = handle.handle;
-	return (handleData >> DEVICE_INDEX_SHIFT);
-}
-
-template <typename Handle>
-u32 GetResourcePoolIndexFromHandle(Handle handle)
-{
-	Assert(handle.handle != InvalidHandle);
-	const u64 poolIndexDataShifted = (handle.handle >> POOL_INDEX_SHIFT);
-	return (poolIndexDataShifted & POOL_INDEX_MASK);
-}
-
-template <typename Handle>
-inline u32 GetHandleIndex(Handle handle)
-{
-	Assert(handle.handle != InvalidHandle);
-	return (handle.handle & RESOURCE_INDEX_MASK);
-}
-
-CommandPoolHandle DeviceManager::CreateCommandPool(DeviceHandle deviceHandle, const CommandPoolCreationParams& params)
+CommandPool DeviceManager::CreateCommandPool(Device deviceHandle, const CommandPoolCreationParams& params)
 {
 	DeviceInternal& deviceInternal = GetDeviceInternals(deviceHandle);
 
@@ -562,27 +708,31 @@ CommandPoolHandle DeviceManager::CreateCommandPool(DeviceHandle deviceHandle, co
 			// handleIndex is valid, so we want to point to the "previous" element
 			deviceInternal.commandPools[handleIndex-1] = commandPoolInternal;
 
-			u32 indexGeneration = TakeHandleIndex(deviceInternal.commandPoolsHandlePool, handleIndex);
+			u32 indexGeneration = GetHandleGeneration(deviceInternal.commandPoolsHandlePool, handleIndex);
 			// TODO(nblane): this MUST be moved so that it can be reused
 			u64 handleData = (deviceHandle.handle << DEVICE_INDEX_SHIFT) 
 				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT) 
 				| (handleIndex & RESOURCE_INDEX_MASK);
-			return CommandPoolHandle{handleData};
+			return CommandPool{handleData};
 		}
 	}
 	return {InvalidHandle};
 }
 
-void DeviceManager::DestroyCommandPool(CommandPoolHandle commandPoolHandle)
+void DeviceManager::DestroyCommandPool(CommandPool commandPoolHandle)
 {
+	// TODO: Assert handle is valid AND handle generation is correct
 	u32 deviceIndex = GetDeviceIndexFromHandle(commandPoolHandle);
 	DeviceInternal deviceInternal = deviceInternals[deviceIndex-1];
 	u32 handleIndex = GetHandleIndex(commandPoolHandle);
 	VkCommandPool cmdPool = deviceInternal.commandPools[handleIndex-1].cmdPool;
 	vkDestroyCommandPool(deviceInternal.device, cmdPool, nullptr);
+
+	// Let the handle pool know this handle is freed
+	PushFreedHandleIndex(deviceInternal.commandPoolsHandlePool, handleIndex);
 }
 
-CommandBufferHandle DeviceManager::AllocateCommandBuffer(CommandPoolHandle commandPoolHandle, const CommandBufferAllocParams& params)
+CommandBuffer DeviceManager::AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params)
 {
 	// TODO: having to REMEMBER to subtract 1 from the index is error prone. It might be better to have
 	// accessors to this for you when passing in the index that's from the handle
@@ -612,31 +762,34 @@ CommandBufferHandle DeviceManager::AllocateCommandBuffer(CommandPoolHandle comma
 			// Set the internal index to be the current data
 			deviceInternal.commandBuffers[handleIndex-1] = commandBufferInternal;
 
-			u32 indexGeneration = TakeHandleIndex(deviceInternal.commandBufferHandlePool, handleIndex);
+			u32 indexGeneration = GetHandleGeneration(deviceInternal.commandBufferHandlePool, handleIndex);
 			// TODO(nblane): this MUST be moved so that it can be reused
 			u64 handleData = ((u64)deviceIndex << DEVICE_INDEX_SHIFT)
 				| ((u64)cmdPoolIndex << POOL_INDEX_SHIFT)
 				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
 				| (handleIndex & RESOURCE_INDEX_MASK);
-			return CommandBufferHandle{ handleData };
+			return CommandBuffer{ handleData };
 		}
 	}
 	return { InvalidHandle };
 }
 
-void DeviceManager::FreeCommandBuffer(CommandBufferHandle commandBufferHandle)
+void DeviceManager::FreeCommandBuffer(CommandBuffer commandBufferHandle)
 {
+	// TODO: Assert handle is valid AND handle generation is correct
 	u32 deviceIndex = GetDeviceIndexFromHandle(commandBufferHandle);
 	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];
 	u32 cmdPoolIndex = GetResourcePoolIndexFromHandle(commandBufferHandle);
 	CommandPoolInternal& commandPoolInternal = deviceInternal.commandPools[cmdPoolIndex-1];
 	u32 cmdBufferIndex = GetHandleIndex(commandBufferHandle);
 	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex-1];
-
 	vkFreeCommandBuffers(deviceInternal.device, commandPoolInternal.cmdPool, 1, &commandBufferInternal.commandBuffer);
+
+	// Let the handle pool know this handle is freed
+	PushFreedHandleIndex(deviceInternal.commandBufferHandlePool, cmdBufferIndex);
 }
 
-VkCommandBuffer DeviceManager::GetCommandBufferHandle(CommandBufferHandle cbHandle)
+VkCommandBuffer DeviceManager::GetCommandBufferHandle(CommandBuffer cbHandle)
 {
 	u32 deviceIndex = GetDeviceIndexFromHandle(cbHandle);
 	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];

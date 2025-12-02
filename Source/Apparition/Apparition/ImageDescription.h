@@ -23,6 +23,8 @@ enum Type
 	D_32f,
 	Invalid,
 
-	Count
+	Count,
+
+	Max = 0x7FFFFFFF
 };
 }

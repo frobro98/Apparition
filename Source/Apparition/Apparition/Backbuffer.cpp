@@ -7,27 +7,27 @@
 
 namespace Apparition
 {
-void SetupBackbuffer(DeviceHandle device, const BackbufferSetupParams& params)
+void SetupBackbuffer(Device device, const BackbufferSetupParams& params)
 {
     Assert(apparition.deviceManager);
 
     return apparition.deviceManager->SetupBackbuffer(device, params);
 }
 
-void TeardownBackbuffer(DeviceHandle device)
+void TeardownBackbuffer(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.TeardownBackbuffer(device);
 }
-ImageFormat::Type GetBackbufferFormat(DeviceHandle device)
+ImageFormat::Type GetBackbufferFormat(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
     return VkFormatToApparitionFormat(deviceInternals.backbuffer.format);
 }
-u32 GetBackbufferVkFormat(DeviceHandle device)
+u32 GetBackbufferVkFormat(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

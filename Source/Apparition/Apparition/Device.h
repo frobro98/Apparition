@@ -14,7 +14,7 @@ typedef struct VkDevice_T* VkDevice;
 namespace Apparition
 {
 
-struct DeviceHandle
+struct Device
 {
 	u64 handle;
 };
@@ -43,11 +43,11 @@ struct DeviceCreationParams
 // No need to expose Vulkan Instance creation, will check upon creation of a device
 
 // TODO - 
-NODISCARD APPARITION_API DeviceHandle CreateDevice(const DeviceCreationParams& params);
-APPARITION_API void DestroyDevice(DeviceHandle deviceHandle);
-APPARITION_API u32 GetGraphicsQueueIndex(DeviceHandle deviceHandle);
-APPARITION_API u32 GetComputeQueueIndex(DeviceHandle deviceHandle);
-APPARITION_API u32 GetTransferQueueIndex(DeviceHandle deviceHandle);
+NODISCARD APPARITION_API Device CreateDevice(const DeviceCreationParams& params);
+APPARITION_API void DestroyDevice(Device deviceHandle);
+APPARITION_API u32 GetGraphicsQueueIndex(Device deviceHandle);
+APPARITION_API u32 GetComputeQueueIndex(Device deviceHandle);
+APPARITION_API u32 GetTransferQueueIndex(Device deviceHandle);
 // TODO - Expose native functionality of Vulkan in a separate file
-APPARITION_API VkDevice GetVulkanDevice(DeviceHandle deviceHandle);
+APPARITION_API VkDevice GetVulkanDevice(Device deviceHandle);
 }

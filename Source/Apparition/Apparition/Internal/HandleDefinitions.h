@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BasicTypes/Intrinsics.hpp"
+
 /*
 * *********************************
 * Anatomy of a Handle in Apparition
@@ -43,3 +45,25 @@
 // 32 bits of resource handles, which supprots 4,294,967,295, due to 0 being invalid
 #define RESOURCE_INDEX_MASK         ((1ull << RESOURCE_GEN_SHIFT) - 1ull)
 
+template <typename Handle>
+inline u32 GetDeviceIndexFromHandle(Handle handle)
+{
+	Assert(handle.handle != InvalidHandle);
+	const u64 handleData = handle.handle;
+	return (handleData >> DEVICE_INDEX_SHIFT);
+}
+
+template <typename Handle>
+inline u32 GetResourcePoolIndexFromHandle(Handle handle)
+{
+	Assert(handle.handle != InvalidHandle);
+	const u64 poolIndexDataShifted = (handle.handle >> POOL_INDEX_SHIFT);
+	return (poolIndexDataShifted & POOL_INDEX_MASK);
+}
+
+template <typename Handle>
+inline u32 GetHandleIndex(Handle handle)
+{
+	Assert(handle.handle != InvalidHandle);
+	return (handle.handle & RESOURCE_INDEX_MASK);
+}

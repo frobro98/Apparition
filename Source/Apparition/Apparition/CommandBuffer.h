@@ -10,7 +10,7 @@ typedef struct VkCommandBuffer_T* VkCommandBuffer;
 
 namespace Apparition
 {
-struct CommandPoolHandle
+struct CommandPool
 {
     u64 handle;
 };
@@ -20,10 +20,10 @@ struct CommandPoolCreationParams
     u32 queueIndex = 0;
 };
 
-NODISCARD APPARITION_API CommandPoolHandle CreateCommandPool(DeviceHandle deviceHandle, const CommandPoolCreationParams& params);
-APPARITION_API void DestroyCommandPool(DeviceHandle deviceHandle, CommandPoolHandle commandPoolHandle);
+NODISCARD APPARITION_API CommandPool CreateCommandPool(Device deviceHandle, const CommandPoolCreationParams& params);
+APPARITION_API void DestroyCommandPool(CommandPool commandPoolHandle);
 
-struct CommandBufferHandle
+struct CommandBuffer
 {
     u64 handle;
 };
@@ -34,9 +34,9 @@ struct CommandBufferAllocParams
     bool isSecondary = false;
 };
 
-NODISCARD APPARITION_API CommandBufferHandle AllocateCommandBuffer(CommandPoolHandle commandPoolHandle, const CommandBufferAllocParams& params);
-APPARITION_API void FreeCommandBuffer(CommandBufferHandle commandBufferHandle);
+NODISCARD APPARITION_API CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params);
+APPARITION_API void FreeCommandBuffer(CommandBuffer commandBufferHandle);
 
 // TEMPORARILY HERE
-APPARITION_API VkCommandBuffer GetVulkanHandle(CommandBufferHandle commandBufferHandle);
+APPARITION_API VkCommandBuffer GetVulkanHandle(CommandBuffer commandBufferHandle);
 }

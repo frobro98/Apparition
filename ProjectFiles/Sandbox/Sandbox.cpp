@@ -34,7 +34,10 @@ WALL_WRN_POP
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
 #include "Apparition/Backbuffer.h"
+#include "Apparition/Buffer.h"
 #include "Apparition/CommandBuffer.h"
+#include "Apparition/CommandBufferCommands.h"
+#include "Apparition/Queue.h"
 
 // Sandbox
 #include "Window.h"
@@ -56,57 +59,6 @@ static void SetupDynamicRenderingFunctions(VkDevice device)
 
 namespace Vk
 {
-VkInstanceCreateInfo InstanceInfo(
-	const VkApplicationInfo& appInfo,
-	const tchar* const* instanceLayers, u32 numLayers,
-	const tchar* const* instanceExtensions, u32 numExtensions
-)
-{
-	VkInstanceCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	//#if M_DEBUG
-	createInfo.enabledLayerCount = numLayers;
-	createInfo.ppEnabledLayerNames = instanceLayers;
-	//#else
-	UNUSED(numLayers, instanceLayers);
-	//#endif
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledExtensionCount = numExtensions;
-	createInfo.ppEnabledExtensionNames = instanceExtensions;
-	return createInfo;
-}
-
-VkDeviceQueueCreateInfo DeviceQueueInfo(u32 queueFamilyIndex, u32 numQueues, const f32* queuePriorities)
-{
-	VkDeviceQueueCreateInfo queueInfo = {};
-	queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueInfo.queueFamilyIndex = queueFamilyIndex;
-	queueInfo.queueCount = numQueues;
-	queueInfo.pQueuePriorities = queuePriorities;
-	return queueInfo;
-}
-
-VkDeviceCreateInfo DeviceInfo(const VkDeviceQueueCreateInfo* queueInfo, u32 numQueueInfos, const tchar** deviceExtensions, u32 numExtensions, const VkPhysicalDeviceFeatures& deviceFeatures)
-{
-	VkDeviceCreateInfo deviceInfo = {};
-	deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceInfo.queueCreateInfoCount = numQueueInfos;
-	deviceInfo.pQueueCreateInfos = queueInfo;
-	deviceInfo.enabledExtensionCount = numExtensions;
-	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
-	deviceInfo.pEnabledFeatures = &deviceFeatures;
-	return deviceInfo;
-}
-
-VkWin32SurfaceCreateInfoKHR SurfaceInfo(HINSTANCE instance, HWND wnd)
-{
-	VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
-	surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-	surfaceInfo.hinstance = instance;
-	surfaceInfo.hwnd = wnd;
-	return surfaceInfo;
-}
-
 VkImageViewCreateInfo ImageViewInfo(VkImage image, u32 mipLevels, VkFormat format, VkImageAspectFlags aspectFlags)
 {
 	VkImageViewCreateInfo imageViewInfo = {};
@@ -127,67 +79,7 @@ VkImageViewCreateInfo ImageViewInfo(VkImage image, u32 mipLevels, VkFormat forma
 }
 }
 
-//constexpr const tchar* validationLayers[] = {
-//	"VK_LAYER_KHRONOS_validation",
-//	//"VK_LAYER_LUNARG_api_dump",
-//	//"VK_LAYER_LUNARG_object_tracker"
-//	//, "VK_LAYER_LUNARG_standard_validation"
-//	//, "VK_LAYER_LUNARG_parameter_validation"
-//	//, "VK_LAYER_GOOGLE_threading"
-//	//, "VK_LAYER_GOOGLE_unique_objects"
-//};
-
-//constexpr const tchar* instanceExtensions[] = {
-//	VK_KHR_SURFACE_EXTENSION_NAME,
-//	VK_PLATFORM_SURFACE_EXTENSION,
-//	VK_EXT_DEBUG_UTILS_EXTENSION_NAME
-//};
-
 #define CHECK_VK(expression) Assert(expression == VK_SUCCESS)
-
-//static PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_ = nullptr;
-//#define vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_
-//
-//static PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_ = nullptr;
-//#define vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_
-//
-//static PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_ = nullptr;
-//#define vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_
-//
-//static PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_ = nullptr;
-//#define vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_
-//
-//static PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_ = nullptr;
-//#define vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_
-//
-//static PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_ = nullptr;
-//#define vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
-//
-//static PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT_ = nullptr;
-//#define vkQueueInsertDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
-//
-//static PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_ = nullptr;
-//#define vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_
-//
-//static PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
-//#define vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_
-//
-//static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
-//#define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
-
-//static void SetupDebugUtilsFunctions(VkInstance instance)
-//{
-//	vkCreateDebugUtilsMessengerEXT_ = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-//	vkDestroyDebugUtilsMessengerEXT_ = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-//	vkSetDebugUtilsObjectNameEXT_ = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT");
-//	vkSetDebugUtilsObjectTagEXT_ = (PFN_vkSetDebugUtilsObjectTagEXT)vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectTagEXT");
-//	vkQueueBeginDebugUtilsLabelEXT_ = (PFN_vkQueueBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueBeginDebugUtilsLabelEXT");
-//	vkQueueEndDebugUtilsLabelEXT_ = (PFN_vkQueueEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueEndDebugUtilsLabelEXT");
-//	vkQueueInsertDebugUtilsLabelEXT_ = (PFN_vkQueueInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkQueueInsertDebugUtilsLabelEXT");
-//	vkCmdBeginDebugUtilsLabelEXT_ = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT");
-//	vkCmdEndDebugUtilsLabelEXT_ = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT");
-//	vkCmdInsertDebugUtilsLabelEXT_ = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT");
-//}
 
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
@@ -257,31 +149,6 @@ static VkBool32 VulkanDebugMessengerCallback(
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-struct Device
-{
-	VkDevice vkDevice = VK_NULL_HANDLE;
-	VkPhysicalDevice vkPhysicalDevice = VK_NULL_HANDLE;
-
-	VkQueue vkGraphicsQueue = VK_NULL_HANDLE;
-	u32 graphicsQueueFamilyIndex = 0;
-	VkQueue vkTransferQueue = VK_NULL_HANDLE;
-	u32 transferQueueFamilyIndex = 0;
-
-	VkCommandPool vkGraphicsCmdPool = VK_NULL_HANDLE;
-	VkCommandPool vkTransferCmdPool = VK_NULL_HANDLE;
-
-	VmaAllocator allocator;
-
-	VkDescriptorPool vkDescriptorPool = VK_NULL_HANDLE;
-};
-
-// Data will be accessible via handle
-struct Surface
-{
-	VkSurfaceKHR vkSurface = VK_NULL_HANDLE;
-	void* wndHandle = nullptr;
-};
-
 struct Image
 {
 	VkImage vkImage = VK_NULL_HANDLE;
@@ -295,24 +162,6 @@ struct Image
 struct ImageView
 {
 	VkImageView vkImageView = VK_NULL_HANDLE;
-};
-
-struct VertexBuffer
-{
-	VkBuffer vkBuffer = VK_NULL_HANDLE;
-	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
-};
-
-struct IndexBuffer
-{
-	VkBuffer vkBuffer = VK_NULL_HANDLE;
-	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
-};
-
-struct StagingBuffer
-{
-	VkBuffer vkBuffer = VK_NULL_HANDLE;
-	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
 };
 
 struct RenderPass
@@ -388,358 +237,6 @@ static const StaticArray<u16, 6> indices = {
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
-
-void CreateInstance(VkInstance& /*instance*/, VkDebugUtilsMessengerEXT& /*debugMessengerHandle*/)
-{
-	//u32 instanceVersion;
-	//vkEnumerateInstanceVersion(&instanceVersion);
-
-	//u32 layerCount;
-	//vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-	//DynamicArray<VkLayerProperties> availableLayers(layerCount);
-	//vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.GetData());
-
-	//u32 extensionCount;
-	//vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	//DynamicArray<VkExtensionProperties> availableExtensions(extensionCount);
-	//vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.GetData());
-
-	//VkApplicationInfo appInfo = {};
-	//appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	//appInfo.pApplicationName = "Apparition Sandbox";
-	//appInfo.applicationVersion = 0;
-	//appInfo.pEngineName = "Apparition";
-	//appInfo.engineVersion = 0;
-	//appInfo.apiVersion = VK_MAKE_VERSION(1, 2, 0);
-
-	//VkInstanceCreateInfo instanceInfo = Vk::InstanceInfo(appInfo, validationLayers, (u32)ArraySize(validationLayers),
-	//	instanceExtensions, (u32)ArraySize(instanceExtensions)/*, &debugInfo*/);
-	//NOT_USED VkResult result = vkCreateInstance(&instanceInfo, nullptr, &instance);
-	//CHECK_VK(result);
-
-	//SetupDebugUtilsFunctions(instance);
-
-	//VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
-	//debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	//debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-	//	VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-	//	VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-	//	VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-	//debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-	//	VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-	//	VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	////debugInfo.pUserData = this;
-	//debugInfo.pfnUserCallback = &VulkanDebugMessengerCallback;
-
-	//result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
-	//CHECK_VK(result);
-}
-
-void CreateDevice(VkInstance /*instance*/, Device& /*device*/)
-{
-	//VkPhysicalDeviceFeatures enabledGPUFeatures{};
-	//if (gpuFeatures.geometryShader)
-	//{
-	//	enabledGPUFeatures.geometryShader = VK_TRUE;
-	//}
-	//if (gpuFeatures.tessellationShader)
-	//{
-	//	enabledGPUFeatures.tessellationShader = VK_TRUE;
-	//}
-	//if (gpuFeatures.fillModeNonSolid)
-	//{
-	//	enabledGPUFeatures.fillModeNonSolid = VK_TRUE;
-	//}
-	//if (gpuFeatures.textureCompressionBC)
-	//{
-	//	enabledGPUFeatures.textureCompressionBC = VK_TRUE;
-	//}
-	//if (gpuFeatures.textureCompressionETC2)
-	//{
-	//	enabledGPUFeatures.textureCompressionETC2 = VK_TRUE;
-	//}
-	//if (gpuFeatures.textureCompressionASTC_LDR)
-	//{
-	//	enabledGPUFeatures.textureCompressionASTC_LDR = VK_TRUE;
-	//}
-
-	//Assert(enabledGPUFeatures.fillModeNonSolid);
-	//Assert(enabledGPUFeatures.tessellationShader);
-	//Assert(enabledGPUFeatures.geometryShader);
-	//Assert(enabledGPUFeatures.textureCompressionBC);
-
-	//vkGetDeviceQueue(device.vkDevice, graphicsFamilyIndex, 0, &device.vkGraphicsQueue);
-	//vkGetDeviceQueue(device.vkDevice, transferFamilyIndex, 0, &device.vkTransferQueue);
-	//device.graphicsQueueFamilyIndex = graphicsFamilyIndex;
-	//device.transferQueueFamilyIndex = transferFamilyIndex;
-
-	//VkCommandPoolCreateInfo cmdPoolInfo = {};
-	//cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	//cmdPoolInfo.queueFamilyIndex = device.graphicsQueueFamilyIndex;
-	//// TODO - Find out if there are any flags for creating command pools
-	//cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-	//result = vkCreateCommandPool(device.vkDevice, &cmdPoolInfo, nullptr, &device.vkGraphicsCmdPool);
-	//CHECK_VK(result);
-
-	//cmdPoolInfo = {};
-	//cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	//cmdPoolInfo.queueFamilyIndex = device.transferQueueFamilyIndex;
-	//// TODO - Find out if there are any flags for creating command pools
-	//cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-	//result = vkCreateCommandPool(device.vkDevice, &cmdPoolInfo, nullptr, &device.vkTransferCmdPool);
-	//CHECK_VK(result);
-
-	//VmaAllocatorCreateInfo allocatorCreateInfo{};
-	////allocatorCreateInfo.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
-	//allocatorCreateInfo.vulkanApiVersion = VK_API_VERSION_1_2;
-	//allocatorCreateInfo.physicalDevice = device.vkPhysicalDevice;
-	//allocatorCreateInfo.device = device.vkDevice;
-	//allocatorCreateInfo.instance = instance;
-
-	//result = vmaCreateAllocator(&allocatorCreateInfo, &device.allocator);
-	//CHECK_VK(result);
-
-	//VkPhysicalDeviceLimits limits = gpuProperties.limits;
-
-	//VkDescriptorPoolSize poolSizes[8] = {};
-	//poolSizes[0].descriptorCount = 10000;//maxSamplerPoolSize;
-	//poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	//poolSizes[1].descriptorCount = 10000;//maxUniformBufferPoolSize;
-	//poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	//poolSizes[2].descriptorCount = limits.maxDescriptorSetUniformBuffersDynamic;
-	//poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	//poolSizes[3].descriptorCount = 10000;//maxStorageBufferPoolSize;
-	//poolSizes[3].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	//poolSizes[4].descriptorCount = limits.maxDescriptorSetStorageBuffersDynamic;
-	//poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-	//poolSizes[5].descriptorCount = 10000;// maxStorageImagePoolSize;
-	//poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	//poolSizes[6].descriptorCount = 10000;// maxSampledImagePoolSize;
-	//poolSizes[6].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-	//poolSizes[7].descriptorCount = 10000;// maxInputAttachmentPoolSize;
-	//poolSizes[7].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-
-	//VkDescriptorPoolCreateInfo poolInfo = {};
-	//poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	//poolInfo.poolSizeCount = (u32)ArraySize(poolSizes);
-	//poolInfo.pPoolSizes = poolSizes;
-	//// TODO - This is a horrible allocation scheme and it holds onto the memory the entire time. Must be a lot more conservative with my pools...
-	//poolInfo.maxSets = 10000;//logicalDevice.GetDeviceLimits().maxBoundDescriptorSets;
-	//// TODO - Figure out what this flag specifically does
-	//poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-	//result = vkCreateDescriptorPool(device.vkDevice, &poolInfo, nullptr, &device.vkDescriptorPool);
-	//CHECK_VK(result);
-
-}
-
-void CreateSurface(VkInstance vkInstance, void* hInstance, void* wndHandle, Surface& surface)
-{
-	VkWin32SurfaceCreateInfoKHR surfaceInfo = Vk::SurfaceInfo((HINSTANCE)hInstance, (HWND)wndHandle);
-	VkResult result = vkCreateWin32SurfaceKHR(vkInstance, &surfaceInfo, nullptr, &surface.vkSurface);
-	CHECK_VK(result);
-
-	surface.wndHandle = wndHandle;
-}
-
-void CreateSwapchain(const Device& device, const Surface& surface, u32 width, u32 height, Swapchain& swapchain)
-{
-	// Get Surface Information Using Device
-	VkSurfaceCapabilitiesKHR surfaceCapabilities = {};
-	VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.vkPhysicalDevice, surface.vkSurface, &surfaceCapabilities);
-	CHECK_VK(result);
-
-	DynamicArray<VkSurfaceFormatKHR> surfaceFormats;
-	u32 formatCount = 0;
-	result = vkGetPhysicalDeviceSurfaceFormatsKHR(device.vkPhysicalDevice, surface.vkSurface, &formatCount, nullptr);
-	CHECK_VK(result);
-	surfaceFormats.Resize(formatCount);
-	result = vkGetPhysicalDeviceSurfaceFormatsKHR(device.vkPhysicalDevice, surface.vkSurface, &formatCount, surfaceFormats.GetData());
-	CHECK_VK(result);
-
-	DynamicArray<VkPresentModeKHR> presentModes;
-	u32 presentModeCount;
-	result = vkGetPhysicalDeviceSurfacePresentModesKHR(device.vkPhysicalDevice, surface.vkSurface, &presentModeCount, nullptr);
-	CHECK_VK(result);
-	presentModes.Resize(presentModeCount);
-	result = vkGetPhysicalDeviceSurfacePresentModesKHR(device.vkPhysicalDevice, surface.vkSurface, &presentModeCount, presentModes.GetData());
-	CHECK_VK(result);
-
-	// Create Swapchain
-	u32 swapchainImageCount = surfaceCapabilities.minImageCount + 1;
-	if (surfaceCapabilities.maxImageCount > 0 &&
-		swapchainImageCount > surfaceCapabilities.maxImageCount)
-	{
-		swapchainImageCount = surfaceCapabilities.maxImageCount;
-	}
-
-	// Finding optimal supported surface format
-	VkSurfaceFormatKHR surfaceFormat = {};
-	if (surfaceFormats.Size() == 1 && surfaceFormats[0].format == VK_FORMAT_UNDEFINED)
-	{
-		surfaceFormat = {
-			VK_FORMAT_R8G8B8A8_UNORM,
-			VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
-		};
-	}
-	else
-	{
-		// TODO - Add for-each support to my arrays
-		for (u32 i = 0; i < surfaceFormats.Size(); ++i)
-		{
-			if (surfaceFormats[i].format == VK_FORMAT_R8G8B8A8_UNORM)
-			{
-				surfaceFormat = surfaceFormats[i];
-				break;
-			}
-		}
-	}
-
-	if (surfaceFormat.format != VK_FORMAT_R8G8B8A8_UNORM)
-	{
-		surfaceFormat = surfaceFormats[0];
-	}
-	swapchain.format = surfaceFormat.format;
-
-	// Set up swapchain extents
-	swapchain.extents.width = surfaceCapabilities.currentExtent.width == 0xffffffff ? width : surfaceCapabilities.currentExtent.width;
-	swapchain.extents.height = surfaceCapabilities.currentExtent.height == 0xffffffff ? height : surfaceCapabilities.currentExtent.height;
-
-	// Set up swapchain usage
-	VkImageUsageFlags usageFlags;
-	if (surfaceCapabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT)
-	{
-		usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	}
-	else
-	{
-		usageFlags = static_cast<VkImageUsageFlags>(-1);
-	}
-
-	// Setting up the surface transform. Mostly going to be using current transform
-	VkSurfaceTransformFlagBitsKHR transformBits = surfaceCapabilities.currentTransform;
-
-	// Set up presentation mode
-	VkPresentModeKHR presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-	for (u32 i = 0; i < presentModes.Size(); ++i)
-	{
-		// Only checking against the mode with lowest latency and still has V-Sync
-		//if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
-		//{
-		//	presentMode = presentModes[i];
-		//	break;
-		//}
-		//if(presentModes[i] == VK_PRESENT_MODE_FIFO_KHR)
-		//{
-		//	presentMode = presentModes[i];
-		//}
-		if (presentModes[i] == VK_PRESENT_MODE_FIFO_RELAXED_KHR)
-		{
-			presentMode = presentModes[i];
-		}
-		else if (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR)
-		{
-			presentMode = presentModes[i];
-			break;
-		}
-	}
-
-	VkSwapchainCreateInfoKHR swapchainInfo = {};
-	swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	swapchainInfo.surface = surface.vkSurface;
-	swapchainInfo.minImageCount = swapchainImageCount;
-	swapchainInfo.imageFormat = surfaceFormat.format;
-	swapchainInfo.imageColorSpace = surfaceFormat.colorSpace;
-	swapchainInfo.imageExtent = swapchain.extents;
-	swapchainInfo.imageArrayLayers = 1;
-	swapchainInfo.imageUsage = usageFlags;
-	swapchainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	swapchainInfo.queueFamilyIndexCount = 0;
-	swapchainInfo.pQueueFamilyIndices = nullptr;
-	swapchainInfo.preTransform = transformBits;
-	swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	swapchainInfo.presentMode = presentMode;
-	swapchainInfo.clipped = VK_TRUE;
-	swapchainInfo.oldSwapchain = VK_NULL_HANDLE; // No need for this sandbox atm
-
-	result = vkCreateSwapchainKHR(device.vkDevice, &swapchainInfo, nullptr, &swapchain.vkSwapchain);
-	CHECK_VK(result);
-
-	u32 imageCount;
-	vkGetSwapchainImagesKHR(device.vkDevice, swapchain.vkSwapchain, &imageCount, nullptr);
-	DynamicArray<VkImage> swapchainImages{ imageCount };
-	vkGetSwapchainImagesKHR(device.vkDevice, swapchain.vkSwapchain, &imageCount, swapchainImages.GetData());
-
-	swapchain.imageViews.Reserve(imageCount);
-	for (VkImage image : swapchainImages)
-	{
-		constexpr u32 miplevel = 1;
-		constexpr VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-		VkImageViewCreateInfo viewCreateInfo = Vk::ImageViewInfo(image, miplevel, swapchain.format, aspectFlags);
-		viewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
-		viewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
-		viewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
-		viewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-
-		VkImageView imageView = VK_NULL_HANDLE;
-		result = vkCreateImageView(device.vkDevice, &viewCreateInfo, nullptr, &imageView);
-		CHECK_VK(result);
-
-		swapchain.imageViews.Add(imageView);
-	}
-
-	// Semaphore creation
-	VkSemaphoreCreateInfo semaphoreCreateInfo = {};
-	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-	result = vkCreateSemaphore(device.vkDevice, &semaphoreCreateInfo, nullptr, &swapchain.isImageAvailable);
-	CHECK_VK(result);
-	result = vkCreateSemaphore(device.vkDevice, &semaphoreCreateInfo, nullptr, &swapchain.hasRenderingFinished);
-	CHECK_VK(result);
-
-}
-
-void CreateRenderPass(const Device& device, const Swapchain& swapchain, RenderPass& renderPass)
-{
-	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = swapchain.format;
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-	VkAttachmentReference colorAttachmentRef{};
-	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	VkSubpassDescription subpass{};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-
-	VkSubpassDependency dependency{};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-	VkRenderPassCreateInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = 1;
-	renderPassInfo.pAttachments = &colorAttachment;
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
-
-	VkResult result = vkCreateRenderPass(device.vkDevice, &renderPassInfo, nullptr, &renderPass.vkRenderPass);
-	CHECK_VK(result);
-}
 
 void CreateBasicGraphicsPipeline(VkDevice device, VkFormat swapchainFormat, Pipeline& pipeline)
 {
@@ -932,6 +429,10 @@ void CreateBasicGraphicsPipeline(VkDevice device, VkFormat swapchainFormat, Pipe
 	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline.vkPipeline);
 	CHECK_VK(result);
 }
+struct Device
+{
+	VkDevice vkDevice;
+};
 
 void CreateSwapchainFramebuffers(const Device& device, const RenderPass& renderpass, Swapchain& swapchain)
 {
@@ -954,69 +455,6 @@ void CreateSwapchainFramebuffers(const Device& device, const RenderPass& renderp
 
 		swapchain.framebuffers.Add(framebuffer);
 	}
-}
-
-void CreateCommandBuffer(const Device& device, CommandBuffer& commandBuffer)
-{
-	VkCommandBufferAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = device.vkGraphicsCmdPool;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = 1;
-
-	VkResult result = vkAllocateCommandBuffers(device.vkDevice, &allocInfo, &commandBuffer.vkCommandBuffer);
-	CHECK_VK(result);
-}
-
-void CreateVertexBuffer(const Device& device, VertexBuffer& vertexBuffer)
-{
-	// Vertex Buffer
-	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = sizeof(vertices[0]) * vertices.Size();
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	VmaAllocationCreateInfo allocCreateInfo = {};
-	allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-
-	VkResult result = vmaCreateBuffer(device.allocator, &bufferInfo, &allocCreateInfo, &vertexBuffer.vkBuffer, &vertexBuffer.vmaAllocation, nullptr);
-	CHECK_VK(result);
-
-	// Copy to VB
-
-	// Release staging buffer and command buffer
-}
-
-void CreateIndexBuffer(const Device& device, IndexBuffer& indexBuffer)
-{
-	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = sizeof(vertices[0]) * vertices.Size();
-	bufferInfo.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	VmaAllocationCreateInfo allocCreateInfo = {};
-	allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-
-	VkResult result = vmaCreateBuffer(device.allocator, &bufferInfo, &allocCreateInfo, &indexBuffer.vkBuffer, &indexBuffer.vmaAllocation, nullptr);
-	CHECK_VK(result);
-}
-
-void CreateStagingBuffer(const Device& device, StagingBuffer& stagingBuffer, VkDeviceSize bufferSize)
-{
-	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = bufferSize;
-	bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	VmaAllocationCreateInfo allocCreateInfo = {};
-	allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
-	allocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-
-	VkResult result = vmaCreateBuffer(device.allocator, &bufferInfo, &allocCreateInfo, &stagingBuffer.vkBuffer, &stagingBuffer.vmaAllocation, nullptr);
-	CHECK_VK(result);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance,
@@ -1057,11 +495,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Apparition::SetErrorLogCallback(MOVE(debugCallback), nullptr);
 	Apparition::InitializeApparition(initParams);
 
-	// Create Device
-	NOT_USED Device device{};
-	//CreateDevice(instance, device);
-
-	Apparition::DeviceHandle deviceHandle;
+	Apparition::Device deviceHandle;
 	{
 		Apparition::DeviceCreationParams createParams{
 			.graphicsSupport = true,
@@ -1069,6 +503,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			.transferSupport = true,
 		};
 		deviceHandle = Apparition::CreateDevice(createParams);
+	}
+
+	Apparition::Queue graphicsQueue;
+	{
+		graphicsQueue = Apparition::AllocateGraphicsQueue(deviceHandle);
 	}
 
 	Apparition::BackbufferSetupParams backbufferSetupParams{
@@ -1086,15 +525,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// <<<<< Temporary behavior END
 
 	NOT_USED Swapchain swapchain = {};
-	////CreateSwapchain(device, surface, windowWidth, windowHeight, swapchain);
 
 	NOT_USED RenderPass renderPass = {};
-	//CreateRenderPass(device, swapchain, renderPass);
 
 	Pipeline pipeline = {};
 	CreateBasicGraphicsPipeline(Apparition::GetVulkanDevice(deviceHandle), (VkFormat)Apparition::GetBackbufferVkFormat(deviceHandle), pipeline);
 
-	Apparition::CommandPoolHandle cmdPoolHandle;
+	Apparition::CommandPool cmdPoolHandle;
 	{
 		Apparition::CommandPoolCreationParams createParams{
 			.queueIndex = Apparition::GetGraphicsQueueIndex(deviceHandle)
@@ -1102,7 +539,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		cmdPoolHandle = Apparition::CreateCommandPool(deviceHandle, createParams);
 	}
 
-	Apparition::CommandBufferHandle cmdBufferHandle;
+	Apparition::CommandBuffer cmdBufferHandle;
 	{
 		Apparition::CommandBufferAllocParams allocParams{
 			.isSecondary = false
@@ -1113,104 +550,130 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	CommandBuffer commandBuffer{
 		.vkCommandBuffer = Apparition::GetVulkanHandle(cmdBufferHandle)
 	};
-	//CreateCommandBuffer(device, commandBuffer);
 
-	VertexBuffer vertexBuffer = {};
-	IndexBuffer indexBuffer = {};
-	CreateVertexBuffer(device, vertexBuffer);
-	CreateIndexBuffer(device, indexBuffer);
+	Apparition::Buffer vertexBufferHandle;
+	{
+		Apparition::BufferCreationParams params{
+			.usage = Apparition::BufferUsageFlagBits::VertexBuffer | Apparition::BufferUsageFlagBits::TransferDst,
+			.size = sizeof(vertices[0]) * vertices.Size()
+		};
+		vertexBufferHandle = Apparition::CreateBuffer(deviceHandle, params);
+	}
+
+	Apparition::Buffer indexBufferHandle;
+	{
+		Apparition::BufferCreationParams params{
+			.usage = Apparition::BufferUsageFlagBits::IndexBuffer | Apparition::BufferUsageFlagBits::TransferDst,
+			.size = sizeof(vertices[0]) * vertices.Size()
+		};
+		indexBufferHandle = Apparition::CreateBuffer(deviceHandle, params);
+	}
 
 	{
 		// Copy verts
-		StagingBuffer vertStagingBuffer;
-		CreateStagingBuffer(device, vertStagingBuffer, sizeof(vertices[0]) * vertices.Size());
-
-		void* data;
-		VkResult result = vmaMapMemory(device.allocator, vertStagingBuffer.vmaAllocation, &data);
-		CHECK_VK(result);
+		Apparition::Buffer vertStagingBufferHandle;
+		{
+			Apparition::BufferCreationParams params{
+				.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+				.size = sizeof(vertices[0]) * vertices.Size(),
+				.supportsMappedMemory = true
+			};
+			vertStagingBufferHandle = Apparition::CreateBuffer(deviceHandle, params);
+		}
+		void* data = Apparition::MapBuffer(vertStagingBufferHandle);
 
 		Memcpy(data, vertices.internalData, vertices.Size() * sizeof(Vertex));
 
-		vmaUnmapMemory(device.allocator, vertStagingBuffer.vmaAllocation);
+		Apparition::UnmapBuffer(vertStagingBufferHandle);
 		data = nullptr;
 
-		CommandBuffer copyVerts;
-		CreateCommandBuffer(device, copyVerts);
+		Apparition::CommandBuffer copyVerts;
+		{
+			Apparition::CommandBufferAllocParams params{
+				.isSecondary = false
+			};
+			copyVerts = Apparition::AllocateCommandBuffer(cmdPoolHandle, params);
+		}
 
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		Apparition::BeginCommandBuffer(copyVerts, /* oneTime= */true);
 
-		vkBeginCommandBuffer(copyVerts.vkCommandBuffer, &beginInfo);
+		{
+			Apparition::BufferCopyDesc copyDesc{
+				.size = vertices.Size() * sizeof(Vertex),
+				.srcBuffer = vertStagingBufferHandle,
+				.dstBuffer = vertexBufferHandle,
+				.srcOffset = 0,
+				.dstOffset = 0
+			};
+			Apparition::CopyBuffer(copyVerts, copyDesc);
+		}
 
-		VkBufferCopy copyRegion{};
-		copyRegion.srcOffset = 0; // Optional
-		copyRegion.dstOffset = 0; // Optional
-		copyRegion.size = vertices.Size() * sizeof(Vertex);
-		vkCmdCopyBuffer(copyVerts.vkCommandBuffer, vertStagingBuffer.vkBuffer, vertexBuffer.vkBuffer, 1, &copyRegion);
+		Apparition::EndCommandBuffer(copyVerts);
 
-		vkEndCommandBuffer(copyVerts.vkCommandBuffer);
-		VkSubmitInfo submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &copyVerts.vkCommandBuffer;
+		Apparition::SubmitCommandBuffer(graphicsQueue, copyVerts);
+		Apparition::WaitForIdle(graphicsQueue);
 
-		vkQueueSubmit(device.vkGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(device.vkGraphicsQueue);
-
-		vkFreeCommandBuffers(device.vkDevice, device.vkGraphicsCmdPool, 1, &copyVerts.vkCommandBuffer);
-		vmaDestroyBuffer(device.allocator, vertStagingBuffer.vkBuffer, vertStagingBuffer.vmaAllocation);
+		Apparition::FreeCommandBuffer(copyVerts);
+		Apparition::DestroyBuffer(vertStagingBufferHandle);
 	}
 
 	{
 		// Copy indices
-		StagingBuffer idxStagingBuffer;
-		CreateStagingBuffer(device, idxStagingBuffer, sizeof(indices[0]) * indices.Size());
+		Apparition::Buffer idxStagingBufferHandle;
+		{
+			Apparition::BufferCreationParams params{
+				.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+				.size = sizeof(indices[0]) * indices.Size(),
+				.supportsMappedMemory = true
+			};
+			idxStagingBufferHandle = Apparition::CreateBuffer(deviceHandle, params);
+		}
 
-		void* data;
-		VkResult result = vmaMapMemory(device.allocator, idxStagingBuffer.vmaAllocation, &data);
-		CHECK_VK(result);
+		void* data = Apparition::MapBuffer(idxStagingBufferHandle);
 
-		Memcpy(data, indices.internalData, indices.Size() * sizeof(u16));
+		Memcpy(data, vertices.internalData, vertices.Size() * sizeof(Vertex));
 
-		vmaUnmapMemory(device.allocator, idxStagingBuffer.vmaAllocation);
+		Apparition::UnmapBuffer(idxStagingBufferHandle);
 		data = nullptr;
 
-		CommandBuffer copyIndices;
-		CreateCommandBuffer(device, copyIndices);
 
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		Apparition::CommandBuffer copyIndices;
+		{
+			Apparition::CommandBufferAllocParams params{
+				.isSecondary = false
+			};
+			copyIndices = Apparition::AllocateCommandBuffer(cmdPoolHandle, params);
+		}
 
-		vkBeginCommandBuffer(copyIndices.vkCommandBuffer, &beginInfo);
+		Apparition::BeginCommandBuffer(copyIndices, /* oneTime= */true);
 
-		VkBufferCopy copyRegion{};
-		copyRegion.srcOffset = 0; // Optional
-		copyRegion.dstOffset = 0; // Optional
-		copyRegion.size = indices.Size() * sizeof(u16);
-		vkCmdCopyBuffer(copyIndices.vkCommandBuffer, idxStagingBuffer.vkBuffer, indexBuffer.vkBuffer, 1, &copyRegion);
+		{
+			Apparition::BufferCopyDesc copyDesc{
+				.size = indices.Size() * sizeof(u16),
+				.srcBuffer = idxStagingBufferHandle,
+				.dstBuffer = indexBufferHandle,
+				.srcOffset = 0,
+				.dstOffset = 0
+			};
+			Apparition::CopyBuffer(copyIndices, copyDesc);
+		}
 
-		vkEndCommandBuffer(copyIndices.vkCommandBuffer);
-		VkSubmitInfo submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &copyIndices.vkCommandBuffer;
+		Apparition::EndCommandBuffer(copyIndices);
 
-		vkQueueSubmit(device.vkGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(device.vkGraphicsQueue);
+		Apparition::SubmitCommandBuffer(graphicsQueue, copyIndices);
+		Apparition::WaitForIdle(graphicsQueue);
 
-		vkFreeCommandBuffers(device.vkDevice, device.vkGraphicsCmdPool, 1, &copyIndices.vkCommandBuffer);
-		vmaDestroyBuffer(device.allocator, idxStagingBuffer.vkBuffer, idxStagingBuffer.vmaAllocation);
+		Apparition::FreeCommandBuffer(copyIndices);
+		Apparition::DestroyBuffer(idxStagingBufferHandle);
 	}
 
 	while (true)
 	{
-		constexpr u64 timout = UINT64_MAX;
-		constexpr VkFence imageFence = VK_NULL_HANDLE;
-		u32 imageIndex;
-		VkResult result = vkAcquireNextImageKHR(device.vkDevice, swapchain.vkSwapchain, timout, swapchain.isImageAvailable, imageFence, &imageIndex);
-		Assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR || result == VK_NOT_READY);
+		//constexpr u64 timout = UINT64_MAX;
+		//constexpr VkFence imageFence = VK_NULL_HANDLE;
+		NOT_USED u32 imageIndex = 0;
+		//VkResult result = vkAcquireNextImageKHR(device.vkDevice, swapchain.vkSwapchain, timout, swapchain.isImageAvailable, imageFence, &imageIndex);
+		//Assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR || result == VK_NOT_READY);
 
 		vkResetCommandBuffer(commandBuffer.vkCommandBuffer, 0);
 
@@ -1220,8 +683,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		beginInfo.flags = 0; // Optional
 		beginInfo.pInheritanceInfo = nullptr; // Optional
 
-		result = vkBeginCommandBuffer(commandBuffer.vkCommandBuffer, &beginInfo);
-		CHECK_VK(result);
+		//result = vkBeginCommandBuffer(commandBuffer.vkCommandBuffer, &beginInfo);
+		//CHECK_VK(result);
 
 		// Begin Render Pass
 		VkClearValue clearColor = { { {0.5f, 0.5f, 0.5f, 1.f} } };
@@ -1256,10 +719,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		vkCmdBindPipeline(commandBuffer.vkCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.vkPipeline);
 
-		const VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(commandBuffer.vkCommandBuffer, 0, 1, &vertexBuffer.vkBuffer, offsets);
+		//const VkDeviceSize offsets[] = { 0 };
+		//vkCmdBindVertexBuffers(commandBuffer.vkCommandBuffer, 0, 1, &vertexBuffer.vkBuffer, offsets);
 
-		vkCmdBindIndexBuffer(commandBuffer.vkCommandBuffer, indexBuffer.vkBuffer, 0, VK_INDEX_TYPE_UINT16);
+		//vkCmdBindIndexBuffer(commandBuffer.vkCommandBuffer, indexBuffer.vkBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 		VkViewport viewport{};
 		viewport.x = 0.0f;
@@ -1268,20 +731,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		viewport.height = static_cast<float>(swapchain.extents.height);
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
-		vkCmdSetViewport(commandBuffer.vkCommandBuffer, 0, 1, &viewport);
+		//vkCmdSetViewport(commandBuffer.vkCommandBuffer, 0, 1, &viewport);
 
 		VkRect2D scissor{};
 		scissor.offset = { 0, 0 };
 		scissor.extent = swapchain.extents;
-		vkCmdSetScissor(commandBuffer.vkCommandBuffer, 0, 1, &scissor);
+		//vkCmdSetScissor(commandBuffer.vkCommandBuffer, 0, 1, &scissor);
 
-		vkCmdDrawIndexed(commandBuffer.vkCommandBuffer, (u32)indices.Size(), 1, 0, 0, 0);
+		//vkCmdDrawIndexed(commandBuffer.vkCommandBuffer, (u32)indices.Size(), 1, 0, 0, 0);
 
 		vkCmdEndRenderingKHR(commandBuffer.vkCommandBuffer);
-		vkCmdEndRenderPass(commandBuffer.vkCommandBuffer);
+		//vkCmdEndRenderPass(commandBuffer.vkCommandBuffer);
 
-		result = vkEndCommandBuffer(commandBuffer.vkCommandBuffer);
-		CHECK_VK(result);
+		//result = vkEndCommandBuffer(commandBuffer.vkCommandBuffer);
+		//CHECK_VK(result);
 
 		// Submit Command Buffer
 		VkSubmitInfo submitInfo{};
@@ -1298,7 +761,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		submitInfo.pSignalSemaphores = signalSemaphores;
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &commandBuffer.vkCommandBuffer;
-		result = vkQueueSubmit(device.vkGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		//result = vkQueueSubmit(device.vkGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -1309,21 +772,21 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		presentInfo.pImageIndices = &imageIndex;
 		presentInfo.pResults = nullptr;
 
-		result = vkQueuePresentKHR(device.vkGraphicsQueue, &presentInfo);
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-		{
-			//Recreate()
-		}
-		else if (result != VK_SUCCESS)
-		{
-			// TODO - Log
-			Assert(false);
-		}
+		//result = vkQueuePresentKHR(device.vkGraphicsQueue, &presentInfo);
+		//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+		//{
+		//	//Recreate()
+		//}
+		//else if (result != VK_SUCCESS)
+		//{
+		//	// TODO - Log
+		//	Assert(false);
+		//}
 
-		vkQueueWaitIdle(device.vkGraphicsQueue);
+		//vkQueueWaitIdle(device.vkGraphicsQueue);
 	}
 
-	vkDeviceWaitIdle(device.vkDevice);
+	//vkDeviceWaitIdle(device.vkDevice);
 
 	Apparition::TeardownBackbuffer(deviceHandle);
 	Apparition::DestroyDevice(deviceHandle);

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "BasicTypes/Intrinsics.hpp"
 #include "Apparition/ApparitionAPI.hpp"
 #include "Apparition/Device.h"
-#include "Apparition/ImageFormat.h"
+#include "Apparition/ImageDescription.h"
+#include "BasicTypes/Intrinsics.hpp"
 
 namespace Apparition
 {
@@ -14,12 +14,12 @@ struct BackbufferSetupParams
 };
 
 // NOTE: Will only set up rendering context once
-APPARITION_API void SetupBackbuffer(DeviceHandle device, const BackbufferSetupParams& params);
-APPARITION_API void TeardownBackbuffer(DeviceHandle device);
+APPARITION_API void SetupBackbuffer(Device device, const BackbufferSetupParams& params);
+APPARITION_API void TeardownBackbuffer(Device device);
 
 // Query backbuffer data
-APPARITION_API ImageFormat::Type GetBackbufferFormat(DeviceHandle device);
+APPARITION_API ImageFormat::Type GetBackbufferFormat(Device device);
 
 // TEMPORARY
-APPARITION_API u32 GetBackbufferVkFormat(DeviceHandle device);
+APPARITION_API u32 GetBackbufferVkFormat(Device device);
 }

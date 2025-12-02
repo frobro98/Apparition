@@ -39,7 +39,7 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\ImageFormat.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\ImageDescription.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.h">
@@ -53,6 +53,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.h">
       <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Buffer.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\BufferDescription.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Pipeline.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Queue.h">
+      <Filter>Source\Apparition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +103,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp">
       <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Buffer.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Resources.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Queue.cpp">
+      <Filter>Source\Apparition</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

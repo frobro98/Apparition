@@ -6,7 +6,7 @@
 #include "VulkanInfos.h"
 
 
-void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Apparition::BackbufferSetupParams& params)
+void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition::BackbufferSetupParams& params)
 {
     using namespace Apparition;
 
@@ -201,7 +201,7 @@ void DeviceManager::SetupBackbuffer(Apparition::DeviceHandle device, const Appar
 	// TODO - Log that backbuffer data has been created
 }
 
-void DeviceManager::TeardownBackbuffer(Apparition::DeviceHandle device)
+void DeviceManager::TeardownBackbuffer(Apparition::Device device)
 {
 	using namespace Apparition;
 

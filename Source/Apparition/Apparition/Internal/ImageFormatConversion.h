@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Apparition/ImageFormat.h"
+#include "Apparition/ImageDescription.h"
 #include "VulkanDefinitions.h"
 
 // Sets up quick mapping between the formats themselves instead of doing a switch

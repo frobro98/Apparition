@@ -174,10 +174,14 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Buffer.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\BufferDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBuffer.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\ImageFormat.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\ImageDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h" />
@@ -186,18 +190,24 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Pipeline.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Queue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Apparition\Apparition\ApparitionCore.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Buffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Resources.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Backbuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Queue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
