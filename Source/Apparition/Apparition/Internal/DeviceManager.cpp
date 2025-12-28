@@ -3,6 +3,7 @@
 
 #include "ApparitionInternals.h"
 #include "HandleDefinitions.h"
+#include "ImageFormatConversion.h"
 #include "Utilities/Array.hpp"
 #include "VulkanInfos.h"
 
@@ -77,6 +78,8 @@ DeviceManager::~DeviceManager()
 
 void DeviceManager::Initialize(const Apparition::InitializeParams& params)
 {
+	InitializeFormatMapping();
+
 	u32 instanceVersion;
 	vkEnumerateInstanceVersion(&instanceVersion);
 //	instanceVersion = instanceVersion & 0xFFFFF000;
@@ -297,10 +300,10 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 	const tchar* deviceExtensions[] = {
 		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME, // Eliminates the need for render pass begin/end
 		VK_KHR_MAINTENANCE_4_EXTENSION_NAME,
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-		VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME,
-		VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME,
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME, // swapchain support
 		VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME,
+		VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME, // Special semaphores that can replace VkSemaphore and VkFence
+		VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME,
 		VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME,
 		VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME
 	};
@@ -346,9 +349,14 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 	Vk::ZeroInfoStruct(dynamicRenderingFeature, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR);
 	dynamicRenderingFeature.dynamicRendering = VK_TRUE;
 
+	VkPhysicalDeviceSynchronization2Features synchronization2Feature;
+	Vk::ZeroInfoStruct(synchronization2Feature, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES);
+	synchronization2Feature.synchronization2 = VK_TRUE;
+	synchronization2Feature.pNext = &dynamicRenderingFeature;
+
 	VkPhysicalDeviceFeatures2 supportedGpuFeatures;
 	supportedGpuFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-	supportedGpuFeatures.pNext = &dynamicRenderingFeature;
+	supportedGpuFeatures.pNext = &synchronization2Feature;
 	vkGetPhysicalDeviceFeatures2(internalDevice.physicalDevice, &supportedGpuFeatures);
 
 	//VkPhysicalDeviceFeatures enabledDeviceFeatures;
@@ -387,41 +395,6 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 		.handle = handleValue
 	};
 	InitializeDeviceHandlePools(internalDevice);
-
-	/*
-	// Device's command pool
-	VkCommandPoolCreateInfo cmdPoolInfo;
-	Vk::ZeroInfoStruct(cmdPoolInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
-
-	if (internalDevice.graphicsFamilyIndex != invalidFamilyIndex)
-	{
-		cmdPoolInfo.queueFamilyIndex = internalDevice.graphicsFamilyIndex;
-		// TODO - Find out if there are any flags for creating command pools
-		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.graphicsCmdPool);
-		CHECK_VK(result);
-	}
-
-	if (internalDevice.transferFamilyIndex != invalidFamilyIndex)
-	{
-		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolInfo.queueFamilyIndex = internalDevice.transferFamilyIndex;
-		// TODO - Find out if there are any flags for creating command pools
-		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.transferCmdPool);
-		CHECK_VK(result);
-	}
-
-	if (internalDevice.computeFamilyIndex != invalidFamilyIndex)
-	{
-		cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolInfo.queueFamilyIndex = internalDevice.computeFamilyIndex;
-		// TODO - Find out if there are any flags for creating command pools
-		cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-		result = vkCreateCommandPool(internalDevice.device, &cmdPoolInfo, nullptr, &internalDevice.computeCmdPool);
-		CHECK_VK(result);
-	}
-	//*/
 
 	const VmaAllocatorCreateInfo allocatorCreateInfo{
 		//.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
@@ -517,6 +490,23 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 		deviceInternal.bufferResourceHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.bufferResources.Resize(initialPoolSize);
+	}
+
+	constexpr u32 extraSwapchainImages = 3;
+	{
+		HandlePool& imageResourceHandlePool = deviceInternal.imageResourceHandlePool;
+		Assert(imageResourceHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.imageResourceHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
+
+		deviceInternal.imageResources.Resize(initialPoolSize + extraSwapchainImages);
+	}
+
+	{
+		HandlePool& imageViewResourceHandlePool = deviceInternal.imageViewResourceHandlePool;
+		Assert(imageViewResourceHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.imageViewResourceHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
+
+		deviceInternal.imageViewResources.Resize(initialPoolSize + extraSwapchainImages);
 	}
 }
 
@@ -627,7 +617,7 @@ HandlePool& DeviceManager::GetQueueHandlePool(DeviceInternal& deviceInternal, u3
 	}
 }
 
-const DynamicArray<QueueInternal>& DeviceManager::GetQueueArray(DeviceInternal& deviceInternal, u32 queueFamilyIndex)
+const DynamicArray<QueueInternal>& DeviceManager::GetQueueArray(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const
 {
 	if (queueFamilyIndex == deviceInternal.graphicsFamilyIndex)
 	{
@@ -693,6 +683,7 @@ CommandPool DeviceManager::CreateCommandPool(Device deviceHandle, const CommandP
 	VkCommandPoolCreateInfo createInfo;
 	Vk::ZeroInfoStruct(createInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
 	createInfo.queueFamilyIndex = params.queueIndex;
+	createInfo.flags = params.canResetCommandBuffers ? VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT : 0;
 	VkCommandPool cmdPool;
 	VkResult result = vkCreateCommandPool(deviceInternal.device, &createInfo, nullptr, &cmdPool);
 	CHECK_VK(result);
@@ -787,6 +778,16 @@ void DeviceManager::FreeCommandBuffer(CommandBuffer commandBufferHandle)
 
 	// Let the handle pool know this handle is freed
 	PushFreedHandleIndex(deviceInternal.commandBufferHandlePool, cmdBufferIndex);
+}
+
+void DeviceManager::ResetCommandBuffer(CommandBuffer commandBuffer)
+{
+	u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
+	DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
+	u32 cmdBufferIndex = GetHandleIndex(commandBuffer);
+	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex - 1];
+	VkResult result = vkResetCommandBuffer(commandBufferInternal.commandBuffer, 0);
+	CHECK_VK(result);
 }
 
 VkCommandBuffer DeviceManager::GetCommandBufferHandle(CommandBuffer cbHandle)

@@ -18,6 +18,7 @@ struct CommandPool
 struct CommandPoolCreationParams
 {
     u32 queueIndex = 0;
+    bool canResetCommandBuffers = false;
 };
 
 NODISCARD APPARITION_API CommandPool CreateCommandPool(Device deviceHandle, const CommandPoolCreationParams& params);
@@ -36,6 +37,7 @@ struct CommandBufferAllocParams
 
 NODISCARD APPARITION_API CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params);
 APPARITION_API void FreeCommandBuffer(CommandBuffer commandBufferHandle);
+APPARITION_API void ResetCommandBuffer(CommandBuffer commandBuffer);
 
 // TEMPORARILY HERE
 APPARITION_API VkCommandBuffer GetVulkanHandle(CommandBuffer commandBufferHandle);

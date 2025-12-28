@@ -2,6 +2,7 @@
 
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/CommandBuffer.h"
+#include "Apparition/ImageDescription.h"
 #include "Containers/DynamicArray.hpp"
 #include "HandlePool.h"
 #include "VulkanDefinitions.h"
@@ -22,13 +23,15 @@ extern ApparitionInternals apparition;
 // TODO - Move these to separate header
 struct Backbuffer
 {
-	DynamicArray<VkImageView> views;
+	DynamicArray<u32> views;
+	DynamicArray<u32> images;
 	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
 	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
 	VkExtent2D extents = {};
-	VkFormat format = VK_FORMAT_UNDEFINED;
+	Apparition::ImageFormat::Type format = Apparition::ImageFormat::Invalid;
 	VkSemaphore isImageAvailableSem = VK_NULL_HANDLE;
 	VkSemaphore hasRenderingFinishedSem = VK_NULL_HANDLE;
+	u32 currentImageIndex = 0;
 };
 
 struct QueueInternal
@@ -58,6 +61,24 @@ struct BufferResourceInternal
 	bool isMappable = false;
 };
 
+struct ImageResourceInternal
+{
+	VkImage image = VK_NULL_HANDLE;
+	VmaAllocation allocation = VK_NULL_HANDLE;
+
+	// Image formatting and access
+	Apparition::ImageFormat::Type format;
+	Apparition::ImageAccess::Type access;
+};
+
+struct ImageViewResourceInternal
+{
+	VkImageView imageView = VK_NULL_HANDLE;
+	u32 imageIndex = UINT32_MAX;
+
+	// View information
+};
+
 struct DeviceInternal
 {
 	Backbuffer backbuffer{};
@@ -77,9 +98,13 @@ struct DeviceInternal
 	HandlePool commandPoolsHandlePool;
 	HandlePool commandBufferHandlePool;
 	HandlePool bufferResourceHandlePool;
+	HandlePool imageResourceHandlePool;
+	HandlePool imageViewResourceHandlePool;
 	DynamicArray<CommandPoolInternal> commandPools;
 	DynamicArray<CommandBufferInternal> commandBuffers;
 	DynamicArray<BufferResourceInternal> bufferResources;
+	DynamicArray<ImageResourceInternal> imageResources;
+	DynamicArray<ImageViewResourceInternal> imageViewResources;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 	u32 graphicsFamilyIndex = 0;
 	u32 transferFamilyIndex = 0;

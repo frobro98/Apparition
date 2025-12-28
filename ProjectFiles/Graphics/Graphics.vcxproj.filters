@@ -4,9 +4,6 @@
     <Filter Include="Source">
       <UniqueIdentifier>{90896e44-2786-41ab-bb9d-7e6589637206}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Vulkan">
-      <UniqueIdentifier>{b770e8f9-af5c-4da8-a2af-9e03b05e0a27}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Apparition">
       <UniqueIdentifier>{a09978c7-02ab-445a-8f8a-5885f4eb0bf4}</UniqueIdentifier>
     </Filter>
@@ -71,6 +68,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Queue.h">
       <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Synchronization.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\RenderingDescription.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\RenderOperationsConversion.h">
+      <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

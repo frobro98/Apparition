@@ -37,6 +37,13 @@ void FreeCommandBuffer(CommandBuffer commandBufferHandle)
 	deviceManager.FreeCommandBuffer(commandBufferHandle);
 }
 
+void ResetCommandBuffer(CommandBuffer commandBuffer)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	deviceManager.ResetCommandBuffer(commandBuffer);
+}
+
 VkCommandBuffer GetVulkanHandle(CommandBuffer commandBufferHandle)
 {
 	Assert(apparition.deviceManager);

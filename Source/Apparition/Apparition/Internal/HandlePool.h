@@ -19,6 +19,7 @@ struct HandlePool
 };
 
 constexpr inline u32 InvalidHandleIndex = 0;
+constexpr inline u16 BackBufferHandleDecorator = 0x3F; // Masks out the entire "pool" section of the handle
 
 HandlePool CreateHandlePool(u32 initialSize);
 void PushFreedHandleIndex(HandlePool& handlePool, u32 freedHandleIndex);

@@ -12,7 +12,6 @@
 
 using namespace Apparition;
 
-class CommandBufferManager;
 struct DeviceInternal;
 struct HandlePool;
 struct QueueInternal;
@@ -51,7 +50,7 @@ public:
 	void FreeQueue(Queue queue);
 
 	HandlePool& GetQueueHandlePool(DeviceInternal& deviceInternal, u32 queueFamilyIndex);
-	const DynamicArray<QueueInternal>& GetQueueArray(DeviceInternal& deviceInternal, u32 queueFamilyIndex);
+	const DynamicArray<QueueInternal>& GetQueueArray(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const;
 #pragma endregion
 
 #pragma region Debug Callback
@@ -73,6 +72,12 @@ public:
 #pragma region Backbuffer
 	void SetupBackbuffer(Device device, const BackbufferSetupParams& params);
 	void TeardownBackbuffer(Device device);
+
+	BackbufferStatus AcquireNextBackbufferImage(Device device);
+	ImageView GetBackbufferImageView(Device device);
+	Image GetAcquiredBackbufferImage(Device device);
+
+public:
 #pragma endregion
 
 #pragma region Command Buffer
@@ -81,6 +86,7 @@ public:
 
 	CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params);
 	void FreeCommandBuffer(CommandBuffer commandBufferHandle);
+	void ResetCommandBuffer(CommandBuffer commandBuffer);
 
 	// TEMP
 	VkCommandBuffer GetCommandBufferHandle(CommandBuffer cbHandle);
@@ -90,6 +96,12 @@ public:
 	Buffer CreateBuffer(Device device, const BufferCreationParams& params);
 	void DestroyBuffer(Buffer buffer);
 
+	Image CreateImage(Device device, const ImageCreationParams& params);
+	void DestroyImage(Image image);
+
+	ImageView CreateImageView(Device device, const ImageViewCreationParams& params);
+	void DestroyImageView(ImageView imageView);
+
 	//RetVal GetBufferDescription(Buffer buffer) const;
 #pragma endregion
 private:
@@ -98,8 +110,6 @@ private:
 	
 	VkInstance instance = VK_NULL_HANDLE;
 	VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
-
-	CommandBufferManager* cmdBufferManager = nullptr;
 
 	static inline u64 NextDeviceHandle = 1;
 };

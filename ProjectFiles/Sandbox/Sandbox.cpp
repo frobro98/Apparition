@@ -44,41 +44,6 @@ WALL_WRN_POP
 
 DEFINE_LOG_CHANNEL(VkValidation);
 
-// Required due to not using 1.3 where VK_KHR_dynamic_rendering is part of core
-static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_ = nullptr;
-#define vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_
-
-static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR_ = nullptr;
-#define vkCmdEndRenderingKHR vkCmdEndRenderingKHR_
-
-static void SetupDynamicRenderingFunctions(VkDevice device)
-{
-	vkCmdBeginRenderingKHR_ = (PFN_vkCmdBeginRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdBeginRenderingKHR");
-	vkCmdEndRenderingKHR_ = (PFN_vkCmdEndRenderingKHR)vkGetDeviceProcAddr(device, "vkCmdEndRenderingKHR");
-}
-
-namespace Vk
-{
-VkImageViewCreateInfo ImageViewInfo(VkImage image, u32 mipLevels, VkFormat format, VkImageAspectFlags aspectFlags)
-{
-	VkImageViewCreateInfo imageViewInfo = {};
-	imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-	imageViewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-	imageViewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-	imageViewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-	imageViewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-	imageViewInfo.image = image;
-	imageViewInfo.format = format;
-	imageViewInfo.subresourceRange.aspectMask = aspectFlags;
-	imageViewInfo.subresourceRange.baseArrayLayer = 0;
-	imageViewInfo.subresourceRange.layerCount = 1;
-	imageViewInfo.subresourceRange.baseMipLevel = 0;
-	imageViewInfo.subresourceRange.levelCount = mipLevels;
-	return imageViewInfo;
-}
-}
-
 #define CHECK_VK(expression) Assert(expression == VK_SUCCESS)
 
 //////////////////////////////////////////////////////
@@ -149,49 +114,12 @@ static VkBool32 VulkanDebugMessengerCallback(
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-struct Image
-{
-	VkImage vkImage = VK_NULL_HANDLE;
-	u32 width = 0;
-	u32 height = 0;
-	VkFormat format = VK_FORMAT_UNDEFINED;
-	VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
-	VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM;
-};
-
-struct ImageView
-{
-	VkImageView vkImageView = VK_NULL_HANDLE;
-};
-
-struct RenderPass
-{
-	VkRenderPass vkRenderPass = VK_NULL_HANDLE;
-};
-
 // Can be reused based on specific parts of the create info
 struct Pipeline
 {
 	VkPipeline vkPipeline = VK_NULL_HANDLE;
 	// Independent of pipeline since it just describes the layout
 	VkPipelineLayout vkPipelineLayout = VK_NULL_HANDLE;
-};
-
-struct Swapchain
-{
-	DynamicArray<VkFramebuffer> framebuffers;
-	DynamicArray<VkImageView> imageViews;
-
-	VkSwapchainKHR vkSwapchain = VK_NULL_HANDLE;
-	VkExtent2D extents = {};
-	VkFormat format = VK_FORMAT_UNDEFINED;
-	VkSemaphore isImageAvailable = VK_NULL_HANDLE;
-	VkSemaphore hasRenderingFinished = VK_NULL_HANDLE;
-};
-
-struct CommandBuffer
-{
-	VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
 };
 
 struct Vertex
@@ -397,8 +325,11 @@ void CreateBasicGraphicsPipeline(VkDevice device, VkFormat swapchainFormat, Pipe
 	// Dynamic Rendering Setup
 	VkPipelineRenderingCreateInfoKHR pipelineRenderingCreateInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR,
+		.viewMask = 0,
 		.colorAttachmentCount = 1,
-		.pColorAttachmentFormats = &swapchainFormat
+		.pColorAttachmentFormats = &swapchainFormat,
+		.depthAttachmentFormat = VK_FORMAT_UNDEFINED,
+		.stencilAttachmentFormat = VK_FORMAT_UNDEFINED
 	};
 
 	// Graphics Pipeline
@@ -429,33 +360,6 @@ void CreateBasicGraphicsPipeline(VkDevice device, VkFormat swapchainFormat, Pipe
 	result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline.vkPipeline);
 	CHECK_VK(result);
 }
-struct Device
-{
-	VkDevice vkDevice;
-};
-
-void CreateSwapchainFramebuffers(const Device& device, const RenderPass& renderpass, Swapchain& swapchain)
-{
-	for (VkImageView imageView : swapchain.imageViews)
-	{
-		VkImageView attachments[] = { imageView };
-
-		VkFramebufferCreateInfo framebufferCreateInfo = {};
-		framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferCreateInfo.attachmentCount = (u32)ArraySize(attachments);
-		framebufferCreateInfo.pAttachments = attachments;
-		framebufferCreateInfo.renderPass = renderpass.vkRenderPass;
-		framebufferCreateInfo.width = swapchain.extents.width;
-		framebufferCreateInfo.height = swapchain.extents.height;
-		framebufferCreateInfo.layers = 1;
-		
-		VkFramebuffer framebuffer = VK_NULL_HANDLE;
-		VkResult result = vkCreateFramebuffer(device.vkDevice, &framebufferCreateInfo, nullptr, &framebuffer);
-		CHECK_VK(result);
-
-		swapchain.framebuffers.Add(framebuffer);
-	}
-}
 
 int WINAPI WinMain(HINSTANCE hInstance,
 	HINSTANCE /*hPrevInstance*/,
@@ -478,10 +382,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	const u32 windowHeight = 720;
 	window = CreateSandboxWindow(hInstance, 0, 0, windowWidth, windowHeight);
 
-	// Create Vulkan Instance
-	NOT_USED VkInstance instance = VK_NULL_HANDLE;
-	//VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;
-	//CreateInstance(instance, debugMessengerHandle);
 
 	Apparition::InitializeParams initParams{
 		.applicationName = "Apparition Sandbox",
@@ -517,24 +417,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	};
 	Apparition::SetupBackbuffer(deviceHandle, backbufferSetupParams);
 
-	// >>>>> Temporary behavior BEGIN
-	{
-		VkDevice vkDevice = Apparition::GetVulkanDevice(deviceHandle);
-		SetupDynamicRenderingFunctions(vkDevice);
-	}
-	// <<<<< Temporary behavior END
-
-	NOT_USED Swapchain swapchain = {};
-
-	NOT_USED RenderPass renderPass = {};
-
 	Pipeline pipeline = {};
 	CreateBasicGraphicsPipeline(Apparition::GetVulkanDevice(deviceHandle), (VkFormat)Apparition::GetBackbufferVkFormat(deviceHandle), pipeline);
 
+	// Command Buffer Setup
 	Apparition::CommandPool cmdPoolHandle;
 	{
 		Apparition::CommandPoolCreationParams createParams{
-			.queueIndex = Apparition::GetGraphicsQueueIndex(deviceHandle)
+			.queueIndex = Apparition::GetGraphicsQueueIndex(deviceHandle),
+			.canResetCommandBuffers = true
+			
 		};
 		cmdPoolHandle = Apparition::CreateCommandPool(deviceHandle, createParams);
 	}
@@ -547,10 +439,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		cmdBufferHandle = Apparition::AllocateCommandBuffer(cmdPoolHandle, allocParams);
 	}
 
-	CommandBuffer commandBuffer{
-		.vkCommandBuffer = Apparition::GetVulkanHandle(cmdBufferHandle)
-	};
-
+	// Vertex and Index Buffer Setup
 	Apparition::Buffer vertexBufferHandle;
 	{
 		Apparition::BufferCreationParams params{
@@ -631,7 +520,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		void* data = Apparition::MapBuffer(idxStagingBufferHandle);
 
-		Memcpy(data, vertices.internalData, vertices.Size() * sizeof(Vertex));
+		Memcpy(data, indices.internalData, indices.Size() * sizeof(indices[0]));
 
 		Apparition::UnmapBuffer(idxStagingBufferHandle);
 		data = nullptr;
@@ -667,123 +556,97 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		Apparition::DestroyBuffer(idxStagingBufferHandle);
 	}
 
+	VkCommandBuffer vkCmdBuffer = Apparition::GetVulkanHandle(cmdBufferHandle);
+
 	while (true)
 	{
-		//constexpr u64 timout = UINT64_MAX;
-		//constexpr VkFence imageFence = VK_NULL_HANDLE;
-		NOT_USED u32 imageIndex = 0;
-		//VkResult result = vkAcquireNextImageKHR(device.vkDevice, swapchain.vkSwapchain, timout, swapchain.isImageAvailable, imageFence, &imageIndex);
-		//Assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR || result == VK_NOT_READY);
+		Apparition::BackbufferStatus preparationStatus = Apparition::StartRenderFrame(deviceHandle);
+		Assert(preparationStatus != Apparition::BackbufferStatus::Unavailable);
+		Apparition::ImageView backbufferView = Apparition::GetBackBufferImageView(deviceHandle);
 
-		vkResetCommandBuffer(commandBuffer.vkCommandBuffer, 0);
+
+		Apparition::ResetCommandBuffer(cmdBufferHandle);
 
 		// Begin Command Buffer
-		VkCommandBufferBeginInfo beginInfo = {};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = 0; // Optional
-		beginInfo.pInheritanceInfo = nullptr; // Optional
+		Apparition::BeginCommandBuffer(cmdBufferHandle);
 
-		//result = vkBeginCommandBuffer(commandBuffer.vkCommandBuffer, &beginInfo);
-		//CHECK_VK(result);
+		{
+			Apparition::ImageMemoryBarrierDesc barrierDesc = {
+				.image = Apparition::GetAcquiredBackbufferImage(deviceHandle),
+				.access = Apparition::ImageAccess::ColorWrite,
+				.aspect = Apparition::ImageViewAspect::Color
+			};
 
-		// Begin Render Pass
-		VkClearValue clearColor = { { {0.5f, 0.5f, 0.5f, 1.f} } };
-		//VkRenderPassBeginInfo renderPassInfo = {};
-		//renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		//renderPassInfo.renderPass = renderPass.vkRenderPass;
-		//renderPassInfo.framebuffer = swapchain.framebuffers[imageIndex];
-		//renderPassInfo.renderArea.offset = { 0, 0 };
-		//renderPassInfo.renderArea.extent = swapchain.extents;
-		//renderPassInfo.clearValueCount = 1;
-		//renderPassInfo.pClearValues = &clearColor;
-		//vkCmdBeginRenderPass(commandBuffer.vkCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			Apparition::ImageMemoryBarrier(cmdBufferHandle, barrierDesc);
+		}
 
-		VkRenderingAttachmentInfoKHR colorAttachInfo = {
-			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
-			.imageView = swapchain.imageViews[imageIndex],
-			.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-			.clearValue = clearColor
+		Apparition::RenderAttachment colorAttachment = {
+			.imageView = backbufferView,
+			.loadStoreOps = Apparition::RenderAttachmentOperations::Clear_Store,
+			.clearValue = {{.5f, .5f, .5f, 1.f}}
 		};
 
-		VkRenderingInfoKHR renderingInfo = {};
-		renderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-		renderingInfo.renderArea.extent = swapchain.extents;
-		renderingInfo.renderArea.offset = { 0, 0 };
-		renderingInfo.layerCount = 1;
-		renderingInfo.colorAttachmentCount = 1;
-		renderingInfo.pColorAttachments = &colorAttachInfo;
-		//renderingInfo.pDepthAttachment;
-		vkCmdBeginRenderingKHR(commandBuffer.vkCommandBuffer, &renderingInfo);
+		const u32 backbufferWidth = Apparition::GetBackbufferWidth(deviceHandle);
+		const u32 backbufferHeight = Apparition::GetBackbufferHeight(deviceHandle);
 
-		vkCmdBindPipeline(commandBuffer.vkCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.vkPipeline);
+		Apparition::RenderSetupParams renderSetup = {};
+		renderSetup.colorAttachments.Add(colorAttachment);
+		renderSetup.renderWidth = backbufferWidth;
+		renderSetup.renderHeight = backbufferHeight;
+		Apparition::BeginRendering(cmdBufferHandle, renderSetup);
 
-		//const VkDeviceSize offsets[] = { 0 };
-		//vkCmdBindVertexBuffers(commandBuffer.vkCommandBuffer, 0, 1, &vertexBuffer.vkBuffer, offsets);
+		vkCmdBindPipeline(vkCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.vkPipeline);
 
-		//vkCmdBindIndexBuffer(commandBuffer.vkCommandBuffer, indexBuffer.vkBuffer, 0, VK_INDEX_TYPE_UINT16);
+		{
+			Apparition::BindVertexBufferDesc desc = {
+				.vertexBuffer = vertexBufferHandle
+			};
+			Apparition::BindVertexBuffers(cmdBufferHandle, desc);
+		}
 
-		VkViewport viewport{};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = static_cast<float>(swapchain.extents.width);
-		viewport.height = static_cast<float>(swapchain.extents.height);
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
-		//vkCmdSetViewport(commandBuffer.vkCommandBuffer, 0, 1, &viewport);
+		{
+			Apparition::BindIndexBufferDesc desc = {
+				.indexBuffer = indexBufferHandle
+			};
+			Apparition::BindIndexBuffer(cmdBufferHandle, desc);
+		}
 
-		VkRect2D scissor{};
-		scissor.offset = { 0, 0 };
-		scissor.extent = swapchain.extents;
-		//vkCmdSetScissor(commandBuffer.vkCommandBuffer, 0, 1, &scissor);
+		Apparition::ViewportDesc viewportDesc = {
+			.x = 0.f,
+			.y = 0.f,
+			.width = static_cast<float>(backbufferWidth),
+			.height = static_cast<float>(backbufferHeight)
+		};
+		Apparition::ScissorDesc scissorDesc = {
+			.offsetX = 0,
+			.offsetY = 0,
+			.extentX = backbufferWidth,
+			.extentY = backbufferHeight
+		};
+		Apparition::SetViewportAndScissor(cmdBufferHandle, viewportDesc, scissorDesc);
 
-		//vkCmdDrawIndexed(commandBuffer.vkCommandBuffer, (u32)indices.Size(), 1, 0, 0, 0);
+		// Draw
+		Apparition::DrawIndexed(cmdBufferHandle, (u32)indices.Size());
 
-		vkCmdEndRenderingKHR(commandBuffer.vkCommandBuffer);
-		//vkCmdEndRenderPass(commandBuffer.vkCommandBuffer);
+		// End rendering so we can transition backbuffer
+		Apparition::EndRendering(cmdBufferHandle);
 
-		//result = vkEndCommandBuffer(commandBuffer.vkCommandBuffer);
-		//CHECK_VK(result);
+		// Prep image for present
+		{
+			Apparition::ImageMemoryBarrierDesc barrierDesc = {
+				.image = Apparition::GetAcquiredBackbufferImage(deviceHandle),
+				.access = Apparition::ImageAccess::Present,
+				.aspect = Apparition::ImageViewAspect::Color
+			};
 
-		// Submit Command Buffer
-		VkSubmitInfo submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			Apparition::ImageMemoryBarrier(cmdBufferHandle, barrierDesc);
+		}
 
-		VkSemaphore waitSemaphores[] = { swapchain.isImageAvailable };
-		VkSemaphore signalSemaphores[] = { swapchain.hasRenderingFinished };
-		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+		Apparition::EndCommandBuffer(cmdBufferHandle);
 
-		submitInfo.waitSemaphoreCount = 1;
-		submitInfo.pWaitSemaphores = waitSemaphores;
-		submitInfo.pWaitDstStageMask = waitStages;
-		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = signalSemaphores;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffer.vkCommandBuffer;
-		//result = vkQueueSubmit(device.vkGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-
-		VkPresentInfoKHR presentInfo = {};
-		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &swapchain.hasRenderingFinished;
-		presentInfo.swapchainCount = 1;
-		presentInfo.pSwapchains = &swapchain.vkSwapchain;
-		presentInfo.pImageIndices = &imageIndex;
-		presentInfo.pResults = nullptr;
-
-		//result = vkQueuePresentKHR(device.vkGraphicsQueue, &presentInfo);
-		//if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-		//{
-		//	//Recreate()
-		//}
-		//else if (result != VK_SUCCESS)
-		//{
-		//	// TODO - Log
-		//	Assert(false);
-		//}
-
-		//vkQueueWaitIdle(device.vkGraphicsQueue);
+		// End Render Frame
+		// Submit Command Buffer and Present
+		Apparition::EndRenderFrame(cmdBufferHandle, graphicsQueue);
 	}
 
 	//vkDeviceWaitIdle(device.vkDevice);

@@ -3,7 +3,9 @@
 
 #include "Internal/ApparitionInternals.h"
 #include "Internal/DeviceManager.h"
+#include "Internal/HandleDefinitions.h"
 #include "Internal/ImageFormatConversion.h"
+#include "Internal/VulkanInfos.h"
 
 namespace Apparition
 {
@@ -20,18 +22,114 @@ void TeardownBackbuffer(Device device)
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.TeardownBackbuffer(device);
 }
+
+BackbufferStatus StartRenderFrame(Device device)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    return deviceManager.AcquireNextBackbufferImage(device);
+}
+
+void EndRenderFrame(CommandBuffer commandBuffer, Queue presentQueue)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
+    const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+    const u32 handleIndex = GetHandleIndex(commandBuffer);
+    const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+    Assert(!cbInternal.hasBegun);
+
+    const u32 queueIndex = GetHandleIndex(presentQueue);
+    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(presentQueue));
+    QueueInternal queueInternal = queueArray[queueIndex - 1];
+
+    const Backbuffer& backbuffer = deviceInternal.backbuffer;
+
+    VkSemaphore waitSemaphores[] = { backbuffer.isImageAvailableSem };
+    VkSemaphore signalSemaphores[] = { backbuffer.hasRenderingFinishedSem };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+    VkSubmitInfo submitInfo;
+    Vk::ZeroInfoStruct(submitInfo, VK_STRUCTURE_TYPE_SUBMIT_INFO);
+
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &cbInternal.commandBuffer;
+    VkResult result = vkQueueSubmit(queueInternal.queue, 1, &submitInfo, VK_NULL_HANDLE);
+    CHECK_VK(result);
+
+    // TODO: Separate Present from Submission of RenderPass CommandBuffer
+    VkPresentInfoKHR presentInfo;
+    Vk::ZeroInfoStruct(presentInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = &backbuffer.hasRenderingFinishedSem;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &backbuffer.swapchainHandle;
+    presentInfo.pImageIndices = &backbuffer.currentImageIndex;
+    presentInfo.pResults = nullptr;
+
+    result = vkQueuePresentKHR(queueInternal.queue, &presentInfo);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+    {
+    	//Recreate()
+    }
+    else if (result != VK_SUCCESS)
+    {
+    	// TODO - Log
+    	Assert(false);
+    }
+
+    // TODO: DO NOT DO THIS!
+    result = vkQueueWaitIdle(queueInternal.queue);
+    CHECK_VK(result);
+}
+
+ImageView GetBackBufferImageView(Device device)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    return deviceManager.GetBackbufferImageView(device);
+}
+
+Image GetAcquiredBackbufferImage(Device device)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    return deviceManager.GetAcquiredBackbufferImage(device);
+}
+
+u32 GetBackbufferWidth(Device device)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
+    return deviceInternals.backbuffer.extents.width;
+}
+u32 GetBackbufferHeight(Device device)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
+    return deviceInternals.backbuffer.extents.height;
+}
+
 ImageFormat::Type GetBackbufferFormat(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
-    return VkFormatToApparitionFormat(deviceInternals.backbuffer.format);
+    return deviceInternals.backbuffer.format;
 }
 u32 GetBackbufferVkFormat(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
-    return deviceInternals.backbuffer.format;
+    return ApparitionFormatToVkFormat(deviceInternals.backbuffer.format);
 }
 }

@@ -94,3 +94,12 @@ void DeviceManager::DestroyBuffer(Buffer buffer)
     // Let the handle pool know this handle is freed
     PushFreedHandleIndex(deviceInternal.bufferResourceHandlePool, handleIndex);
 }
+
+ImageView DeviceManager::CreateImageView(Device /*device*/, const ImageViewCreationParams& /*params*/)
+{
+    return ImageView{};
+}
+
+void DeviceManager::DestroyImageView(ImageView /*imageView*/)
+{
+}
