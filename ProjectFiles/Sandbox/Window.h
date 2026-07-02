@@ -10,3 +10,4 @@ struct Window
 };
 
 Window* CreateSandboxWindow(void* instance, i32 xPos, i32 yPos, i32 width, i32 height);
+void ProcessWindowInput();

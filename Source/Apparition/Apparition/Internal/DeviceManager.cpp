@@ -785,7 +785,7 @@ void DeviceManager::ResetCommandBuffer(CommandBuffer commandBuffer)
 	u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
 	DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
 	u32 cmdBufferIndex = GetHandleIndex(commandBuffer);
-	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex - 1];
+	CommandBufferInternal& commandBufferInternal = GetCommandBufferInternalFromIndex(deviceInternal, cmdBufferIndex);
 	VkResult result = vkResetCommandBuffer(commandBufferInternal.commandBuffer, 0);
 	CHECK_VK(result);
 }
@@ -795,7 +795,7 @@ VkCommandBuffer DeviceManager::GetCommandBufferHandle(CommandBuffer cbHandle)
 	u32 deviceIndex = GetDeviceIndexFromHandle(cbHandle);
 	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];
 	u32 cmdBufferIndex = GetHandleIndex(cbHandle);
-	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex-1];
+	CommandBufferInternal& commandBufferInternal = GetCommandBufferInternalFromIndex(deviceInternal, cmdBufferIndex);
 
 	return commandBufferInternal.commandBuffer;
 }

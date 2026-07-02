@@ -4,6 +4,7 @@
 #include "BasicTypes/FunctionRef.hpp"
 #include "Containers/DynamicArray.hpp"
 #include "Apparition/ApparitionAPI.hpp"
+#include "Apparition/ApparitionCore.h"
 
 struct VkPhysicalDeviceFeatures;
 struct VkDeviceQueueCreateInfo;
@@ -18,6 +19,7 @@ struct Device
 {
 	u64 handle;
 };
+HANDLE_TYPE_OPERATORS(Device);
 
 // ONLY SUPPORTS DISCRETE GPUS CURRENTLY. WILL CHANGE TO PRIORITIZING DISCRETE
 // ONLY SUPPORTS DEVICE THAT WILL PRESENT

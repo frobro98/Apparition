@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BasicTypes/Intrinsics.hpp"
+#include "Apparition/ApparitionCore.h"
 #include "Apparition/Device.h"
-
 #include "Apparition/ApparitionAPI.hpp"
 
 struct VkCommandBuffer_T;
@@ -14,6 +14,7 @@ struct CommandPool
 {
     u64 handle;
 };
+HANDLE_TYPE_OPERATORS(CommandPool);
 
 struct CommandPoolCreationParams
 {
@@ -28,6 +29,7 @@ struct CommandBuffer
 {
     u64 handle;
 };
+HANDLE_TYPE_OPERATORS(CommandBuffer);
 
 struct CommandBufferAllocParams
 {

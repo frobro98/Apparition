@@ -175,7 +175,7 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 		// Image set up
 		u32 imageHandleIndex = PopFreeHandleIndex(deviceInternal.imageResourceHandlePool);
 		Assert(imageHandleIndex != InvalidHandleIndex);
-		ImageResourceInternal& imgInternal = deviceInternal.imageResources[imageHandleIndex];
+		ImageInternal& imgInternal = GetImageInternalFromIndex(deviceInternal, imageHandleIndex);
 		imgInternal.image = backbufferImages[i];
 		// image allocation is backed by the VkSwapchain, no need for this to be valid
 		imgInternal.allocation = VK_NULL_HANDLE;
@@ -209,7 +209,7 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 		result = vkCreateImageView(deviceInternal.device, &viewInfo, nullptr, &backbufferView);
 		CHECK_VK(result);
 
-		ImageViewResourceInternal& viewInternal = deviceInternal.imageViewResources[imageViewHandleIndex];
+		ImageViewInternal& viewInternal = GetImageViewInternalFromIndex(deviceInternal, imageViewHandleIndex);
 		viewInternal.imageView = backbufferView;
 		viewInternal.imageIndex = imageHandleIndex;
 

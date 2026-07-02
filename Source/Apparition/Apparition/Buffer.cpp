@@ -29,7 +29,7 @@ void* MapBuffer(Buffer buffer)
 	const u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
 	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
 	u32 handleIndex = GetHandleIndex(buffer);
-	BufferResourceInternal& bufferInternal = deviceInternal.bufferResources[handleIndex - 1];
+	BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
 	Assert(bufferInternal.isMappable);
 
 	void* mappedData = nullptr;
@@ -46,7 +46,7 @@ void UnmapBuffer(Buffer buffer)
 	const u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
 	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
 	u32 handleIndex = GetHandleIndex(buffer);
-	BufferResourceInternal& bufferInternal = deviceInternal.bufferResources[handleIndex - 1];
+	BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
 
 	vmaUnmapMemory(deviceInternal.allocator, bufferInternal.allocation);
 }

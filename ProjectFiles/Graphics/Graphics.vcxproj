@@ -178,6 +178,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\BufferDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBuffer.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorSet.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h" />

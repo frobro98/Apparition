@@ -361,6 +361,8 @@ void CreateBasicGraphicsPipeline(VkDevice device, VkFormat swapchainFormat, Pipe
 	CHECK_VK(result);
 }
 
+extern bool windowOpen;
+
 int WINAPI WinMain(HINSTANCE hInstance,
 	HINSTANCE /*hPrevInstance*/,
 	LPSTR /*lpCmdLine*/,
@@ -558,9 +560,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	VkCommandBuffer vkCmdBuffer = Apparition::GetVulkanHandle(cmdBufferHandle);
 
-	while (true)
+	while (windowOpen)
 	{
-		Apparition::BackbufferStatus preparationStatus = Apparition::StartRenderFrame(deviceHandle);
+		ProcessWindowInput();
+
+		Apparition::BackbufferStatus preparationStatus = Apparition::AcquireBackbufferImage(deviceHandle);
 		Assert(preparationStatus != Apparition::BackbufferStatus::Unavailable);
 		Apparition::ImageView backbufferView = Apparition::GetBackBufferImageView(deviceHandle);
 
@@ -646,10 +650,23 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		// End Render Frame
 		// Submit Command Buffer and Present
-		Apparition::EndRenderFrame(cmdBufferHandle, graphicsQueue);
+		Apparition::SubmitBackbufferCommandBuffer(cmdBufferHandle, graphicsQueue);
+		Apparition::PresentBackbuffer(graphicsQueue);
 	}
 
-	//vkDeviceWaitIdle(device.vkDevice);
+	Apparition::WaitForIdle(graphicsQueue);
+
+	// TODO: Handle this within API
+	{
+		vkDestroyPipeline(Apparition::GetVulkanDevice(deviceHandle), pipeline.vkPipeline, nullptr);
+		vkDestroyPipelineLayout(Apparition::GetVulkanDevice(deviceHandle), pipeline.vkPipelineLayout, nullptr);
+	}
+
+	Apparition::FreeCommandBuffer(cmdBufferHandle);
+	Apparition::DestroyCommandPool(cmdPoolHandle);
+
+	Apparition::DestroyBuffer(indexBufferHandle);
+	Apparition::DestroyBuffer(vertexBufferHandle);
 
 	Apparition::TeardownBackbuffer(deviceHandle);
 	Apparition::DestroyDevice(deviceHandle);

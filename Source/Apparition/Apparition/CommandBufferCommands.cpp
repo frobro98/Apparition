@@ -11,12 +11,8 @@ namespace Apparition
 {
 void BeginCommandBuffer(CommandBuffer commandBuffer, bool oneTimeSubmit)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	u32 handleIndex = GetHandleIndex(commandBuffer);
-	CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(!cbInternal.hasBegun);
 
 	VkCommandBufferBeginInfo beginInfo;
 	Vk::ZeroInfoStruct(beginInfo, VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO);
@@ -24,18 +20,13 @@ void BeginCommandBuffer(CommandBuffer commandBuffer, bool oneTimeSubmit)
 
 	VkResult result = vkBeginCommandBuffer(cbInternal.commandBuffer, &beginInfo);
 	CHECK_VK(result);
-
 	cbInternal.hasBegun = true;
 }
 
 void EndCommandBuffer(CommandBuffer commandBuffer)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	u32 handleIndex = GetHandleIndex(commandBuffer);
-	CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
 
 	VkResult result = vkEndCommandBuffer(cbInternal.commandBuffer);
 	CHECK_VK(result);
@@ -44,12 +35,7 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 
  void BeginRendering(CommandBuffer commandBuffer, const RenderSetupParams& renderSetupParams)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	u32 handleIndex = GetHandleIndex(commandBuffer);
-	CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	 const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 	
 	DynamicArray<VkRenderingAttachmentInfo> colorAttachments;
@@ -67,8 +53,7 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 		renderAttachementInfo.loadOp = ApparitionLoadToVkLoad(GetLoadOperation(colorAttachment.loadStoreOps));
 		renderAttachementInfo.storeOp = ApparitionStoreToVkStore(GetStoreOperation(colorAttachment.loadStoreOps));
 
-		u32 viewIndex = GetHandleIndex(colorAttachment.imageView);
-		ImageViewResourceInternal& viewInternal = deviceInternal.imageViewResources[viewIndex];
+		ImageViewInternal& viewInternal = GetImageViewInternal(colorAttachment.imageView);
 		renderAttachementInfo.imageView = viewInternal.imageView;
 		colorAttachments.Add(renderAttachementInfo);
 	}
@@ -79,7 +64,6 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 	if (renderSetupParams.depthAttachment.imageView.handle != InvalidHandle)
 	{
 		const RenderAttachment& renderDepthAttachment = renderSetupParams.depthAttachment;
-		// TODO: There currently is not a dedicated 
 		depthAttachment.clearValue.depthStencil = {
 			renderDepthAttachment.clearValue.depthStencil.depth,
 			renderDepthAttachment.clearValue.depthStencil.stencil
@@ -88,8 +72,7 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 		depthAttachment.loadOp = ApparitionLoadToVkLoad(GetLoadOperation(renderDepthAttachment.loadStoreOps));
 		depthAttachment.storeOp = ApparitionStoreToVkStore(GetStoreOperation(renderDepthAttachment.loadStoreOps));
 
-		u32 viewIndex = GetHandleIndex(renderDepthAttachment.imageView);
-		ImageViewResourceInternal& viewInternal = deviceInternal.imageViewResources[viewIndex];
+		ImageViewInternal& viewInternal = GetImageViewInternal(renderDepthAttachment.imageView);
 		depthAttachment.imageView = viewInternal.imageView;
 	}
 
@@ -108,8 +91,7 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 		stencilAttachment.loadOp = ApparitionLoadToVkLoad(GetLoadOperation(renderStencilAttachment.loadStoreOps));
 		stencilAttachment.storeOp = ApparitionStoreToVkStore(GetStoreOperation(renderStencilAttachment.loadStoreOps));
 
-		u32 viewIndex = GetHandleIndex(renderStencilAttachment.imageView);
-		ImageViewResourceInternal& viewInternal = deviceInternal.imageViewResources[viewIndex];
+		ImageViewInternal& viewInternal = GetImageViewInternal(renderStencilAttachment.imageView);
 		stencilAttachment.imageView = viewInternal.imageView;
 	}
 	else if (depthAttachment.imageView != VK_NULL_HANDLE)
@@ -139,12 +121,7 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 
 void EndRendering(CommandBuffer commandBuffer)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	u32 handleIndex = GetHandleIndex(commandBuffer);
-	CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
 	vkCmdEndRendering(cbInternal.commandBuffer);
@@ -152,17 +129,10 @@ void EndRendering(CommandBuffer commandBuffer)
 
 void BindVertexBuffers(CommandBuffer commandBuffer, const BindVertexBufferDesc& desc)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	const u32 handleIndex = GetHandleIndex(commandBuffer);
-	const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	const u32 vbIndex = GetHandleIndex(desc.vertexBuffer);
-	// TODO: THIS NEEDS TO BE SOME SORT OF FUNCTION THAT'S SPECIFIC TO EACH TYPE
-	VkBuffer vbBuffer = deviceInternal.bufferResources[vbIndex - 1].buffer;
+	VkBuffer vbBuffer = GetBufferInternal(desc.vertexBuffer).buffer;
 
 	const VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(cbInternal.commandBuffer, 0, 1, &vbBuffer, offsets);
@@ -170,17 +140,10 @@ void BindVertexBuffers(CommandBuffer commandBuffer, const BindVertexBufferDesc& 
 
 void BindIndexBuffer(CommandBuffer commandBuffer, const BindIndexBufferDesc& desc)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	const u32 handleIndex = GetHandleIndex(commandBuffer);
-	const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	const u32 ibIndex = GetHandleIndex(desc.indexBuffer);
-	// TODO: THIS NEEDS TO BE SOME SORT OF FUNCTION THAT'S SPECIFIC TO EACH TYPE
-	VkBuffer ibBuffer = deviceInternal.bufferResources[ibIndex - 1].buffer;
+	VkBuffer ibBuffer = GetBufferInternal(desc.indexBuffer).buffer;
 
 	// TODO: VK_INDEX_TYPE must be a consistent setting for index buffers. Vulkan will catch this issue, theoretically,
 	// but we'd like to catch it in some way too
@@ -189,12 +152,7 @@ void BindIndexBuffer(CommandBuffer commandBuffer, const BindIndexBufferDesc& des
 
 void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& viewDesc, const ScissorDesc& scissorDesc)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	const u32 handleIndex = GetHandleIndex(commandBuffer);
-	const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
 	VkViewport viewport = {
@@ -216,12 +174,7 @@ void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& view
 
 void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	const u32 handleIndex = GetHandleIndex(commandBuffer);
-	const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
 	vkCmdDrawIndexed(cbInternal.commandBuffer, indexCount, 1, 0, 0, 0);
@@ -229,19 +182,11 @@ void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount)
 
 void CopyBuffer(CommandBuffer commandBuffer, const BufferCopyDesc& copyDesc)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	const u32 handleIndex = GetHandleIndex(commandBuffer);
-	const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	const u32 srcBufferIndex = GetHandleIndex(copyDesc.srcBuffer);
-	const u32 dstBufferIndex = GetHandleIndex(copyDesc.dstBuffer);
-	// TODO: THIS NEEDS TO BE SOME SORT OF FUNCTION THAT'S SPECIFIC TO EACH TYPE
-	VkBuffer vkSrcBuffer = deviceInternal.bufferResources[srcBufferIndex - 1].buffer;
-	VkBuffer vkDstBuffer = deviceInternal.bufferResources[dstBufferIndex - 1].buffer;
+	VkBuffer vkSrcBuffer = GetBufferInternal(copyDesc.srcBuffer).buffer;
+	VkBuffer vkDstBuffer = GetBufferInternal(copyDesc.dstBuffer).buffer;
 
 	VkBufferCopy copyRegion{};
 	copyRegion.size = copyDesc.size;
@@ -252,16 +197,10 @@ void CopyBuffer(CommandBuffer commandBuffer, const BufferCopyDesc& copyDesc)
 
 void ImageMemoryBarrier(CommandBuffer commandBuffer, const ImageMemoryBarrierDesc& barrierDesc)
 {
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
-	const u32 handleIndex = GetHandleIndex(commandBuffer);
-	const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	const u32 imageResourceIndex = GetHandleIndex(barrierDesc.image);
-	ImageResourceInternal& imgInternal = deviceInternal.imageResources[imageResourceIndex];
+	ImageInternal& imgInternal = GetImageInternal(barrierDesc.image);
 
 	// TODO: There is no validation between the access and the format
 	VkImageMemoryBarrier2 imageBarrier;

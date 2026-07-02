@@ -25,6 +25,7 @@ struct BufferCreationParams
     size_t size = 0;
     bool supportsMappedMemory = false;
 };
+HANDLE_TYPE_OPERATORS(Buffer);
 
 NODISCARD APPARITION_API Buffer CreateBuffer(Device device, const BufferCreationParams& params);
 APPARITION_API void DestroyBuffer(Buffer buffer);

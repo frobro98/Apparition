@@ -49,3 +49,23 @@ APPARITION_API void SetErrorLogCallback(ValidationDelegate&& validationDelegate,
 
 APPARITION_API void InitializeApparition(const InitializeParams& initParams);
 }
+
+// Compare ops for InvalidHandle
+#define HANDLE_TYPE_OPERATORS(HandleType)							\
+	inline bool operator==(HandleType handle, u32 internalHandleValue)		\
+	{																\
+		return handle.handle == internalHandleValue;				\
+	}																\
+																	\
+	inline bool operator!=(HandleType handle, u32 internalHandleValue)		\
+	{																\
+		return handle.handle != internalHandleValue;				\
+	}
+
+// Defines a handle type
+#define HANDLE_TYPE(HandleType)		\
+struct HandleType					\
+{									\
+	u64 handle;						\
+};									\
+HANDLE_TYPE_OPERATORS(HandleType)

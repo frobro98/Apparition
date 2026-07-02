@@ -62,14 +62,15 @@ Buffer DeviceManager::CreateBuffer(Device device, const BufferCreationParams& pa
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
-        BufferResourceInternal bufferInternal = {};
+        BufferInternal bufferInternal = {};
         bufferInternal.buffer = buffer;
         bufferInternal.allocation = vmaAllocation;
         bufferInternal.isMappable = params.supportsMappedMemory;
         u32 handleIndex = PopFreeHandleIndex(deviceInternal.bufferResourceHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
-            deviceInternal.bufferResources[handleIndex - 1] = bufferInternal;
+            // TODO - this kinda is stinky to me, don't assign to the return of a function...
+            GetBufferInternalFromIndex(deviceInternal, handleIndex) = bufferInternal;
 
             u32 handleGeneration = GetHandleGeneration(deviceInternal.bufferResourceHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
@@ -88,7 +89,7 @@ void DeviceManager::DestroyBuffer(Buffer buffer)
     u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
     DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
     u32 handleIndex = GetHandleIndex(buffer);
-    BufferResourceInternal& bufferInternal = deviceInternal.bufferResources[handleIndex - 1];
+    BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
     vmaDestroyBuffer(deviceInternal.allocator, bufferInternal.buffer, bufferInternal.allocation);
 
     // Let the handle pool know this handle is freed

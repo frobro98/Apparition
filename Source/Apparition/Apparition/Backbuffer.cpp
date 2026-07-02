@@ -23,25 +23,25 @@ void TeardownBackbuffer(Device device)
     deviceManager.TeardownBackbuffer(device);
 }
 
-BackbufferStatus StartRenderFrame(Device device)
+BackbufferStatus AcquireBackbufferImage(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.AcquireNextBackbufferImage(device);
 }
 
-void EndRenderFrame(CommandBuffer commandBuffer, Queue presentQueue)
+void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
     const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
     const u32 handleIndex = GetHandleIndex(commandBuffer);
-    const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[handleIndex - 1];
+    const CommandBufferInternal& cbInternal = GetCommandBufferInternalFromIndex(deviceInternal, handleIndex);
     Assert(!cbInternal.hasBegun);
 
-    const u32 queueIndex = GetHandleIndex(presentQueue);
-    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(presentQueue));
+    const u32 queueIndex = GetHandleIndex(queue);
+    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(queue));
     QueueInternal queueInternal = queueArray[queueIndex - 1];
 
     const Backbuffer& backbuffer = deviceInternal.backbuffer;
@@ -62,8 +62,21 @@ void EndRenderFrame(CommandBuffer commandBuffer, Queue presentQueue)
     submitInfo.pCommandBuffers = &cbInternal.commandBuffer;
     VkResult result = vkQueueSubmit(queueInternal.queue, 1, &submitInfo, VK_NULL_HANDLE);
     CHECK_VK(result);
+}
 
-    // TODO: Separate Present from Submission of RenderPass CommandBuffer
+void PresentBackbuffer(Queue presentQueue)
+{
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    const u32 deviceIndex = GetDeviceIndexFromHandle(presentQueue);
+    const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+
+    const u32 queueIndex = GetHandleIndex(presentQueue);
+    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(presentQueue));
+    QueueInternal queueInternal = queueArray[queueIndex - 1];
+
+    const Backbuffer& backbuffer = deviceInternal.backbuffer;
+
     VkPresentInfoKHR presentInfo;
     Vk::ZeroInfoStruct(presentInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
     presentInfo.waitSemaphoreCount = 1;
@@ -73,15 +86,15 @@ void EndRenderFrame(CommandBuffer commandBuffer, Queue presentQueue)
     presentInfo.pImageIndices = &backbuffer.currentImageIndex;
     presentInfo.pResults = nullptr;
 
-    result = vkQueuePresentKHR(queueInternal.queue, &presentInfo);
+    VkResult result = vkQueuePresentKHR(queueInternal.queue, &presentInfo);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
-    	//Recreate()
+        //Recreate()
     }
     else if (result != VK_SUCCESS)
     {
-    	// TODO - Log
-    	Assert(false);
+        // TODO - Log
+        Assert(false);
     }
 
     // TODO: DO NOT DO THIS!

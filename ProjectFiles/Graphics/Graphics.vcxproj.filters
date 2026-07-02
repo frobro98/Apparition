@@ -60,9 +60,6 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\Pipeline.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
@@ -77,6 +74,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\RenderOperationsConversion.h">
       <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorSet.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h">
+      <Filter>Source\Apparition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

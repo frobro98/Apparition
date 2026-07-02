@@ -28,8 +28,9 @@ APPARITION_API void SetupBackbuffer(Device device, const BackbufferSetupParams& 
 APPARITION_API void TeardownBackbuffer(Device device);
 
 // Backing image acquisition
-APPARITION_API BackbufferStatus StartRenderFrame(Device device);
-APPARITION_API void EndRenderFrame(CommandBuffer commandBuffer, Queue presentQueue);
+APPARITION_API BackbufferStatus AcquireBackbufferImage(Device device);
+APPARITION_API void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue);
+APPARITION_API void PresentBackbuffer(Queue presentQueue);
 
 APPARITION_API ImageView GetBackBufferImageView(Device device);
 APPARITION_API Image GetAcquiredBackbufferImage(Device device);

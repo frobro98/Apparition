@@ -4,6 +4,8 @@
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/ImageDescription.h"
 #include "Containers/DynamicArray.hpp"
+#include "DeviceManager.h"
+#include "HandleDefinitions.h"
 #include "HandlePool.h"
 #include "VulkanDefinitions.h"
 
@@ -54,14 +56,14 @@ struct CommandPoolInternal
 	u32 queueFamilyIndex = 0;
 };
 
-struct BufferResourceInternal
+struct BufferInternal
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
 	VmaAllocation allocation = VK_NULL_HANDLE;
 	bool isMappable = false;
 };
 
-struct ImageResourceInternal
+struct ImageInternal
 {
 	VkImage image = VK_NULL_HANDLE;
 	VmaAllocation allocation = VK_NULL_HANDLE;
@@ -71,7 +73,7 @@ struct ImageResourceInternal
 	Apparition::ImageAccess::Type access;
 };
 
-struct ImageViewResourceInternal
+struct ImageViewInternal
 {
 	VkImageView imageView = VK_NULL_HANDLE;
 	u32 imageIndex = UINT32_MAX;
@@ -102,11 +104,18 @@ struct DeviceInternal
 	HandlePool imageViewResourceHandlePool;
 	DynamicArray<CommandPoolInternal> commandPools;
 	DynamicArray<CommandBufferInternal> commandBuffers;
-	DynamicArray<BufferResourceInternal> bufferResources;
-	DynamicArray<ImageResourceInternal> imageResources;
-	DynamicArray<ImageViewResourceInternal> imageViewResources;
+	DynamicArray<BufferInternal> bufferResources;
+	DynamicArray<ImageInternal> imageResources;
+	DynamicArray<ImageViewInternal> imageViewResources;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 	u32 graphicsFamilyIndex = 0;
 	u32 transferFamilyIndex = 0;
 	u32 computeFamilyIndex = 0;
 };
+
+REGISTER_HANDLE_TYPE(CommandPool, commandPools);
+REGISTER_HANDLE_TYPE(CommandBuffer, commandBuffers);
+REGISTER_HANDLE_TYPE(Buffer, bufferResources)
+REGISTER_HANDLE_TYPE(Image, imageResources)
+REGISTER_HANDLE_TYPE(ImageView, imageViewResources)
+

@@ -48,7 +48,7 @@
 template <typename Handle>
 inline u32 GetDeviceIndexFromHandle(Handle handle)
 {
-	Assert(handle.handle != InvalidHandle);
+	Assert(handle.handle != Apparition::InvalidHandle);
 	const u64 handleData = handle.handle;
 	return (handleData >> DEVICE_INDEX_SHIFT);
 }
@@ -56,7 +56,7 @@ inline u32 GetDeviceIndexFromHandle(Handle handle)
 template <typename Handle>
 inline u32 GetResourcePoolIndexFromHandle(Handle handle)
 {
-	Assert(handle.handle != InvalidHandle);
+	Assert(handle.handle != Apparition::InvalidHandle);
 	const u64 poolIndexDataShifted = (handle.handle >> POOL_INDEX_SHIFT);
 	return (poolIndexDataShifted & POOL_INDEX_MASK);
 }
@@ -64,6 +64,46 @@ inline u32 GetResourcePoolIndexFromHandle(Handle handle)
 template <typename Handle>
 inline u32 GetHandleIndex(Handle handle)
 {
-	Assert(handle.handle != InvalidHandle);
+	Assert(handle.handle != Apparition::InvalidHandle);
 	return (handle.handle & RESOURCE_INDEX_MASK);
 }
+
+#define DEFINE_DEVICE_HANDLE_FUNC()															\
+inline DeviceInternal& GetDeviceInternal(Device device)										\
+{																							\
+	Assert(apparition.deviceManager);														\
+	DeviceManager& deviceManager = *apparition.deviceManager;								\
+	return deviceManager.GetDeviceInternals(device);										\
+}
+
+#define _REGISTER_HANDLE_TYPE_DEVICE(HandleType)											\
+inline DeviceInternal& GetDeviceInternal(Apparition::HandleType handleType)					\
+{																							\
+	Assert(apparition.deviceManager);														\
+	DeviceManager& deviceManager = *apparition.deviceManager;								\
+	const u32 deviceIndex = GetDeviceIndexFromHandle(handleType);							\
+	const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);	\
+}
+
+#define _REGISTER_HANDLE_TYPE_GET_INTERNALS(HandleType, InternalName)															\
+inline HandleType##Internal& Get##HandleType##Internal(Apparition::HandleType handle)											\
+{																																\
+	Assert(apparition.deviceManager);																							\
+	DeviceManager& deviceManager = *apparition.deviceManager;																	\
+	const u32 deviceIndex = GetDeviceIndexFromHandle(handle);																	\
+	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);												\
+	const u32 handleIndex = GetHandleIndex(handle);																				\
+	return deviceInternal.InternalName[handleIndex - 1];																		\
+}																																\
+																																\
+inline HandleType##Internal& Get##HandleType##InternalFromIndex(DeviceInternal& deviceInternal, u32 handleIndex)				\
+{																																\
+	return deviceInternal.InternalName[handleIndex - 1];																		\
+}																																\
+inline const HandleType##Internal& Get##HandleType##InternalFromIndex(const DeviceInternal& deviceInternal, u32 handleIndex)	\
+{																																\
+	return deviceInternal.InternalName[handleIndex - 1];																		\
+}
+
+#define REGISTER_HANDLE_TYPE(HandleType, InternalName) \
+	_REGISTER_HANDLE_TYPE_GET_INTERNALS(HandleType, InternalName)

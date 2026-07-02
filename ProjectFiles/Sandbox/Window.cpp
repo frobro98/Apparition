@@ -8,6 +8,8 @@ WALL_WRN_PUSH
 #include <ShlObj.h>
 WALL_WRN_POP
 
+bool windowOpen = false;
+
 //----------------------------------------------------------------
 // Basic Window callback
 LRESULT CALLBACK WindowCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -46,12 +48,18 @@ LRESULT CALLBACK WindowCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 			//MUSA_DEBUG(Windows, "Window Close Event");
 
 			//eventRouter.HandleWindowCloseEvent();
+
+			windowOpen = false;
+
 			return 0;
 		}break;
 
 		case WM_DESTROY:
 		{
 			//MUSA_DEBUG(Windows, "Window Destroy Event");
+
+			windowOpen = false;
+
 			return 0;
 		}break;
 
@@ -272,6 +280,17 @@ Window* CreateSandboxWindow(void* instance, i32 xPos, i32 yPos, i32 width, i32 h
 	RECT windowRect;
 	GetWindowRect((HWND)window->windowHandle, &windowRect);
 
+	windowOpen = true;
 
 	return window;
+}
+
+void ProcessWindowInput()
+{
+	MSG Message;
+	while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&Message);
+		DispatchMessage(&Message);
+	}
 }
