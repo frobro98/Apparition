@@ -30,12 +30,16 @@ enum Type
 }
 static_assert(Descriptor::Type::Count == Descriptor::Type::InputAttachment + 1);
 
+HANDLE_TYPE(DescriptorSetLayout);
+HANDLE_TYPE(DescriptorPool);
+HANDLE_TYPE(DescriptorSet);
+
 struct DescriptorSetLayoutCreationParams
 {
     DynamicArray<Descriptor::Type> bindings;
 };
 
-struct DescriptorSetPoolCreationParams
+struct DescriptorPoolCreationParams
 {
     StaticArray<u32, Descriptor::Type::Max> poolSizes;
 };
@@ -45,8 +49,15 @@ struct DescriptorSetAllocParams
     DescriptorSetLayout layout;
 };
 
-HANDLE_TYPE(DescriptorSetLayout);
-HANDLE_TYPE(DescriptorSetPool);
-HANDLE_TYPE(DescriptorSet);
+NODISCARD APPARITION_API DescriptorSetLayout CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params);
+APPARITION_API void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
+
+NODISCARD APPARITION_API DescriptorPool CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params);
+APPARITION_API void DestroyDescriptorPool(DescriptorPool descriptorPool);
+
+NODISCARD APPARITION_API DescriptorSet AllocateDescriptorSet(DescriptorPool descriptorPool);
+APPARITION_API void AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSet>& descriptorSets);
+void FreeDescriptorSet(DescriptorSet descriptorSet);
+void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets);
 
 }

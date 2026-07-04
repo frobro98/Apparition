@@ -98,7 +98,7 @@
     </PostBuildEvent>
     <Link>
       <AdditionalDependencies>Core.lib;vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.3.290.0\Lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.4.350.0\Lib</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
@@ -122,7 +122,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>Core.lib;vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.3.290.0\Lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.4.350.0\Lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Binaries;C:\VulkanSDK\1.0.39.1\Bin\</AdditionalLibraryDirectories>
@@ -157,7 +157,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>Core.lib;vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.3.290.0\Lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Platform)\$(Configuration)\;C:\VulkanSDK\1.4.350.0\Lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)Binaries;C:\VulkanSDK\1.0.39.1\Bin\</AdditionalLibraryDirectories>
@@ -178,6 +178,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\BufferDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBuffer.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorHeap.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorSet.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
@@ -202,7 +203,9 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Buffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBuffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\DescriptorSet.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Image.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
@@ -211,6 +214,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Backbuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Pipeline.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Queue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

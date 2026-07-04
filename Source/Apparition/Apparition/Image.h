@@ -9,8 +9,14 @@
 namespace Apparition
 {
 
+// Only supports 2D images currently
 struct ImageCreationParams
 {
+    u32 width = 0;
+    u32 height = 0;
+    ImageFormat::Type format = ImageFormat::Invalid;
+    u32 mipLevels = 0;
+    ImageUsageFlags usageFlags = 0;
 
 };
 

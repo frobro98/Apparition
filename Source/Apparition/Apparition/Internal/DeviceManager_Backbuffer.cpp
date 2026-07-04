@@ -218,10 +218,18 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 
 	VkSemaphoreCreateInfo semaphoreCreateInfo;
 	Vk::ZeroInfoStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
-	result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.isImageAvailableSem);
-	CHECK_VK(result);
-	result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.hasRenderingFinishedSem);
-	CHECK_VK(result);
+	for (u32 i = 0; i < Backbuffer::numSwapchainImages; ++i)
+	{
+		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.acquireImageSemaphores[i]);
+		CHECK_VK(result);
+		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.submitRenderSemaphores[i]);
+		CHECK_VK(result);
+
+		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.isImageAvailableSem);
+		CHECK_VK(result);
+		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.hasRenderingFinishedSem);
+		CHECK_VK(result);
+	}
 
 	// TODO - Log that backbuffer data has been created
 }

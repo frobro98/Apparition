@@ -45,9 +45,15 @@ void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue)
     QueueInternal queueInternal = queueArray[queueIndex - 1];
 
     const Backbuffer& backbuffer = deviceInternal.backbuffer;
-
+    NOT_USED const u32 imageIndex = backbuffer.currentImageIndex;
+    //*
     VkSemaphore waitSemaphores[] = { backbuffer.isImageAvailableSem };
     VkSemaphore signalSemaphores[] = { backbuffer.hasRenderingFinishedSem };
+    //*/
+    /*
+    VkSemaphore waitSemaphores[] = { backbuffer.acquireImageSemaphores[imageIndex] };
+    VkSemaphore signalSemaphores[] = { backbuffer.submitRenderSemaphores[imageIndex] };
+    //*/
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
     VkSubmitInfo submitInfo;
@@ -76,11 +82,17 @@ void PresentBackbuffer(Queue presentQueue)
     QueueInternal queueInternal = queueArray[queueIndex - 1];
 
     const Backbuffer& backbuffer = deviceInternal.backbuffer;
+    NOT_USED const u32 imageIndex = backbuffer.currentImageIndex;
 
     VkPresentInfoKHR presentInfo;
     Vk::ZeroInfoStruct(presentInfo, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR);
     presentInfo.waitSemaphoreCount = 1;
+    //*
     presentInfo.pWaitSemaphores = &backbuffer.hasRenderingFinishedSem;
+    //*/
+    /*
+    presentInfo.pWaitSemaphores = &backbuffer.submitRenderSemaphores[imageIndex];
+    //*/
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = &backbuffer.swapchainHandle;
     presentInfo.pImageIndices = &backbuffer.currentImageIndex;

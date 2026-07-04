@@ -22,6 +22,7 @@ constexpr const tchar* instanceExtensions[] = {
 	VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME,
 	VK_PLATFORM_SURFACE_EXTENSION,
 	VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+	VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME,
 	VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
 };
 
@@ -300,8 +301,10 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 	const tchar* deviceExtensions[] = {
 		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME, // Eliminates the need for render pass begin/end
 		VK_KHR_MAINTENANCE_4_EXTENSION_NAME,
+		VK_KHR_MAINTENANCE_5_EXTENSION_NAME,
+		VK_EXT_DESCRIPTOR_HEAP_EXTENSION_NAME,
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME, // swapchain support
-		VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME,
+		//VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME, // TODO - Reenable and adhere to this functionality
 		VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME, // Special semaphores that can replace VkSemaphore and VkFence
 		VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME,
 		VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME,
@@ -343,20 +346,34 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 		.computeFamilyIndex = computeFamilyIndex
 	};
 
-
 	// Initialize dynamic rendering extension
 	VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeature;
 	Vk::ZeroInfoStruct(dynamicRenderingFeature, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR);
 	dynamicRenderingFeature.dynamicRendering = VK_TRUE;
 
+	// Initialize synchronization2 features
 	VkPhysicalDeviceSynchronization2Features synchronization2Feature;
 	Vk::ZeroInfoStruct(synchronization2Feature, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES);
 	synchronization2Feature.synchronization2 = VK_TRUE;
 	synchronization2Feature.pNext = &dynamicRenderingFeature;
 
+	// Initialize buffer device address features
+	VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures = {
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
+		.pNext = &synchronization2Feature,
+		.bufferDeviceAddress = VK_TRUE
+	};
+
+	// Initialize descriptor heap features
+	VkPhysicalDeviceDescriptorHeapFeaturesEXT descriptorHeapFeatures = {
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_FEATURES_EXT,
+		.pNext = &bufferDeviceAddressFeatures,
+		.descriptorHeap = VK_TRUE
+	};
+
 	VkPhysicalDeviceFeatures2 supportedGpuFeatures;
 	supportedGpuFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-	supportedGpuFeatures.pNext = &synchronization2Feature;
+	supportedGpuFeatures.pNext = &descriptorHeapFeatures;
 	vkGetPhysicalDeviceFeatures2(internalDevice.physicalDevice, &supportedGpuFeatures);
 
 	//VkPhysicalDeviceFeatures enabledDeviceFeatures;

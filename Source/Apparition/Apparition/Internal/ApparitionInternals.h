@@ -25,12 +25,15 @@ extern ApparitionInternals apparition;
 // TODO - Move these to separate header
 struct Backbuffer
 {
+	static constexpr inline u32 numSwapchainImages = 2;
 	DynamicArray<u32> views;
 	DynamicArray<u32> images;
 	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
 	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
 	VkExtent2D extents = {};
 	Apparition::ImageFormat::Type format = Apparition::ImageFormat::Invalid;
+	VkSemaphore acquireImageSemaphores[numSwapchainImages];
+	VkSemaphore submitRenderSemaphores[numSwapchainImages];
 	VkSemaphore isImageAvailableSem = VK_NULL_HANDLE;
 	VkSemaphore hasRenderingFinishedSem = VK_NULL_HANDLE;
 	u32 currentImageIndex = 0;
@@ -115,7 +118,7 @@ struct DeviceInternal
 
 REGISTER_HANDLE_TYPE(CommandPool, commandPools);
 REGISTER_HANDLE_TYPE(CommandBuffer, commandBuffers);
-REGISTER_HANDLE_TYPE(Buffer, bufferResources)
-REGISTER_HANDLE_TYPE(Image, imageResources)
-REGISTER_HANDLE_TYPE(ImageView, imageViewResources)
+REGISTER_HANDLE_TYPE(Buffer, bufferResources);
+REGISTER_HANDLE_TYPE(Image, imageResources);
+REGISTER_HANDLE_TYPE(ImageView, imageViewResources);
 
