@@ -35,7 +35,7 @@ void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue)
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const u32 deviceIndex = GetDeviceIndexFromHandle(commandBuffer);
-    const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+    const DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
     const u32 handleIndex = GetHandleIndex(commandBuffer);
     const CommandBufferInternal& cbInternal = GetCommandBufferInternalFromIndex(deviceInternal, handleIndex);
     Assert(!cbInternal.hasBegun);
@@ -75,7 +75,7 @@ void PresentBackbuffer(Queue presentQueue)
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const u32 deviceIndex = GetDeviceIndexFromHandle(presentQueue);
-    const DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+    const DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
 
     const u32 queueIndex = GetHandleIndex(presentQueue);
     const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(presentQueue));
@@ -132,14 +132,14 @@ u32 GetBackbufferWidth(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
-    const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
+    const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
     return deviceInternals.backbuffer.extents.width;
 }
 u32 GetBackbufferHeight(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
-    const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
+    const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
     return deviceInternals.backbuffer.extents.height;
 }
 
@@ -147,14 +147,14 @@ ImageFormat::Type GetBackbufferFormat(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
-    const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
+    const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
     return deviceInternals.backbuffer.format;
 }
 u32 GetBackbufferVkFormat(Device device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
-    const DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(device);
-    return ApparitionFormatToVkFormat(deviceInternals.backbuffer.format);
+    const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
+    return ApparitionFormatToVk(deviceInternals.backbuffer.format);
 }
 }

@@ -6,6 +6,7 @@
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/Image.h"
 #include "Apparition/ImageDescription.h"
+#include "Apparition/Pipeline.h"
 #include "Apparition/RenderingDescription.h"
 
 // TODO: Revisit when implementing specific Sascha Williams functionality
@@ -47,6 +48,8 @@ struct ScissorDesc
 };
 
 APPARITION_API void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& viewDesc, const ScissorDesc& scissorDesc);
+
+APPARITION_API void BindGraphicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline);
 
 // Draw Commands
 APPARITION_API void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount);

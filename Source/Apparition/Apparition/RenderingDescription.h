@@ -6,24 +6,36 @@
 
 namespace Apparition
 {
-enum class LoadOperation : u8
+namespace LoadOperation
+{
+enum Type
 {
 	Load,
 	Clear,
-	DontCare
-};
+	DontCare,
 
-// TODO - move this enum to a better place
-enum class StoreOperation : u8
+	Count = DontCare + 1
+};
+}// LoadOperation
+static_assert(LoadOperation::Count < 4, "LoadOperation must be less that 3 bit");
+
+namespace StoreOperation
+{
+enum Type
 {
 	Store,
-	DontCare
+	DontCare,
+
+	Count = DontCare + 1
 };
+}// StoreOperation
+static_assert(StoreOperation::Count < 4, "StoreOperation must be less that 3 bit");
 
 #define ATTACHMENT_OP_MASK 2
 #define CREATE_ATTACHMENT_OP(LoadOp, StoreOp) (((u8)LoadOperation::LoadOp << ATTACHMENT_OP_MASK) | ((u8)StoreOperation::StoreOp))
-// TODO - These ops aren't necessarily for Color Targets. Should they be RenderTarget operations?
-enum class RenderAttachmentOperations : u8
+namespace AttachmentOperations
+{
+enum Type
 {
 	DontLoad_DontStore = CREATE_ATTACHMENT_OP(DontCare, DontCare),
 	DontLoad_Store = CREATE_ATTACHMENT_OP(DontCare, Store),
@@ -32,20 +44,21 @@ enum class RenderAttachmentOperations : u8
 	Clear_DontStore = CREATE_ATTACHMENT_OP(Clear, DontCare),
 	Clear_Store = CREATE_ATTACHMENT_OP(Clear, Store)
 };
+}// AttachmentOperations
 
-constexpr LoadOperation GetLoadOperation(RenderAttachmentOperations op)
+constexpr LoadOperation::Type LoadOperationFrom(AttachmentOperations::Type op)
 {
-	return (LoadOperation)((u8)op >> ATTACHMENT_OP_MASK);
+	return (LoadOperation::Type)(op >> ATTACHMENT_OP_MASK);
 }
 
-constexpr StoreOperation GetStoreOperation(RenderAttachmentOperations op)
+constexpr StoreOperation::Type StoreOperationFrom(AttachmentOperations::Type op)
 {
-	return (StoreOperation)((u8)op & ((1 << ATTACHMENT_OP_MASK) - 1));
+	return (StoreOperation::Type)(op & ((1 << ATTACHMENT_OP_MASK) - 1));
 }
 
-constexpr RenderAttachmentOperations CreateRenderAttachmentOperations(LoadOperation loadOp, StoreOperation storeOp)
+constexpr AttachmentOperations::Type AttachmentOperationsFrom(LoadOperation::Type loadOp, StoreOperation::Type storeOp)
 {
-	return (RenderAttachmentOperations)(((u8)loadOp << ATTACHMENT_OP_MASK) | ((u8)storeOp));
+	return (AttachmentOperations::Type)((loadOp << ATTACHMENT_OP_MASK) | (storeOp));
 }
 
 #undef ATTACHMENT_OP_MASK
@@ -65,7 +78,7 @@ union AttachmentClearValue
 struct RenderAttachment
 {
 	ImageView imageView;
-	RenderAttachmentOperations loadStoreOps;
+	AttachmentOperations::Type loadStoreOps;
 	AttachmentClearValue clearValue;
 };
 

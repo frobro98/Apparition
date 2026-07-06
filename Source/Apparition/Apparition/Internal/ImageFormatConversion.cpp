@@ -45,12 +45,12 @@ void InitializeFormatMapping()
     VkFormatToImageFormat.Add(VK_FORMAT_UNDEFINED, Apparition::ImageFormat::Invalid);
 }
 
-Apparition::ImageFormat::Type VkFormatToApparitionFormat(VkFormat format)
+Apparition::ImageFormat::Type VkFormatToApparition(VkFormat format)
 {
     return VkFormatToImageFormat[format];
 }
 
-VkFormat ApparitionFormatToVkFormat(Apparition::ImageFormat::Type imageFormat)
+VkFormat ApparitionFormatToVk(Apparition::ImageFormat::Type imageFormat)
 {
     return vkFormats[imageFormat];
 }

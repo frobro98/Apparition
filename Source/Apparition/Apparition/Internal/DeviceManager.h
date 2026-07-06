@@ -1,14 +1,17 @@
 #pragma once
 
+#include "BasicTypes/Function.hpp"
+#include "Containers/DynamicArray.hpp"
+
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Backbuffer.h"
 #include "Apparition/Buffer.h"
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/Device.h"
+#include "Apparition/Pipeline.h"
 #include "Apparition/Queue.h"
-#include "BasicTypes/Function.hpp"
-#include "Containers/DynamicArray.hpp"
-#include "VulkanDefinitions.h"
+
+#include "Apparition/Internal/VulkanDefinitions.h"
 
 using namespace Apparition;
 
@@ -36,8 +39,8 @@ public:
 	Apparition::Device CreateDevice(const DeviceCreationParams& params);
 	void DestroyDevice(Device deviceHandle);
 
-	DeviceInternal& GetDeviceInternals(Device deviceHandle);
-	DeviceInternal& GetDeviceInternals(u32 deviceIndex);
+	DeviceInternal& DeviceInternalFrom(Device deviceHandle);
+	DeviceInternal& DeviceInternalFrom(u32 deviceIndex);
 private:
 	void InitializeDeviceHandlePools(DeviceInternal& deviceInternal);
 public:
@@ -103,6 +106,24 @@ public:
 	void DestroyImageView(ImageView imageView);
 
 	//RetVal GetBufferDescription(Buffer buffer) const;
+
+	// TEMP
+	VkBuffer GetBufferHandle(Buffer bufferHandle);
+#pragma endregion
+
+#pragma region Pipeline State
+	VertexInputPipelineState CreateVertexInputPipelineState(Device device, const VertexInputPipelineStateCreationParams& params);
+	PrerasterShadersPipelineState CreatePrerasterShadersPipelineState(Device device, const PreRasterShadersPipelineStateCreationParams& params);
+	FragmentShaderPipelineState CreateFragmentShaderPipelineState(Device device, const FragmentShaderPipelineStateCreationParams& params);
+	FragmentOutputPipelineState CreateFragmentOutputPipelineState(Device device, const FragmentOutputPipelineStateCreationParams& params);
+
+	void DestroyVertexInputPipelineState(VertexInputPipelineState state);
+	void DestroyPrerasterShadersPipelineState(PrerasterShadersPipelineState state);
+	void DestroyFragmentShaderPipelineState(FragmentShaderPipelineState state);
+	void DestroyFragmentOutputPipelineState(FragmentOutputPipelineState state);
+
+	Pipeline CreatePipeline(Device device, const PipelineCreationParams& params);
+	void DestroyPipeline(Pipeline pipeline);
 #pragma endregion
 private:
 	UserValidationCallbackData userValidation;

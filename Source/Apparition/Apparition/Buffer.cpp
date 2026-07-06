@@ -25,9 +25,7 @@ void DestroyBuffer(Buffer buffer)
 void* MapBuffer(Buffer buffer)
 {
 	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+	DeviceInternal& deviceInternal = GetDeviceInternal(buffer);
 	u32 handleIndex = GetHandleIndex(buffer);
 	BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
 	Assert(bufferInternal.isMappable);
@@ -42,12 +40,17 @@ void* MapBuffer(Buffer buffer)
 void UnmapBuffer(Buffer buffer)
 {
 	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	const u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
-	DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+	DeviceInternal& deviceInternal = GetDeviceInternal(buffer);
 	u32 handleIndex = GetHandleIndex(buffer);
 	BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
 
 	vmaUnmapMemory(deviceInternal.allocator, bufferInternal.allocation);
+}
+
+VkBuffer GetVulkanHandle(Buffer bufferHandle)
+{
+	Assert(apparition.deviceManager);
+	DeviceManager& deviceManager = *apparition.deviceManager;
+	return deviceManager.GetBufferHandle(bufferHandle);
 }
 }

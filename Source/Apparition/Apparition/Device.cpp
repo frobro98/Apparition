@@ -24,7 +24,7 @@ u32 GetGraphicsQueueIndex(Device deviceHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(deviceHandle);
 	return deviceInternals.graphicsFamilyIndex;
 
 	return 0;
@@ -34,7 +34,7 @@ u32 GetComputeQueueIndex(Device deviceHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(deviceHandle);
 	return deviceInternals.computeFamilyIndex;
 }
 
@@ -42,7 +42,7 @@ u32 GetTransferQueueIndex(Device deviceHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(deviceHandle);
 	return deviceInternals.transferFamilyIndex;
 }
 
@@ -50,7 +50,7 @@ VkDevice GetVulkanDevice(Device deviceHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
-	DeviceInternal& deviceInternals = deviceManager.GetDeviceInternals(deviceHandle);
+	DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(deviceHandle);
 	return deviceInternals.device;
 }
 

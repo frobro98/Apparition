@@ -4,12 +4,12 @@
 #include "Apparition/Device.h"
 #include "BasicTypes/Intrinsics.hpp"
 
+struct VkBuffer_T;
+typedef struct VkBuffer_T* VkBuffer;
+
 namespace Apparition
 {
-struct Buffer
-{
-    u64 handle;
-};
+HANDLE_TYPE(Buffer)
 
 // Currently supports simple memory handling internally.
 // 
@@ -25,7 +25,6 @@ struct BufferCreationParams
     size_t size = 0;
     bool supportsMappedMemory = false;
 };
-HANDLE_TYPE_OPERATORS(Buffer);
 
 NODISCARD APPARITION_API Buffer CreateBuffer(Device device, const BufferCreationParams& params);
 APPARITION_API void DestroyBuffer(Buffer buffer);
@@ -33,4 +32,7 @@ APPARITION_API void DestroyBuffer(Buffer buffer);
 // Buffer Map/Unmap
 NODISCARD APPARITION_API void* MapBuffer(Buffer buffer);
 APPARITION_API void UnmapBuffer(Buffer buffer);
+
+// TEMPORARILY HERE
+APPARITION_API VkBuffer GetVulkanHandle(Buffer bufferHandle);
 }

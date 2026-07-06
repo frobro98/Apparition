@@ -41,7 +41,7 @@ static VkBufferUsageFlags ApparitionToVkBufferUsage(BufferUsageFlags usageFlags)
 
 Buffer DeviceManager::CreateBuffer(Device device, const BufferCreationParams& params)
 {
-    DeviceInternal& deviceInternal = GetDeviceInternals(device);
+    DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
     VkBufferCreateInfo bufferInfo = {};
     Vk::ZeroInfoStruct(bufferInfo, VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO);
@@ -103,4 +103,14 @@ ImageView DeviceManager::CreateImageView(Device /*device*/, const ImageViewCreat
 
 void DeviceManager::DestroyImageView(ImageView /*imageView*/)
 {
+}
+
+VkBuffer DeviceManager::GetBufferHandle(Buffer bufferHandle)
+{
+    u32 deviceIndex = GetDeviceIndexFromHandle(bufferHandle);
+    DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
+    u32 cmdBufferIndex = GetHandleIndex(bufferHandle);
+    BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, cmdBufferIndex);
+
+    return bufferInternal.buffer;
 }

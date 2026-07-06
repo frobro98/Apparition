@@ -1,10 +1,10 @@
 #include "CommandBufferCommands.h"
 
 #include "Internal/ApparitionInternals.h"
+#include "Internal/Conversions.h"
 #include "Internal/DeviceManager.h"
 #include "Internal/HandleDefinitions.h"
 #include "Internal/ImageFormatConversion.h"
-#include "Internal/RenderOperationsConversion.h"
 #include "Internal/VulkanInfos.h"
 
 namespace Apparition
@@ -50,8 +50,8 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 			colorAttachment.clearValue.color.b,
 			colorAttachment.clearValue.color.a } };
 		renderAttachementInfo.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
-		renderAttachementInfo.loadOp = ApparitionLoadToVkLoad(GetLoadOperation(colorAttachment.loadStoreOps));
-		renderAttachementInfo.storeOp = ApparitionStoreToVkStore(GetStoreOperation(colorAttachment.loadStoreOps));
+		renderAttachementInfo.loadOp = ApparitionLoadToVkLoad(LoadOperationFrom(colorAttachment.loadStoreOps));
+		renderAttachementInfo.storeOp = ApparitionStoreToVkStore(StoreOperationFrom(colorAttachment.loadStoreOps));
 
 		ImageViewInternal& viewInternal = GetImageViewInternal(colorAttachment.imageView);
 		renderAttachementInfo.imageView = viewInternal.imageView;
@@ -69,8 +69,8 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 			renderDepthAttachment.clearValue.depthStencil.stencil
 		};
 		depthAttachment.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
-		depthAttachment.loadOp = ApparitionLoadToVkLoad(GetLoadOperation(renderDepthAttachment.loadStoreOps));
-		depthAttachment.storeOp = ApparitionStoreToVkStore(GetStoreOperation(renderDepthAttachment.loadStoreOps));
+		depthAttachment.loadOp = ApparitionLoadToVkLoad(LoadOperationFrom(renderDepthAttachment.loadStoreOps));
+		depthAttachment.storeOp = ApparitionStoreToVkStore(StoreOperationFrom(renderDepthAttachment.loadStoreOps));
 
 		ImageViewInternal& viewInternal = GetImageViewInternal(renderDepthAttachment.imageView);
 		depthAttachment.imageView = viewInternal.imageView;
@@ -88,8 +88,8 @@ void EndCommandBuffer(CommandBuffer commandBuffer)
 			renderStencilAttachment.clearValue.depthStencil.stencil
 		};
 		stencilAttachment.imageLayout = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL;
-		stencilAttachment.loadOp = ApparitionLoadToVkLoad(GetLoadOperation(renderStencilAttachment.loadStoreOps));
-		stencilAttachment.storeOp = ApparitionStoreToVkStore(GetStoreOperation(renderStencilAttachment.loadStoreOps));
+		stencilAttachment.loadOp = ApparitionLoadToVkLoad(LoadOperationFrom(renderStencilAttachment.loadStoreOps));
+		stencilAttachment.storeOp = ApparitionStoreToVkStore(StoreOperationFrom(renderStencilAttachment.loadStoreOps));
 
 		ImageViewInternal& viewInternal = GetImageViewInternal(renderStencilAttachment.imageView);
 		stencilAttachment.imageView = viewInternal.imageView;
@@ -170,6 +170,15 @@ void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& view
 		.extent = { scissorDesc.extentX, scissorDesc.extentY }
 	};
 	vkCmdSetScissor(cbInternal.commandBuffer, 0, 1, &scissor);
+}
+
+APPARITION_API void BindGraphicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	VkPipeline vkPipeline = GetPipelineInternal(pipeline).pipeline;
+	vkCmdBindPipeline(cbInternal.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
 }
 
 void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount)

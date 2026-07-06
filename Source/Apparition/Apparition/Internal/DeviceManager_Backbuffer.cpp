@@ -12,7 +12,7 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 {
     using namespace Apparition;
 
-    DeviceInternal& deviceInternal = GetDeviceInternals(device);
+    DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
     if (deviceInternal.backbuffer.swapchainHandle != VK_NULL_HANDLE)
     {
@@ -94,7 +94,7 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 	{
 		surfaceFormat = surfaceFormats[0];
 	}
-	backbuffer.format = VkFormatToApparitionFormat(surfaceFormat.format);
+	backbuffer.format = VkFormatToApparition(surfaceFormat.format);
 
 	// Set up swapchain extents
 	backbuffer.extents.width = surfaceCapabilities.currentExtent.width == 0xffffffff ? params.wndWidth : surfaceCapabilities.currentExtent.width;
@@ -193,7 +193,7 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 		Vk::ZeroInfoStruct(viewInfo, VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO);
 		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		viewInfo.image = backbufferImages[i];
-		viewInfo.format = ApparitionFormatToVkFormat(backbuffer.format);
+		viewInfo.format = ApparitionFormatToVk(backbuffer.format);
 		viewInfo.components = {
 			.r = VK_COMPONENT_SWIZZLE_IDENTITY,
 			.g = VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -238,7 +238,7 @@ void DeviceManager::TeardownBackbuffer(Apparition::Device device)
 {
 	using namespace Apparition;
 
-	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
 
@@ -260,9 +260,7 @@ void DeviceManager::TeardownBackbuffer(Apparition::Device device)
 
 BackbufferStatus DeviceManager::AcquireNextBackbufferImage(Device device)
 {
-	using namespace Apparition;
-
-	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
 
 	u32 imageIndex;
@@ -290,7 +288,7 @@ BackbufferStatus DeviceManager::AcquireNextBackbufferImage(Device device)
 
 ImageView DeviceManager::GetBackbufferImageView(Device device)
 {
-	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
 	u32 viewIndex = backbuffer.currentImageIndex;
 	Assert(backbuffer.views.IsIndexValid(viewIndex));
@@ -302,7 +300,7 @@ ImageView DeviceManager::GetBackbufferImageView(Device device)
 
 Image DeviceManager::GetAcquiredBackbufferImage(Device device)
 {
-	DeviceInternal& deviceInternal = GetDeviceInternals(device);
+	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
 	u32 imgIndex = backbuffer.currentImageIndex;
 	Assert(backbuffer.images.IsIndexValid(imgIndex));

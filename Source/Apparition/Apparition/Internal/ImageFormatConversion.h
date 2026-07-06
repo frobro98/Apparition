@@ -7,8 +7,8 @@
 // Sets up quick mapping between the formats themselves instead of doing a switch
 void InitializeFormatMapping();
 
-Apparition::ImageFormat::Type VkFormatToApparitionFormat(VkFormat format);
-VkFormat ApparitionFormatToVkFormat(Apparition::ImageFormat::Type imageFormat);
+Apparition::ImageFormat::Type VkFormatToApparition(VkFormat format);
+VkFormat ApparitionFormatToVk(Apparition::ImageFormat::Type imageFormat);
 
 inline VkImageAspectFlags ApparitionImageViewAspectToVkAspectFlags(Apparition::ImageViewAspect::Type aspect)
 {

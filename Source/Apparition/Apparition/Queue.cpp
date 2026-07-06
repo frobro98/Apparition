@@ -41,7 +41,7 @@ APPARITION_API void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const u32 deviceIndex = GetDeviceIndexFromHandle(queue);
-    DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+    DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
     // Queue internals
     const u32 queueIndex = GetHandleIndex(queue);
     const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(queue));
@@ -64,7 +64,7 @@ APPARITION_API void WaitForIdle(Queue queue)
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const u32 deviceIndex = GetDeviceIndexFromHandle(queue);
-    DeviceInternal& deviceInternal = deviceManager.GetDeviceInternals(deviceIndex);
+    DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
     // Queue internals
     const u32 queueIndex = GetHandleIndex(queue);
     const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(queue));

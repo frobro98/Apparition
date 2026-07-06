@@ -189,11 +189,12 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\RenderOperationsConversion.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\Conversions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanInfos.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Pipeline.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\PipelineStateDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Queue.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\RenderingDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Synchronization.h" />
@@ -209,6 +210,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Pipeline.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Resources.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.cpp" />

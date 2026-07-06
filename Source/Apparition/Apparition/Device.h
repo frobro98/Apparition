@@ -44,7 +44,6 @@ struct DeviceCreationParams
 
 // No need to expose Vulkan Instance creation, will check upon creation of a device
 
-// TODO - 
 NODISCARD APPARITION_API Device CreateDevice(const DeviceCreationParams& params);
 APPARITION_API void DestroyDevice(Device deviceHandle);
 APPARITION_API u32 GetGraphicsQueueIndex(Device deviceHandle);

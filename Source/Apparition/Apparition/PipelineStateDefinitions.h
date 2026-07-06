@@ -1,0 +1,213 @@
+#pragma once
+
+#include "BasicTypes/Intrinsics.hpp"
+
+namespace Apparition
+{
+////////////////////////
+// Vertex Input State
+////////////////////////
+namespace VertexInputFormat
+{
+enum Type
+{
+	F32_1,
+	F32_2,
+	F32_3,
+	F32_4,
+	U32,
+
+	MAX = 0x7FFFFFFF
+};
+}// VertexInputFormat
+
+namespace VertexInputRate
+{
+enum Type
+{
+	Vertex,
+	Instance,
+
+	MAX = 0x7FFFFFFF
+};
+}// VertexInputRate
+
+////////////////////////
+// Input Assembly State
+////////////////////////
+
+namespace PrimitiveTopology
+{
+enum Type
+{
+	TriangleList,
+	TriangleStrip,
+	TriangleFan,
+	LineList,
+	LineStrip,
+	PointList,
+
+	MAX = 0x7FFFFFFF
+};
+}// PrimitiveTopology
+
+
+////////////////////////
+// Rasterization State
+////////////////////////
+
+namespace FillMode
+{
+enum Type
+{
+	Full,
+	Wireframe,
+	Point,
+	MAX = 0x7FFFFFFF
+};
+}// FillMode
+
+namespace CullMode
+{
+enum Type
+{
+	None,
+	Back,
+	Front,
+	FrontAndBack,
+
+	MAX = 0x7FFFFFFF
+};
+}// CullMode
+
+// TODO - rename this to something more straightforward
+namespace FrontFace
+{
+enum Type
+{
+	Clockwise,
+	CounterClockwise,
+
+	MAX = 0x7FFFFFFF
+};
+}
+
+////////////////////////
+// Depth/Stencil State
+////////////////////////
+
+namespace CompareOperation
+{
+enum Type
+{
+	None,
+	Equal,
+	NotEqual,
+	Less,
+	LessThanOrEqual,
+	Greater,
+	GreaterThanOrEqual,
+	Always
+};
+}// CompareOperation
+
+namespace StencilOperation
+{
+enum Type
+{
+	Keep,
+	Zero,
+	Replace,
+	Invert,
+	IncrementAndClamp,
+	DecrementAndClamp,
+	IncrementAndWrap,
+	DecrementAndWrap
+};
+}// StencilOperation
+
+////////////////////////
+// Multisampling State
+////////////////////////
+
+namespace SampleCountFlagBits
+{
+enum Type
+{
+	SampleCount_1 = 1 << 0,
+	SampleCount_2 = 1 << 1,
+	SampleCount_4 = 1 << 2,
+	SampleCount_8 = 1 << 3,
+	SampleCount_16 = 1 << 4,
+	SampleCount_32 = 1 << 5,
+	SampleCount_64 = 1 << 6,
+
+	MAX = 0x7FFFFFFF
+};
+} // SampleCountFlagBits
+using SampleCountFlags = u32;
+
+////////////////////////
+// Color Blend State
+////////////////////////
+
+namespace BlendMode
+{
+enum Type
+{
+	Opaque,
+	Transparent,
+
+	MAX = 0x7FFFFFFF
+};
+}// BlendMode
+
+namespace ColorComponentFlagBits
+{
+enum Type
+{
+    Red = 1 << 0,
+    Green = 1 << 1,
+    Blue = 1 << 2,
+    Alpha = 1 << 3,
+
+    RGB = Red | Green | Blue,
+    RGBA = Red | Green | Blue | Alpha
+};
+} // ColorComponentFlagBits
+using ColorComponentFlags = u32;
+
+namespace BlendOperation
+{
+enum Type
+{
+    None,
+    Add,
+    Subtract
+};
+}// BlendOperation
+
+namespace BlendFactor
+{
+enum Type
+{
+	Zero,
+	One,
+	SrcColor,
+	OneMinusSrcColor,
+	DstColor,
+	OneMinusDstColor,
+	SrcAlpha,
+	OneMinusSrcAlpha,
+	DstAlpha,
+	OneMinusDstAlpha,
+	ConstColor,
+	OneMinusConstColor,
+	ConstAlpha,
+	OneMinusConstAlpha
+};
+}// BlendFactor
+
+
+
+}

@@ -72,7 +72,7 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\RenderingDescription.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\RenderOperationsConversion.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\Conversions.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorSet.h">
@@ -81,7 +81,12 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorHeap.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorHeap.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\PipelineStateDefinitions.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp">
@@ -126,8 +131,17 @@
     <ClCompile Include="..\..\Source\Apparition\Apparition\Queue.cpp">
       <Filter>Source\Apparition</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Apparition\Apparition\DescriptorSet.cpp" />
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Image.cpp" />
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Pipeline.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\DescriptorSet.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Image.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Pipeline.cpp">
+      <Filter>Source\Apparition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Pipeline.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

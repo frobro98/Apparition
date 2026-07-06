@@ -84,6 +84,37 @@ struct ImageViewInternal
 	// View information
 };
 
+struct VertexInputPipelineStateInternal
+{
+	VkPipeline state = VK_NULL_HANDLE;
+};
+
+struct PrerasterShadersPipelineStateInternal
+{
+	VkPipeline state = VK_NULL_HANDLE;
+};
+
+struct FragmentShaderPipelineStateInternal
+{
+	VkPipeline state = VK_NULL_HANDLE;
+};
+
+struct FragmentOutputPipelineStateInternal
+{
+	VkPipeline state = VK_NULL_HANDLE;
+};
+
+struct PipelineInternal
+{
+	VkPipeline pipeline = VK_NULL_HANDLE;
+
+	// States used in pipeline construction
+	u32 vertexInputIndex = 0;
+	u32 prerasterShadersIndex = 0;
+	u32 fragmentShaderIndex = 0;
+	u32 fragmentOutputIndex = 0;
+};
+
 struct DeviceInternal
 {
 	Backbuffer backbuffer{};
@@ -105,11 +136,21 @@ struct DeviceInternal
 	HandlePool bufferResourceHandlePool;
 	HandlePool imageResourceHandlePool;
 	HandlePool imageViewResourceHandlePool;
+	HandlePool vertexInputResourceHandlePool;
+	HandlePool prerasterShadersResourceHandlePool;
+	HandlePool fragmentShaderResourceHandlePool;
+	HandlePool fragmentOutputResourceHandlePool;
+	HandlePool pipelineResourceHandlePool;
 	DynamicArray<CommandPoolInternal> commandPools;
 	DynamicArray<CommandBufferInternal> commandBuffers;
 	DynamicArray<BufferInternal> bufferResources;
 	DynamicArray<ImageInternal> imageResources;
 	DynamicArray<ImageViewInternal> imageViewResources;
+	DynamicArray<VertexInputPipelineStateInternal> vertexInputResources;
+	DynamicArray<PrerasterShadersPipelineStateInternal> prerasterShadersResources;
+	DynamicArray<FragmentShaderPipelineStateInternal> fragmentShaderResources;
+	DynamicArray<FragmentOutputPipelineStateInternal> fragmentOutputResources;
+	DynamicArray<PipelineInternal> pipelineResources;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 	u32 graphicsFamilyIndex = 0;
 	u32 transferFamilyIndex = 0;
@@ -121,4 +162,9 @@ REGISTER_HANDLE_TYPE(CommandBuffer, commandBuffers);
 REGISTER_HANDLE_TYPE(Buffer, bufferResources);
 REGISTER_HANDLE_TYPE(Image, imageResources);
 REGISTER_HANDLE_TYPE(ImageView, imageViewResources);
+REGISTER_HANDLE_TYPE(VertexInputPipelineState, vertexInputResources);
+REGISTER_HANDLE_TYPE(PrerasterShadersPipelineState, prerasterShadersResources);
+REGISTER_HANDLE_TYPE(FragmentShaderPipelineState, fragmentShaderResources);
+REGISTER_HANDLE_TYPE(FragmentOutputPipelineState, fragmentOutputResources);
+REGISTER_HANDLE_TYPE(Pipeline, pipelineResources);
 
