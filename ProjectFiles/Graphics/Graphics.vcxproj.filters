@@ -87,6 +87,9 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\PipelineStateDefinitions.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DeviceLimits.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp">
@@ -141,6 +144,9 @@
       <Filter>Source\Apparition</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Pipeline.cpp">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_DescriptorSet.cpp">
       <Filter>Source\Apparition\Internal</Filter>
     </ClCompile>
   </ItemGroup>

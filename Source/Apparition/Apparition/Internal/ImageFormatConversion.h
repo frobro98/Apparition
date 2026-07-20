@@ -10,22 +10,22 @@ void InitializeFormatMapping();
 Apparition::ImageFormat::Type VkFormatToApparition(VkFormat format);
 VkFormat ApparitionFormatToVk(Apparition::ImageFormat::Type imageFormat);
 
-inline VkImageAspectFlags ApparitionImageViewAspectToVkAspectFlags(Apparition::ImageViewAspect::Type aspect)
+constexpr VkImageAspectFlags ApparitionImageViewAspectToVkAspectFlags(Apparition::ImageAspect::Type aspect)
 {
 	switch (aspect)
 	{
-	case Apparition::ImageViewAspect::Color:
+	case Apparition::ImageAspect::Color:
 		return VK_IMAGE_ASPECT_COLOR_BIT;
-	case Apparition::ImageViewAspect::Depth:
+	case Apparition::ImageAspect::Depth:
 		return VK_IMAGE_ASPECT_DEPTH_BIT;
-	case Apparition::ImageViewAspect::Stencil:
+	case Apparition::ImageAspect::Stencil:
 		return VK_IMAGE_ASPECT_STENCIL_BIT;
 	default:
 		return VK_IMAGE_ASPECT_NONE;
 	}
 }
 
-inline VkImageLayout ApparitionImageAccessToVkLayout(Apparition::ImageAccess::Type imgState)
+constexpr VkImageLayout ApparitionImageAccessToVkLayout(Apparition::ImageAccess::Type imgState)
 {
 	switch (imgState)
 	{
@@ -48,12 +48,14 @@ inline VkImageLayout ApparitionImageAccessToVkLayout(Apparition::ImageAccess::Ty
 	}
 }
 
-inline VkAccessFlags2 ApparitionImageAccessToAccessMask(Apparition::ImageAccess::Type imgAccess)
+constexpr VkAccessFlags2 ApparitionImageAccessToAccessMask(Apparition::ImageAccess::Type imgAccess)
 {
 	switch (imgAccess)
 	{
 	case Apparition::ImageAccess::Present:
 		return 0;
+	case Apparition::ImageAccess::TransferSrc:
+		return VK_ACCESS_2_TRANSFER_READ_BIT;
 	case Apparition::ImageAccess::TransferDst:
 		return VK_ACCESS_2_TRANSFER_WRITE_BIT;
 	case Apparition::ImageAccess::ColorWrite:
@@ -70,7 +72,7 @@ inline VkAccessFlags2 ApparitionImageAccessToAccessMask(Apparition::ImageAccess:
 	}
 }
 
-inline VkPipelineStageFlags2 ApparitionImageAccessToPipelineStage(Apparition::ImageAccess::Type imgAccess)
+constexpr VkPipelineStageFlags2 ApparitionImageAccessToPipelineStage(Apparition::ImageAccess::Type imgAccess)
 {
 	switch (imgAccess)
 	{

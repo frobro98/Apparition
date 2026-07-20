@@ -4,6 +4,33 @@
 #include "Apparition/PipelineStateDefinitions.h"
 #include "VulkanDefinitions.h"
 
+constexpr VkImageUsageFlags ApparitionImageUsageToVk(Apparition::ImageUsageFlags imageUsageFlags)
+{
+	VkImageUsageFlags vkUsageFlags = 0;
+	if (imageUsageFlags & Apparition::ImageUsageFlagBits::TransferSrc)
+	{
+		vkUsageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	}
+	if (imageUsageFlags & Apparition::ImageUsageFlagBits::TransferDst)
+	{
+		vkUsageFlags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	}
+	if (imageUsageFlags & Apparition::ImageUsageFlagBits::Sampled)
+	{
+		vkUsageFlags |= VK_IMAGE_USAGE_SAMPLED_BIT;
+	}
+	if (imageUsageFlags & Apparition::ImageUsageFlagBits::ColorAttachment)
+	{
+		vkUsageFlags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	}
+	if (imageUsageFlags & Apparition::ImageUsageFlagBits::DepthStencilAttachment)
+	{
+		vkUsageFlags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	}
+
+	return vkUsageFlags;
+}
+
 constexpr VkFormat ApparitionInputFormatToVk(Apparition::VertexInputFormat::Type type)
 {
 	using namespace Apparition;
@@ -252,4 +279,93 @@ constexpr VkBlendFactor ApparitionBlendFactorToVk(Apparition::BlendFactor::Type 
 	default:
 		return VK_BLEND_FACTOR_MAX_ENUM;
 	}
+}
+
+constexpr VkDescriptorType ApparitionDescriptorTypeToVk(Apparition::Descriptor::Type descriptorType)
+{
+	using namespace Apparition;
+	switch (descriptorType)
+	{
+	case Apparition::Descriptor::Sampler:
+		return VK_DESCRIPTOR_TYPE_SAMPLER;
+	case Apparition::Descriptor::CombinedImageSampler:
+		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	case Apparition::Descriptor::SampledImage:
+		return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+	case Apparition::Descriptor::StorageImage:
+		return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	case Apparition::Descriptor::UniformTexelBuffer:
+		return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+	case Apparition::Descriptor::StorageTexelBuffer:
+		return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+	case Apparition::Descriptor::UniformBuffer:
+		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	case Apparition::Descriptor::StorageBuffer:
+		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	case Apparition::Descriptor::UniformBufferDynamic:
+		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+	case Apparition::Descriptor::StorageBufferDynamic:
+		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+	case Apparition::Descriptor::InputAttachment:
+		return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+	case Apparition::Descriptor::Count:
+	case Apparition::Descriptor::Max:
+	default:
+		Assert(false);
+	}
+
+	return VK_DESCRIPTOR_TYPE_MAX_ENUM;
+}
+
+constexpr VkFilter ApparitionFilterToVk(Apparition::SamplerFilter::Type filter)
+{
+	using namespace Apparition;
+
+	switch (filter)
+	{
+	case SamplerFilter::Nearest:
+		return VK_FILTER_NEAREST;
+	case SamplerFilter::Linear:
+		return VK_FILTER_LINEAR;
+	default:
+		Assert(false);
+	}
+
+	return VK_FILTER_MAX_ENUM;
+}
+
+constexpr VkSamplerAddressMode ApparitionAddressModeToVk(Apparition::SamplerAddressMode::Type addrMode)
+{
+	using namespace Apparition;
+
+	switch (addrMode)
+	{
+	case SamplerAddressMode::Repeat:
+		return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	case SamplerAddressMode::Clamp:
+		return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	case SamplerAddressMode::Mirror:
+		return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+	default:
+		Assert(false);
+	}
+
+	return VK_SAMPLER_ADDRESS_MODE_MAX_ENUM;
+}
+
+constexpr VkSamplerMipmapMode ApparitionMipModeToVk(Apparition::SamplerMipmapMode::Type mipMode)
+{
+	using namespace Apparition;
+
+	switch (mipMode)
+	{
+	case SamplerMipmapMode::Nearest:
+		return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	case SamplerMipmapMode::Linear:
+		return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	default:
+		Assert(false);
+	}
+
+	return VK_SAMPLER_MIPMAP_MODE_MAX_ENUM;
 }

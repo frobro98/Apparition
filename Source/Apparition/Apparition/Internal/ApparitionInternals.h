@@ -72,8 +72,9 @@ struct ImageInternal
 	VmaAllocation allocation = VK_NULL_HANDLE;
 
 	// Image formatting and access
+	// Access per mip level of the image. Defaults all to Undefined until access occurs
+	DynamicArray<Apparition::ImageAccess::Type> access;
 	Apparition::ImageFormat::Type format;
-	Apparition::ImageAccess::Type access;
 };
 
 struct ImageViewInternal
@@ -82,6 +83,11 @@ struct ImageViewInternal
 	u32 imageIndex = UINT32_MAX;
 
 	// View information
+};
+
+struct SamplerInternal
+{
+	VkSampler sampler = VK_NULL_HANDLE;
 };
 
 struct VertexInputPipelineStateInternal
@@ -115,6 +121,21 @@ struct PipelineInternal
 	u32 fragmentOutputIndex = 0;
 };
 
+struct DescriptorSetLayoutInternal
+{
+	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+};
+
+struct DescriptorPoolInternal
+{
+	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+};
+
+struct DescriptorSetInternal
+{
+	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+};
+
 struct DeviceInternal
 {
 	Backbuffer backbuffer{};
@@ -136,21 +157,30 @@ struct DeviceInternal
 	HandlePool bufferResourceHandlePool;
 	HandlePool imageResourceHandlePool;
 	HandlePool imageViewResourceHandlePool;
+	HandlePool samplerResourceHandlePool;
 	HandlePool vertexInputResourceHandlePool;
 	HandlePool prerasterShadersResourceHandlePool;
 	HandlePool fragmentShaderResourceHandlePool;
 	HandlePool fragmentOutputResourceHandlePool;
 	HandlePool pipelineResourceHandlePool;
+	HandlePool descriptorSetLayoutHandlePools;
+	HandlePool descriptorPoolHandlePools;
+	HandlePool descriptorSetHandlePools;
+
 	DynamicArray<CommandPoolInternal> commandPools;
 	DynamicArray<CommandBufferInternal> commandBuffers;
 	DynamicArray<BufferInternal> bufferResources;
 	DynamicArray<ImageInternal> imageResources;
 	DynamicArray<ImageViewInternal> imageViewResources;
+	DynamicArray<SamplerInternal> samplerResources;
 	DynamicArray<VertexInputPipelineStateInternal> vertexInputResources;
 	DynamicArray<PrerasterShadersPipelineStateInternal> prerasterShadersResources;
 	DynamicArray<FragmentShaderPipelineStateInternal> fragmentShaderResources;
 	DynamicArray<FragmentOutputPipelineStateInternal> fragmentOutputResources;
 	DynamicArray<PipelineInternal> pipelineResources;
+	DynamicArray<DescriptorSetLayoutInternal> descriptorSetLayoutResources;
+	DynamicArray<DescriptorPoolInternal> descriptorPoolResources;
+	DynamicArray<DescriptorSetInternal> descriptorSetResources;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 	u32 graphicsFamilyIndex = 0;
 	u32 transferFamilyIndex = 0;
@@ -159,12 +189,19 @@ struct DeviceInternal
 
 REGISTER_HANDLE_TYPE(CommandPool, commandPools);
 REGISTER_HANDLE_TYPE(CommandBuffer, commandBuffers);
+// Resource Handles
 REGISTER_HANDLE_TYPE(Buffer, bufferResources);
 REGISTER_HANDLE_TYPE(Image, imageResources);
 REGISTER_HANDLE_TYPE(ImageView, imageViewResources);
+REGISTER_HANDLE_TYPE(Sampler, samplerResources);
+// Pipeline Handles
 REGISTER_HANDLE_TYPE(VertexInputPipelineState, vertexInputResources);
 REGISTER_HANDLE_TYPE(PrerasterShadersPipelineState, prerasterShadersResources);
 REGISTER_HANDLE_TYPE(FragmentShaderPipelineState, fragmentShaderResources);
 REGISTER_HANDLE_TYPE(FragmentOutputPipelineState, fragmentOutputResources);
 REGISTER_HANDLE_TYPE(Pipeline, pipelineResources);
+// DescriptorSet Handles
+REGISTER_HANDLE_TYPE(DescriptorSetLayout, descriptorSetLayoutResources);
+REGISTER_HANDLE_TYPE(DescriptorPool, descriptorPoolResources);
+REGISTER_HANDLE_TYPE(DescriptorSet, descriptorSetResources);
 

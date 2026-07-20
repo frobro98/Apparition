@@ -31,7 +31,8 @@ enum Type
 };
 } // ImageFormat
 
-namespace ImageViewAspect
+// TODO - Make this a mask
+namespace ImageAspect
 {
 enum Type
 {
@@ -47,7 +48,7 @@ enum Type
 {
 	Undefined,
 	Present,
-	//TransferSrc,
+	TransferSrc,
 	TransferDst,
 	ColorWrite,
 	ColorRead,

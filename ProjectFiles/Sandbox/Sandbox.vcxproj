@@ -108,13 +108,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include;$(SolutionDir)ThirdParty\include\ktx\include;$(SolutionDir)ThirdParty\include\ktx\other_include</AdditionalIncludeDirectories>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4201;4251;4307</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -147,10 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\checkheader.c" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\filestream.c" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\hashlist.c" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\memstream.c" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\swap.c" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\texture.c" />
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\vkloader.c" />
     <ClCompile Include="Sandbox.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

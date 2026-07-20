@@ -11,6 +11,12 @@
     <Filter Include="Source\Shaders">
       <UniqueIdentifier>{016b075d-bad3-4e72-98cf-f0f24c070beb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\glTFModel">
+      <UniqueIdentifier>{15f5cea4-e1c2-4ebe-9ef8-e18128a96bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\glTFModel\ktx">
+      <UniqueIdentifier>{1a423b7e-832c-4144-83ce-021b15710999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp">
@@ -19,10 +25,37 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source\Window</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp">
+      <Filter>Source\glTFModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\hashlist.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\memstream.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\swap.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\texture.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\vkloader.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\checkheader.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\ktx\lib\filestream.c">
+      <Filter>Source\glTFModel\ktx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
       <Filter>Source\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h">
+      <Filter>Source\glTFModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

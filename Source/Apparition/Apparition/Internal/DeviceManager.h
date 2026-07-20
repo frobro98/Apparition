@@ -105,6 +105,9 @@ public:
 	ImageView CreateImageView(Device device, const ImageViewCreationParams& params);
 	void DestroyImageView(ImageView imageView);
 
+	Sampler CreateSampler(Device device, const SamplerCreationParams& params);
+	void DestroySampler(Sampler sampler);
+
 	//RetVal GetBufferDescription(Buffer buffer) const;
 
 	// TEMP
@@ -124,6 +127,21 @@ public:
 
 	Pipeline CreatePipeline(Device device, const PipelineCreationParams& params);
 	void DestroyPipeline(Pipeline pipeline);
+#pragma endregion
+
+#pragma region Descriptor Set
+	DescriptorSetLayout CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params);
+	void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
+
+	DescriptorPool CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params);
+	void DestroyDescriptorPool(DescriptorPool descriptorPool);
+
+	DescriptorSet AllocateDescriptorSet(DescriptorPool descriptorPool, const DescriptorSetAllocParams& allocParams);
+	void FreeDescriptorSet(DescriptorSet descriptorSet);
+	void AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSetAllocParams>& allocParams);
+	void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets);
+
+	void UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetDesc>& descriptorSetUpdates);
 #pragma endregion
 private:
 	UserValidationCallbackData userValidation;

@@ -51,6 +51,25 @@ APPARITION_API void SetViewportAndScissor(CommandBuffer commandBuffer, const Vie
 
 APPARITION_API void BindGraphicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline);
 
+namespace BindPoint
+{
+enum Type
+{
+    Graphics,
+    Compute
+};
+}
+
+struct BindDescriptorSetsDesc
+{
+    PipelineDescription pipelineDesc;
+    BindPoint::Type bindPoint = BindPoint::Graphics;
+    u32 firstSet = 0;
+    DynamicArray<DescriptorSet> descriptorSets;
+};
+
+APPARITION_API void BindDescriptorSets(CommandBuffer commandBuffer, const BindDescriptorSetsDesc& bindDescriptorSetsDesc);
+
 // Draw Commands
 APPARITION_API void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount);
 
@@ -67,6 +86,52 @@ struct BufferCopyDesc
 };
 
 APPARITION_API void CopyBuffer(CommandBuffer commandBuffer, const BufferCopyDesc& copyDesc);
+
+struct BufferToImageCopyOutline
+{
+    // Subresource
+    ImageAspect::Type aspect = ImageAspect::Color;
+    u32 mipLevel = 0;
+    // TODO - Support array layers
+    u32 imgWidth = 0;
+    u32 imgHeight = 0;
+};
+
+struct BufferToImageCopyDesc
+{
+    Buffer srcBuffer = { InvalidHandle };
+    Image dstImage = { InvalidHandle };
+    BufferToImageCopyOutline outline;
+};
+
+APPARITION_API void CopyBufferToImage(CommandBuffer commandBuffer, const BufferToImageCopyDesc& copyDesc);
+
+// TODO - the BuffertoImageCopyDesc struct has a reference to a buffer and an image, just like VkBufferImageCopy. This
+// needs to be changed because of clarity. Make a separate copy structure that is shared by all Buffer -> Image commands
+struct BufferRegionsToImageCopyDesc
+{
+    Buffer srcBuffer = { InvalidHandle };
+    Image dstImage = { InvalidHandle };
+    DynamicArray<BufferToImageCopyOutline> outlines;
+};
+APPARITION_API void CopyBufferRegionsToImage(CommandBuffer commandBuffer, const BufferRegionsToImageCopyDesc& copyRegions);
+
+struct BlitImageDesc
+{
+    Image srcImage;
+    ImageAspect::Type srcAspect = ImageAspect::Color;
+    u32 srcMipLevel = 0;
+    // TODO - Better understand why there are multiple offsets for both src and dst
+    i32 srcOffsetX[2] = { 0, 0 };
+    i32 srcOffsetY[2] = { 0, 0 };
+    Image dstImage;
+    ImageAspect::Type dstAspect = ImageAspect::Color;
+    u32 dstMipLevel = 0;
+    i32 dstOffsetX[2] = { 0, 0 };
+    i32 dstOffsetY[2] = { 0, 0 };
+};
+
+APPARITION_API void BlitImage(CommandBuffer commandBuffer, const BlitImageDesc& blitDesc);
 
 /* NOTES ON PIPELINE BARRIERS
 *  What we know:
@@ -87,7 +152,10 @@ struct ImageMemoryBarrierDesc
 {
     Image image;
     ImageAccess::Type access;
-    Apparition::ImageViewAspect::Type aspect;
+    // Subresource range
+    ImageAspect::Type aspect = ImageAspect::Color;
+    u32 baseMipLevel = 0;
+    u32 mipLevelCount = 0;
 };
 
 // NOTE: current does not support multiple image transitions at one time, BUT will need to support this at some point

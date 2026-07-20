@@ -19,7 +19,7 @@ struct ShaderData
 
 struct PipelineDescription
 {
-    DynamicArray<DescriptorSetLayout> DescriptorSets;
+    DynamicArray<DescriptorSetLayout> descriptorSets;
 };
 
 HANDLE_TYPE(VertexInputPipelineState);

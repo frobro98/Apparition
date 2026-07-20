@@ -181,6 +181,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorHeap.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorSet.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DeviceLimits.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\ImageDescription.h" />
@@ -210,6 +211,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_DescriptorSet.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Pipeline.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Resources.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp" />

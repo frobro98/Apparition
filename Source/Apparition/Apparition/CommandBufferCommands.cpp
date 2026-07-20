@@ -7,6 +7,35 @@
 #include "Internal/ImageFormatConversion.h"
 #include "Internal/VulkanInfos.h"
 
+namespace
+{
+using namespace Apparition;
+
+// Create VkPipelineLayout
+VkPipelineLayout CreatePipelineLayout(const PipelineDescription& desc, VkDevice device)
+{
+	DynamicArray<VkDescriptorSetLayout> setLayouts;
+	setLayouts.Reserve(desc.descriptorSets.Size());
+	for (const DescriptorSetLayout& layoutHandle : desc.descriptorSets)
+	{
+		DescriptorSetLayoutInternal& layoutInternal = GetDescriptorSetLayoutInternal(layoutHandle);
+		setLayouts.Add(layoutInternal.descriptorSetLayout);
+	}
+
+	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = setLayouts.Size();
+	pipelineLayoutInfo.pSetLayouts = setLayouts.GetData();
+	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+	const VkResult result = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+	CHECK_VK(result);
+
+	return pipelineLayout;
+}
+}
+
 namespace Apparition
 {
 void BeginCommandBuffer(CommandBuffer commandBuffer, bool oneTimeSubmit)
@@ -172,13 +201,35 @@ void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& view
 	vkCmdSetScissor(cbInternal.commandBuffer, 0, 1, &scissor);
 }
 
-APPARITION_API void BindGraphicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline)
+void BindGraphicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline)
 {
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
 	VkPipeline vkPipeline = GetPipelineInternal(pipeline).pipeline;
 	vkCmdBindPipeline(cbInternal.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+}
+
+void BindDescriptorSets(CommandBuffer commandBuffer, const BindDescriptorSetsDesc& bindDescriptorSetsDesc)
+{
+	const DeviceInternal& deviceInternal = GetDeviceInternal(commandBuffer);
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	DynamicArray<VkDescriptorSet> setHandles(bindDescriptorSetsDesc.descriptorSets.Size());
+	for (const DescriptorSet& descriptorSet : bindDescriptorSetsDesc.descriptorSets)
+	{
+		DescriptorSetInternal& setInternal = GetDescriptorSetInternal(descriptorSet);
+		setHandles.Add(setInternal.descriptorSet);
+	}
+	// Create VkPipelineLayout
+	VkPipelineLayout pipelineLayout = CreatePipelineLayout(bindDescriptorSetsDesc.pipelineDesc, deviceInternal.device);
+
+	VkPipelineBindPoint bindPoint = bindDescriptorSetsDesc.bindPoint == BindPoint::Graphics ? VK_PIPELINE_BIND_POINT_GRAPHICS : VK_PIPELINE_BIND_POINT_COMPUTE;
+
+	vkCmdBindDescriptorSets(cbInternal.commandBuffer, bindPoint, pipelineLayout, bindDescriptorSetsDesc.firstSet, setHandles.Size(), setHandles.GetData(), 0, nullptr);
+
+	vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 }
 
 void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount)
@@ -204,6 +255,73 @@ void CopyBuffer(CommandBuffer commandBuffer, const BufferCopyDesc& copyDesc)
 	vkCmdCopyBuffer(cbInternal.commandBuffer, vkSrcBuffer, vkDstBuffer, 1, &copyRegion);
 }
 
+void CopyBufferToImage(CommandBuffer commandBuffer, const BufferToImageCopyDesc& copyDesc)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	VkBuffer vkSrcBuffer = GetBufferInternal(copyDesc.srcBuffer).buffer;
+	VkImage vkDstImage = GetImageInternal(copyDesc.dstImage).image;
+
+	const BufferToImageCopyOutline& outline = copyDesc.outline;
+	VkBufferImageCopy bufferCopyRegion{
+		.imageSubresource = {
+			.aspectMask = ApparitionImageViewAspectToVkAspectFlags(outline.aspect),
+			.mipLevel = outline.mipLevel,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		},
+		.imageExtent = {
+			.width = outline.imgWidth,
+			.height = outline.imgHeight,
+			.depth = 1
+		}
+	};
+	vkCmdCopyBufferToImage(cbInternal.commandBuffer, vkSrcBuffer, vkDstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+}
+
+void CopyBufferRegionsToImage(CommandBuffer commandBuffer, const BufferRegionsToImageCopyDesc& copyRegions)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	VkBuffer vkSrcBuffer = GetBufferInternal(copyRegions.srcBuffer).buffer;
+	VkImage vkDstImage = GetImageInternal(copyRegions.dstImage).image;
+
+	const DynamicArray<BufferToImageCopyOutline>& outlines = copyRegions.outlines;
+	DynamicArray<VkBufferImageCopy> bufferCopyRegions;
+	bufferCopyRegions.Reserve(outlines.Size());
+	for (const BufferToImageCopyOutline& outline : outlines)
+	{
+		VkBufferImageCopy bufferCopyRegion{
+			.imageSubresource = {
+				.aspectMask = ApparitionImageViewAspectToVkAspectFlags(outline.aspect),
+				.mipLevel = outline.mipLevel,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			},
+			.imageExtent = {
+				.width = outline.imgWidth,
+				.height = outline.imgHeight,
+				.depth = 1
+			}
+		};
+		bufferCopyRegions.Add(bufferCopyRegion);
+	}
+	vkCmdCopyBufferToImage(cbInternal.commandBuffer, vkSrcBuffer, vkDstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, bufferCopyRegions.Size(), bufferCopyRegions.GetData());
+}
+
+void BlitImage(CommandBuffer commandBuffer, const BlitImageDesc& blitDesc)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	NOT_USED VkImage srcImage = GetImageInternal(blitDesc.srcImage).image;
+	NOT_USED VkImage dstImage = GetImageInternal(blitDesc.dstImage).image;
+
+	//vkCmdBlitImage(cbInternal.commandBuffer, srcImage, srcAccessLayout, dstImage, dstAccessLayout, , filter);
+}
+
 void ImageMemoryBarrier(CommandBuffer commandBuffer, const ImageMemoryBarrierDesc& barrierDesc)
 {
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
@@ -211,22 +329,29 @@ void ImageMemoryBarrier(CommandBuffer commandBuffer, const ImageMemoryBarrierDes
 
 	ImageInternal& imgInternal = GetImageInternal(barrierDesc.image);
 
+	// TODO: Will need to make this part of the barrier desc. Can be a default most of the time
+	VkImageSubresourceRange subresourceRange{
+		.aspectMask = ApparitionImageViewAspectToVkAspectFlags(barrierDesc.aspect),
+		.baseMipLevel = barrierDesc.baseMipLevel,
+		.levelCount = barrierDesc.mipLevelCount,
+		.layerCount = 1
+	};
+
+	Assert(imgInternal.access.IsIndexValid(barrierDesc.baseMipLevel));
+	Apparition::ImageAccess::Type imgAccess = imgInternal.access[barrierDesc.baseMipLevel];
+
 	// TODO: There is no validation between the access and the format
 	VkImageMemoryBarrier2 imageBarrier;
 	Vk::ZeroInfoStruct(imageBarrier, VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2);
-	imageBarrier.oldLayout = ApparitionImageAccessToVkLayout(imgInternal.access);
+	imageBarrier.oldLayout = ApparitionImageAccessToVkLayout(imgAccess);
 	imageBarrier.newLayout = ApparitionImageAccessToVkLayout(barrierDesc.access);
-	imageBarrier.srcAccessMask = ApparitionImageAccessToAccessMask(imgInternal.access);
+	imageBarrier.srcAccessMask = ApparitionImageAccessToAccessMask(imgAccess);
 	imageBarrier.dstAccessMask = ApparitionImageAccessToAccessMask(barrierDesc.access);
-	imageBarrier.srcStageMask = ApparitionImageAccessToPipelineStage(imgInternal.access);
+	// TODO - Expose stage mask, since this kind of assumption is a little much for this kind of API
+	imageBarrier.srcStageMask = ApparitionImageAccessToPipelineStage(imgAccess);
 	imageBarrier.dstStageMask = ApparitionImageAccessToPipelineStage(barrierDesc.access);
 	imageBarrier.image = imgInternal.image;
-	// TODO: Will need to make this part of the barrier desc. Can be a default most of the time
-	imageBarrier.subresourceRange.aspectMask = ApparitionImageViewAspectToVkAspectFlags(barrierDesc.aspect);
-	imageBarrier.subresourceRange.layerCount = 1;
-	imageBarrier.subresourceRange.levelCount = 1;
-	imageBarrier.subresourceRange.baseMipLevel = 0;
-	imageBarrier.subresourceRange.baseArrayLayer = 0;
+	imageBarrier.subresourceRange = subresourceRange;
 
 	VkDependencyInfo dependencyInfo;
 	Vk::ZeroInfoStruct(dependencyInfo, VK_STRUCTURE_TYPE_DEPENDENCY_INFO);
@@ -234,5 +359,11 @@ void ImageMemoryBarrier(CommandBuffer commandBuffer, const ImageMemoryBarrierDes
 	dependencyInfo.pImageMemoryBarriers = &imageBarrier;
 
 	vkCmdPipelineBarrier2(cbInternal.commandBuffer, &dependencyInfo);
+
+	const u32 mipLevelsToChange = barrierDesc.baseMipLevel + barrierDesc.mipLevelCount;
+	for (u32 i = barrierDesc.baseMipLevel; i < mipLevelsToChange; ++i)
+	{
+		imgInternal.access[i] = barrierDesc.access;
+	}
 }
 }

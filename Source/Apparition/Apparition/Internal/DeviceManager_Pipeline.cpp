@@ -258,8 +258,6 @@ PrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineState
 
 FragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(Device device, const FragmentShaderPipelineStateCreationParams& params)
 {
-    UNUSED(params);
-    
     // Depth/Stencil
     VkPipelineDepthStencilStateCreateInfo depthStencilState{
         .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
@@ -460,8 +458,6 @@ void DeviceManager::DestroyFragmentOutputPipelineState(FragmentOutputPipelineSta
 
 Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationParams& params)
 {
-    UNUSED(params);
-
     // Find VkPipeline handles for API handles
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
@@ -543,5 +539,9 @@ Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationPara
 
 void DeviceManager::DestroyPipeline(Pipeline pipeline)
 {
-    UNUSED(pipeline);
+    DeviceInternal& deviceInternal = GetDeviceInternal(pipeline);
+    PipelineInternal& pipelineInternal = GetPipelineInternal(pipeline);
+    vkDestroyPipeline(deviceInternal.device, pipelineInternal.pipeline, nullptr);
+
+    PushFreedHandleIndex(deviceInternal.pipelineResourceHandlePool, GetHandleIndex(pipeline));
 }

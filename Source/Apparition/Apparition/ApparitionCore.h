@@ -49,17 +49,25 @@ APPARITION_API void SetErrorLogCallback(ValidationDelegate&& validationDelegate,
 
 APPARITION_API void InitializeApparition(const InitializeParams& initParams);
 }
+// TODO - The below could be done with templates and concepts
+
+// NOTE - This is partially correct, but it does not determine validity through the actual handle pools
+#define HANDLE_TYPE_ISVALID(HandleType)						\
+	constexpr bool IsValid(HandleType handle)				\
+	{														\
+		return handle.handle == Apparition::InvalidHandle;	\
+	}
 
 // Compare ops for InvalidHandle
-#define HANDLE_TYPE_OPERATORS(HandleType)							\
+#define HANDLE_TYPE_OPERATORS(HandleType)									\
 	inline bool operator==(HandleType handle, u32 internalHandleValue)		\
-	{																\
-		return handle.handle == internalHandleValue;				\
-	}																\
-																	\
+	{																		\
+		return handle.handle == internalHandleValue;						\
+	}																		\
+																			\
 	inline bool operator!=(HandleType handle, u32 internalHandleValue)		\
-	{																\
-		return handle.handle != internalHandleValue;				\
+	{																		\
+		return handle.handle != internalHandleValue;						\
 	}
 
 // Defines a handle type
@@ -68,4 +76,5 @@ struct HandleType					\
 {									\
 	u64 handle;						\
 };									\
-HANDLE_TYPE_OPERATORS(HandleType)
+HANDLE_TYPE_OPERATORS(HandleType)	\
+HANDLE_TYPE_ISVALID(HandleType)

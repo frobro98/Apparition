@@ -698,7 +698,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		Apparition::CommandPoolCreationParams createParams{
 			.queueIndex = Apparition::GetGraphicsQueueIndex(deviceHandle),
 			.canResetCommandBuffers = true
-			
 		};
 		cmdPoolHandle = Apparition::CreateCommandPool(deviceHandle, createParams);
 	}
@@ -846,7 +845,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			Apparition::ImageMemoryBarrierDesc barrierDesc = {
 				.image = Apparition::GetAcquiredBackbufferImage(deviceHandle),
 				.access = Apparition::ImageAccess::ColorWrite,
-				.aspect = Apparition::ImageViewAspect::Color
+				.aspect = Apparition::ImageAspect::Color
 			};
 
 			Apparition::ImageMemoryBarrier(cmdBufferHandle, barrierDesc);
@@ -908,7 +907,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			Apparition::ImageMemoryBarrierDesc barrierDesc = {
 				.image = Apparition::GetAcquiredBackbufferImage(deviceHandle),
 				.access = Apparition::ImageAccess::Present,
-				.aspect = Apparition::ImageViewAspect::Color
+				.aspect = Apparition::ImageAspect::Color
 			};
 
 			Apparition::ImageMemoryBarrier(cmdBufferHandle, barrierDesc);

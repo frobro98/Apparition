@@ -179,8 +179,10 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 		imgInternal.image = backbufferImages[i];
 		// image allocation is backed by the VkSwapchain, no need for this to be valid
 		imgInternal.allocation = VK_NULL_HANDLE;
+		// Swapchain doesn't have mips
+		imgInternal.access.Resize(1);
 		// The current access pattern of the image is not known, undefined is ok
-		imgInternal.access = Apparition::ImageAccess::Undefined;
+		imgInternal.access[0] = Apparition::ImageAccess::Undefined;
 		imgInternal.format = backbuffer.format;
 		backbuffer.images.Add(imageHandleIndex);
 
