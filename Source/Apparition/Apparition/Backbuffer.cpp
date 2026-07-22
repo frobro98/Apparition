@@ -150,11 +150,4 @@ ImageFormat::Type GetBackbufferFormat(Device device)
     const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
     return deviceInternals.backbuffer.format;
 }
-u32 GetBackbufferVkFormat(Device device)
-{
-    Assert(apparition.deviceManager);
-    DeviceManager& deviceManager = *apparition.deviceManager;
-    const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
-    return ApparitionFormatToVk(deviceInternals.backbuffer.format);
-}
 }

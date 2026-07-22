@@ -461,6 +461,8 @@ Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationPara
     // Find VkPipeline handles for API handles
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
+    // TODO - Figure out if we should store this in some way within the pipeline
+    // Maybe it makes sense to reference the index? But if it gets destroyed by the user, it won't be correct...
     VertexInputPipelineStateInternal& vertexInputInternal = GetVertexInputPipelineStateInternal(params.vertexInput);
     PrerasterShadersPipelineStateInternal& prerasterShadersInternal = GetPrerasterShadersPipelineStateInternal(params.prerasterShaders);
     FragmentShaderPipelineStateInternal& fragmentShaderInternal = GetFragmentShaderPipelineStateInternal(params.fragmentShader);

@@ -113,9 +113,10 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include;$(SolutionDir)ThirdParty\include\ktx\include;$(SolutionDir)ThirdParty\include\ktx\other_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Sandbox;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include;$(SolutionDir)ThirdParty\include\ktx\include;$(SolutionDir)ThirdParty\include\ktx\other_include</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4201;4251;4307</DisableSpecificWarnings>
+      <AdditionalOptions>-Wno-sometimes-uninitialized</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,9 +134,10 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\Sandbox;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4201;4251;4307</DisableSpecificWarnings>
+      <AdditionalOptions>-Wno-sometimes-uninitialized</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,7 +149,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\Window\Window.cpp" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\checkheader.c" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\filestream.c" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\hashlist.c" />
@@ -156,15 +160,16 @@
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\texture.c" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\vkloader.c" />
     <ClCompile Include="Sandbox.cpp" />
-    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Sandbox\Examples\Base\Base.h" />
+    <ClInclude Include="..\..\Source\Sandbox\Examples\ExampleCore.h" />
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="..\..\Source\Sandbox\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="triangle.frag" />
-    <None Include="triangle.vert" />
+    <None Include="..\..\Assets\Shaders\Base\base.frag" />
+    <None Include="..\..\Assets\Shaders\Base\base.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

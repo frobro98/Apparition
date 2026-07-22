@@ -8,22 +8,25 @@
     <Filter Include="Source\Window">
       <UniqueIdentifier>{8315f944-324f-4628-9858-9e7dd0993943}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Shaders">
-      <UniqueIdentifier>{016b075d-bad3-4e72-98cf-f0f24c070beb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\glTFModel">
       <UniqueIdentifier>{15f5cea4-e1c2-4ebe-9ef8-e18128a96bc6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\glTFModel\ktx">
       <UniqueIdentifier>{1a423b7e-832c-4144-83ce-021b15710999}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Examples">
+      <UniqueIdentifier>{e65040b6-1c87-4fcf-a9a2-eeba18ce5c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Examples\Base">
+      <UniqueIdentifier>{8f6a661b-0b04-4c1c-a044-d5752829ed2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Examples\Base\Shaders">
+      <UniqueIdentifier>{016b075d-bad3-4e72-98cf-f0f24c070beb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source\Window</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp">
       <Filter>Source\glTFModel</Filter>
@@ -49,21 +52,33 @@
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\filestream.c">
       <Filter>Source\glTFModel\ktx</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\Window\Window.cpp">
+      <Filter>Source\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp">
+      <Filter>Source\Examples\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Window.h">
-      <Filter>Source\Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h">
       <Filter>Source\glTFModel</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\Examples\ExampleCore.h">
+      <Filter>Source\Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\Window\Window.h">
+      <Filter>Source\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\Examples\Base\Base.h">
+      <Filter>Source\Examples\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="triangle.vert">
-      <Filter>Source\Shaders</Filter>
+    <None Include="..\..\Assets\Shaders\Base\base.frag">
+      <Filter>Source\Examples\Base\Shaders</Filter>
     </None>
-    <None Include="triangle.frag">
-      <Filter>Source\Shaders</Filter>
+    <None Include="..\..\Assets\Shaders\Base\base.vert">
+      <Filter>Source\Examples\Base\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

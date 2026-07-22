@@ -39,7 +39,4 @@ APPARITION_API Image GetAcquiredBackbufferImage(Device device);
 APPARITION_API u32 GetBackbufferWidth(Device device);
 APPARITION_API u32 GetBackbufferHeight(Device device);
 APPARITION_API ImageFormat::Type GetBackbufferFormat(Device device);
-
-// TEMPORARY
-APPARITION_API u32 GetBackbufferVkFormat(Device device);
 }
