@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\Sandbox.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Window\Window.cpp" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\checkheader.c" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\filestream.c" />
@@ -159,7 +160,6 @@
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\swap.c" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\texture.c" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\vkloader.c" />
-    <ClCompile Include="Sandbox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Sandbox\Examples\Base\Base.h" />

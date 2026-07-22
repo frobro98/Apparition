@@ -25,9 +25,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sandbox.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp">
       <Filter>Source\glTFModel</Filter>
     </ClCompile>
@@ -57,6 +54,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp">
       <Filter>Source\Examples\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\Sandbox.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
