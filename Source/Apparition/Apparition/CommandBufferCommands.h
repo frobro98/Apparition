@@ -89,6 +89,7 @@ APPARITION_API void CopyBuffer(CommandBuffer commandBuffer, const BufferCopyDesc
 
 struct BufferToImageCopyOutline
 {
+    u64 bufferOffset = 0;
     // Subresource
     ImageAspect::Type aspect = ImageAspect::Color;
     u32 mipLevel = 0;

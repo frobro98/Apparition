@@ -9,7 +9,51 @@
 
 DescriptorSetLayout DeviceManager::CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params)
 {
-    UNUSED(device, params);
+    DynamicArray<VkDescriptorSetLayoutBinding> bindings;
+    bindings.Reserve(params.bindings.Size());
+    for (const Apparition::DescriptorSetLayoutDesc& desc : params.bindings)
+    {
+        VkDescriptorSetLayoutBinding binding
+        {
+            .binding = desc.binding,
+            .descriptorType = ApparitionDescriptorTypeToVk(desc.descriptorType),
+            .descriptorCount = desc.descriptorCount,
+            .stageFlags = ApparitionShaderFlagsToVk(desc.shaderStageFlags)
+        };
+        bindings.Add(binding);
+    }
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .bindingCount = bindings.Size(),
+        .pBindings = bindings.GetData()
+    };
+
+    DeviceInternal& deviceInternal = DeviceInternalFrom(device);
+    
+    VkDescriptorSetLayout layout = VK_NULL_HANDLE;
+    VkResult result = vkCreateDescriptorSetLayout(deviceInternal.device, &layoutInfo, nullptr, &layout);
+    CHECK_VK(result);
+    if (result == VK_SUCCESS)
+    {
+        const DescriptorSetLayoutInternal layoutInternal
+        {
+            .descriptorSetLayout = layout
+        };
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorSetLayoutHandlePools);
+        if (handleIndex != InvalidHandleIndex)
+        {
+            GetDescriptorSetLayoutInternalFromIndex(deviceInternal, handleIndex) = layoutInternal;
+
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorSetLayoutHandlePools, handleIndex);
+            // TODO(nblane): this MUST be moved so that it can be reused
+            const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+                | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+                | (handleIndex & RESOURCE_INDEX_MASK);
+            return DescriptorSetLayout{ handleData };
+        }
+    }
 
     return { Apparition::InvalidHandle };
 }
@@ -25,7 +69,53 @@ void DeviceManager::DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSet
 
 DescriptorPool DeviceManager::CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params)
 {
-    UNUSED(device, params);
+    u32 maxSets = 0;
+    DynamicArray<VkDescriptorPoolSize> poolSizes(params.poolSizes.Size());
+    for (u32 i = 0; i < params.poolSizes.Size(); ++i)
+    {
+        VkDescriptorType type = ApparitionDescriptorTypeToVk(params.poolSizes[i].poolType);
+        u32 descriptorCount = params.poolSizes[i].size;
+        maxSets += descriptorCount;
+        VkDescriptorPoolSize poolSize
+        {
+            .type = type,
+            .descriptorCount = descriptorCount
+        };
+        poolSizes[i] = poolSize;
+    }
+
+    DeviceInternal& deviceInternal = DeviceInternalFrom(device);
+
+    VkDescriptorPoolCreateInfo poolInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .maxSets = maxSets,
+        .poolSizeCount = poolSizes.Size(),
+        .pPoolSizes = poolSizes.GetData()
+    };
+    VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+    VkResult result = vkCreateDescriptorPool(deviceInternal.device, &poolInfo, nullptr, &descriptorPool);
+    CHECK_VK(result);
+    if (result == VK_SUCCESS)
+    {
+        const DescriptorPoolInternal poolInternal
+        {
+            .descriptorPool = descriptorPool
+        };
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorPoolHandlePools);
+        if (handleIndex != InvalidHandleIndex)
+        {
+            GetDescriptorPoolInternalFromIndex(deviceInternal, handleIndex) = poolInternal;
+
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorPoolHandlePools, handleIndex);
+            // TODO(nblane): this MUST be moved so that it can be reused
+            const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+                | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+                | (handleIndex & RESOURCE_INDEX_MASK);
+            return DescriptorPool{ handleData };
+        }
+    }
+
     return { Apparition::InvalidHandle };
 }
 
@@ -116,7 +206,8 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetD
                 .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
                 .dstSet = setInternal.descriptorSet,
                 .dstBinding = updateDescriptorSetDesc.setBinding,
-                .descriptorCount = 1
+                .descriptorCount = 1,
+                .descriptorType = ApparitionDescriptorTypeToVk(updateDescriptorSetDesc.descriptorType)
             };
             Assert(updateDescriptorSetDesc.bufferDescriptor || updateDescriptorSetDesc.imageDescriptor);
             Assert(!(updateDescriptorSetDesc.bufferDescriptor && updateDescriptorSetDesc.imageDescriptor));

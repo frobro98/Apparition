@@ -47,6 +47,7 @@ WALL_WRN_POP
 
 // Examples
 #include "Examples/Base/Base.h"
+#include "Examples/DescriptorSets/DescriptorSets.h"
 
 DEFINE_LOG_CHANNEL(VkValidation);
 
@@ -163,57 +164,6 @@ static VkBool32 VulkanDebugMessengerCallback(
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-
-
-void CreateDescriptorHeaps(Apparition::Device device, VkPhysicalDevice physicalDevice)
-{
-	struct Data
-	{
-		Vector3 test0;
-		Vector3 test1;
-		Vector3 test2;
-		Vector3 test3;
-	};
-
-	VkDevice deviceHandle = Apparition::GetVulkanDevice(device);
-
-	Apparition::BufferCreationParams creationParams{
-		.usage = Apparition::BufferUsageFlagBits::UniformBuffer | Apparition::BufferUsageFlagBits::ShaderDeviceAddress,
-		.size = sizeof(Data),
-		.supportsMappedMemory = true
-	};
-	Apparition::Buffer uniformBuffer = Apparition::CreateBuffer(device, creationParams);
-	VkBuffer bufferHandle = Apparition::GetVulkanHandle(uniformBuffer);
-
-	// Get Buffer Device Address
-	VkBufferDeviceAddressInfoKHR bufferDeviceAddressInfo{
-		.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-		.buffer = bufferHandle
-	};
-	NOT_USED VkDeviceAddress bufferDeviceAddress = vkGetBufferDeviceAddress(deviceHandle, &bufferDeviceAddressInfo);
-
-	// Descriptor heaps have varying offset, size and alignment requirements, so we store it's properties for later user
-	VkPhysicalDeviceDescriptorHeapPropertiesEXT descriptorHeapProperties{};
-
-	VkPhysicalDeviceProperties2 deviceProps2{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
-	descriptorHeapProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_PROPERTIES_EXT;
-	deviceProps2.pNext = &descriptorHeapProperties;
-	vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
-
-	// There are two descriptor heap types, one for resources and the other for samplers. Can't use "Combined image sampler"
-	
-	// Sampler descriptor heap
-	{
-		VkDeviceSize samplerDescriptorSize = Align(descriptorHeapProperties.samplerDescriptorSize, descriptorHeapProperties.samplerDescriptorAlignment);
-
-		NOT_USED const VkDeviceSize heapSizeSamplers = Align(samplerDescriptorSize * 2 + descriptorHeapProperties.minSamplerHeapReservedRange, 
-			descriptorHeapProperties.samplerHeapAlignment);
-		// Create buffer that is a descriptor heap
-	}
-}
-
-
-
 extern bool windowOpen;
 Window* window = nullptr;
 
@@ -233,7 +183,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	GetLogger().AddLogSink(new DebugOutputWindowSink);
 
-	const u32 windowWidth = 1080;
+	const u32 windowWidth = 1280;
 	const u32 windowHeight = 720;
 	window = CreateSandboxWindow(hInstance, 0, 0, windowWidth, windowHeight);
 
@@ -260,17 +210,19 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		deviceHandle = Apparition::CreateDevice(createParams);
 	}
 
-	InitializeBaseExample(deviceHandle);
+	//InitializeBaseExample(deviceHandle);
+	InitializeDescriptorSetsExample(deviceHandle);
 
 	while (windowOpen)
 	{
 		ProcessWindowInput();
 
-		TickBaseExample();
+		//TickBaseExample();
+		TickDescriptorSetsExample();
 	}
 
-	DestroyBaseExample();
-
+	//DestroyBaseExample();
+	DestroyDescriptorSetsExample();
 
 	Apparition::TeardownBackbuffer(deviceHandle);
 	Apparition::DestroyDevice(deviceHandle);

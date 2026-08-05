@@ -51,6 +51,7 @@ void PushFreedHandleIndex(HandlePool& handlePool, u32 freedHandleIndex)
 
 u32 PopFreeHandleIndex(HandlePool& handlePool)
 {
+    Assert(!handlePool.handleIndexGenerations.IsEmpty());
     if (handlePool.stackTop < handlePool.freeHandleIndices.Size())
     {
         // Increment the top after we get access to the free index

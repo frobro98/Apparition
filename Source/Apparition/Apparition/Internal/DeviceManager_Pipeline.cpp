@@ -194,10 +194,19 @@ PrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineState
     // Create VkPipelineLayout for this operation
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     {
+        Apparition::PipelineDescription pipelineDesc = params.pipelineDesc;
+        DynamicArray<VkDescriptorSetLayout> vkLayouts;
+        vkLayouts.Reserve(pipelineDesc.descriptorSets.Size());
+        for (const Apparition::DescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
+        {
+            const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
+            vkLayouts.Add(dslInternal.descriptorSetLayout);
+        }
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        pipelineLayoutInfo.setLayoutCount = vkLayouts.Size(); // Optional
+        pipelineLayoutInfo.pSetLayouts = vkLayouts.GetData(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         const VkResult result = vkCreatePipelineLayout(deviceInternal.device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
@@ -264,6 +273,7 @@ FragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(Dev
         .depthTestEnable = params.depthTestEnabled,
         .depthWriteEnable = params.depthWriteEnabled,
         .depthCompareOp = ApparitionCompareOpToVk(params.depthCompareOp),
+        .back = {.compareOp = VK_COMPARE_OP_ALWAYS}
     };
 
     // TODO - Support multisampling
@@ -302,10 +312,19 @@ FragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(Dev
     // Create VkPipelineLayout for this operation
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     {
+        Apparition::PipelineDescription pipelineDesc = params.pipelineDesc;
+        DynamicArray<VkDescriptorSetLayout> vkLayouts;
+        vkLayouts.Reserve(pipelineDesc.descriptorSets.Size());
+        for (const Apparition::DescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
+        {
+            const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
+            vkLayouts.Add(dslInternal.descriptorSetLayout);
+        }
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        pipelineLayoutInfo.setLayoutCount = vkLayouts.Size(); // Optional
+        pipelineLayoutInfo.pSetLayouts = vkLayouts.GetData(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         const VkResult result = vkCreatePipelineLayout(deviceInternal.device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
@@ -360,25 +379,25 @@ FragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState(Dev
     DynamicArray<VkPipelineColorBlendAttachmentState> vkBlendAttachments = ApparitionBlendAttachmentsToVk(params.attachments);
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.logicOpEnable = VK_FALSE;
-    colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
     colorBlending.attachmentCount = vkBlendAttachments.Size();
     colorBlending.pAttachments = vkBlendAttachments.GetData();
-    colorBlending.blendConstants[0] = 0.0f; // Optional
-    colorBlending.blendConstants[1] = 0.0f; // Optional
-    colorBlending.blendConstants[2] = 0.0f; // Optional
-    colorBlending.blendConstants[3] = 0.0f; // Optional
+    //colorBlending.logicOpEnable = VK_FALSE;
+    //colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
+    //colorBlending.blendConstants[0] = 0.0f; // Optional
+    //colorBlending.blendConstants[1] = 0.0f; // Optional
+    //colorBlending.blendConstants[2] = 0.0f; // Optional
+    //colorBlending.blendConstants[3] = 0.0f; // Optional
 
     // TODO - Support multisampling
     // Multisampling
     VkPipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    multisampling.sampleShadingEnable = VK_FALSE;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-    multisampling.minSampleShading = 1.0f; // Optional
-    multisampling.pSampleMask = nullptr; // Optional
-    multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
-    multisampling.alphaToOneEnable = VK_FALSE; // Optional
+    //multisampling.sampleShadingEnable = VK_FALSE;
+    //multisampling.minSampleShading = 1.0f; // Optional
+    //multisampling.pSampleMask = nullptr; // Optional
+    //multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
+    //multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
 
     // Dynamic Rendering Setup: Gets passed to shader stages
@@ -492,10 +511,19 @@ Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationPara
     // Create VkPipelineLayout
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     {
+        Apparition::PipelineDescription pipelineDesc = params.pipelineDesc;
+        DynamicArray<VkDescriptorSetLayout> vkLayouts;
+        vkLayouts.Reserve(pipelineDesc.descriptorSets.Size());
+        for (const Apparition::DescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
+        {
+            const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
+            vkLayouts.Add(dslInternal.descriptorSetLayout);
+        }
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+        pipelineLayoutInfo.setLayoutCount = vkLayouts.Size(); // Optional
+        pipelineLayoutInfo.pSetLayouts = vkLayouts.GetData(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
         const VkResult result = vkCreatePipelineLayout(deviceInternal.device, &pipelineLayoutInfo, nullptr, &pipelineLayout);

@@ -38,7 +38,8 @@ enum Type
 {
 	Color,
 	Depth,
-	Stencil
+	Stencil,
+	DepthStencil
 };
 }
 

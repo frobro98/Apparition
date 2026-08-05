@@ -17,6 +17,8 @@
 // Sandbox includes
 #include "Window/Window.h"
 
+constexpr u32 maxConcurrentFrames = 2;
+
 constexpr const tchar* SandboxRootPath()
 {
 	return "../../../";
@@ -25,6 +27,16 @@ constexpr const tchar* SandboxRootPath()
 constexpr const tchar* SandboxAssetPath()
 {
 	return "../../../Assets/";
+}
+
+constexpr const tchar* SandboxModelPath()
+{
+	return "../../../Assets/Models/";
+}
+
+constexpr const tchar* SandboxTexturePath()
+{
+	return "../../../Assets/Textures/";
 }
 
 constexpr const tchar* SandboxShaderBasePath()

@@ -57,6 +57,7 @@ Buffer DeviceManager::CreateBuffer(Device device, const BufferCreationParams& pa
     allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO;
     if (params.supportsMappedMemory)
     {
+        allocCreateInfo.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
         allocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
     }
 
@@ -112,6 +113,7 @@ Image DeviceManager::CreateImage(Device device, const ImageCreationParams& param
         .format = ApparitionFormatToVk(params.format),
         .extent = {.width = params.width, .height = params.height, .depth = 1 },
         .mipLevels = params.mipLevels,
+        .arrayLayers = 1,
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .tiling = VK_IMAGE_TILING_OPTIMAL,
         .usage = ApparitionImageUsageToVk(params.usageFlags),
@@ -174,10 +176,10 @@ void DeviceManager::DestroyImage(Image image)
     PushFreedHandleIndex(deviceInternal.imageResourceHandlePool, GetHandleIndex(image));
 }
 
-ImageView DeviceManager::CreateImageView(Device device, const ImageViewCreationParams& params)
+ImageView DeviceManager::CreateImageView(Image image, const ImageViewCreationParams& params)
 {
-    DeviceInternal& deviceInternal = DeviceInternalFrom(device);
-    ImageInternal& imageInternal = GetImageInternal(params.image);
+    DeviceInternal& deviceInternal = GetDeviceInternal(image);
+    ImageInternal& imageInternal = GetImageInternal(image);
     VkImageViewCreateInfo viewInfo
     {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -208,18 +210,18 @@ ImageView DeviceManager::CreateImageView(Device device, const ImageViewCreationP
         ImageViewInternal imageViewInternal
         {
             .imageView = imageView,
-            .imageIndex = GetHandleIndex(params.image)
+            .imageIndex = GetHandleIndex(image)
         };
 
-        u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageResourceHandlePool);
+        u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageViewResourceHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             // TODO - this kinda is stinky to me, don't assign to the return of a function...
             GetImageViewInternalFromIndex(deviceInternal, handleIndex) = imageViewInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.imageResourceHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.imageViewResourceHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
-            u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+            u64 handleData = ((u64)GetDeviceIndexFromHandle(image) << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
             return ImageView{ handleData };

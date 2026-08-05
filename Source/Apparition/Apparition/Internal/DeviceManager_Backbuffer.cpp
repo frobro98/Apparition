@@ -264,6 +264,7 @@ BackbufferStatus DeviceManager::AcquireNextBackbufferImage(Device device)
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
+	Assert(backbuffer.swapchainHandle != VK_NULL_HANDLE);
 
 	u32 imageIndex;
 	VkResult result = vkAcquireNextImageKHR(deviceInternal.device, backbuffer.swapchainHandle, UINT64_MAX, backbuffer.isImageAvailableSem, VK_NULL_HANDLE, &imageIndex);

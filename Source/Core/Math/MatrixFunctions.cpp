@@ -49,16 +49,29 @@ Matrix4 ConstructViewMatrix(const Vector4& position, const Vector4& forward, con
 Matrix4 ConstructViewMatrix(const Vector4& position, const Quat& rotation)
 {
 	Matrix4 invRot = Matrix4(rotation).GetTranspose();
-	Matrix4 trans = Matrix4(TRANS, -position);
+	Matrix4 trans = Matrix4(TRANS, position);
 	return trans * invRot;
+}
+
+CORE_API Matrix4 ConstructViewMatrix(const Vector4& position, const Quat& rotation, bool orbit)
+{
+	if (!orbit)
+	{
+		return ConstructViewMatrix(position, rotation);
+	}
+
+	Matrix4 invRot = Matrix4(rotation).GetTranspose();
+	Matrix4 trans = Matrix4(TRANS, position);
+	return invRot * trans;
 }
 
 Matrix4 ConstructPerspectiveMatrix(f32 fovDeg, f32 aspectRatio, f32 nearPlane, f32 farPlane)
 {
 	// NOTE: This is an OpenGL projection matrix. The adjustment happens in the shader currently
 
-	NOT_USED f32 tanHalfFOV = Math::Tan(Math::DegreesToRadians(fovDeg) * .5f);
-	NOT_USED f32 nearHeight = 2.f * Math::Tan(Math::DegreesToRadians(fovDeg) * .5f) * nearPlane;
+	const f32 fovRad = Math::DegreesToRadians(fovDeg);
+	NOT_USED f32 tanHalfFOV = Math::Tan(fovRad * .5f);
+	NOT_USED f32 nearHeight = 2.f * Math::Tan(fovRad * .5f) * nearPlane;
 	NOT_USED f32 nearWidth = nearHeight * aspectRatio;
 	NOT_USED f32 doubleNearPlane = 2.f * nearPlane;
 	NOT_USED f32 planeDifference = farPlane - nearPlane;
@@ -76,12 +89,14 @@ Matrix4 ConstructPerspectiveMatrix(f32 fovDeg, f32 aspectRatio, f32 nearPlane, f
 
 	projection[m8] = 0;
 	projection[m9] = 0;
-	projection[m10] = -(farPlane + nearPlane) / (planeDifference);
+	projection[m10] = farPlane / (nearPlane - farPlane);
+	//projection[m10] = -(farPlane + nearPlane) / (planeDifference);
 	projection[m11] = -1.f;
 
 	projection[m12] = 0;
 	projection[m13] = 0;
 	projection[m14] = -(farPlane * nearPlane) / planeDifference;
+	//projection[m14] = (2.f * farPlane * nearPlane) / planeDifference;
 	projection[m15] = 0;
 
 	// TODO - This is a vulkan adjustment. This should be something that gets adjusted for all graphics apis
@@ -99,7 +114,7 @@ Matrix4 ConstructPerspectiveMatrix(f32 fovDeg, f32 aspectRatio, f32 nearPlane, f
 		Vector4(0.f, 0.f, 0.f, 1)
 	);
 
-	projection = projection * clipAdjustGL;
+	//projection = projection * clipAdjustGL;
 
 	Assert((projection * ConstructFastInversePerspectiveMatrix(projection)).IsIdentity());
 

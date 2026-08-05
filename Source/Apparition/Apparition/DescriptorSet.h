@@ -35,16 +35,17 @@ enum Type
 }
 static_assert(Descriptor::Type::Count == Descriptor::Type::InputAttachment + 1);
 
-namespace ShaderStage
+namespace ShaderStageFlagBits
 {
 enum Type
 {
-    Vertex,
-    Fragment,
+    Vertex = 1 << 0,
+    Fragment = 1 << 1,
 
     Max = 0x7FFFFFFF
 };
 }
+using ShaderStageFlags = u32;
 
 HANDLE_TYPE(DescriptorSetLayout);
 HANDLE_TYPE(DescriptorPool);
@@ -55,16 +56,22 @@ struct DescriptorSetLayoutDesc
     u32 binding = 0;
     Descriptor::Type descriptorType = Descriptor::Type::Max;
     u32 descriptorCount = 0;
-    ShaderStage::Type shaderStageFlags = ShaderStage::Vertex;
+    ShaderStageFlags shaderStageFlags = 0;
 };
 struct DescriptorSetLayoutCreationParams
 {
     DynamicArray<DescriptorSetLayoutDesc> bindings;
 };
 
+struct DescriptorPoolSize
+{
+    Descriptor::Type poolType = Descriptor::Max;
+    u32 size = 0;
+};
+
 struct DescriptorPoolCreationParams
 {
-    StaticArray<u32, Descriptor::Type::Count> poolSizes;
+    DynamicArray<DescriptorPoolSize> poolSizes;
 };
 
 struct DescriptorSetAllocParams
@@ -80,8 +87,8 @@ APPARITION_API void DestroyDescriptorPool(DescriptorPool descriptorPool);
 
 NODISCARD APPARITION_API DescriptorSet AllocateDescriptorSet(DescriptorPool descriptorPool, const DescriptorSetAllocParams& allocParams);
 APPARITION_API void AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSetAllocParams>& allocParams);
-void FreeDescriptorSet(DescriptorSet descriptorSet);
-void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets);
+APPARITION_API void FreeDescriptorSet(DescriptorSet descriptorSet);
+APPARITION_API void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets);
 
 HANDLE_TYPE(Sampler);
 

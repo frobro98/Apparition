@@ -47,6 +47,7 @@
 //  - base64: base64 decode/encode library.
 //  - stb_image: Image loading library.
 //
+
 #ifndef TINY_GLTF_H_
 #define TINY_GLTF_H_
 
@@ -1428,7 +1429,7 @@ class TinyGLTF {
 
 #endif  // TINY_GLTF_H_
 
-#if defined(TINYGLTF_IMPLEMENTATION) || defined(__INTELLISENSE__)
+#if defined(TINYGLTF_IMPLEMENTATION)// || defined(__INTELLISENSE__)
 #include <algorithm>
 //#include <cassert>
 #ifndef TINYGLTF_NO_FS

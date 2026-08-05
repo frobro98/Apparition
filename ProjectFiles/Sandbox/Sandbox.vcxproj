@@ -116,7 +116,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Source\Sandbox;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include;$(SolutionDir)ThirdParty\include\ktx\include;$(SolutionDir)ThirdParty\include\ktx\other_include</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <DisableSpecificWarnings>4201;4251;4307</DisableSpecificWarnings>
-      <AdditionalOptions>-Wno-sometimes-uninitialized</AdditionalOptions>
+      <AdditionalOptions>-Wno-sometimes-uninitialized -Wno-reorder-init-list</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,7 +137,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Source\Sandbox;$(SolutionDir)Source\Core;$(SolutionDir)Source\Apparition;$(SolutionDir)ThirdParty\include</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4201;4251;4307</DisableSpecificWarnings>
-      <AdditionalOptions>-Wno-sometimes-uninitialized</AdditionalOptions>
+      <AdditionalOptions>-Wno-sometimes-uninitialized -Wno-reorder-init-list</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Sandbox.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Window\Window.cpp" />
     <ClCompile Include="..\..\ThirdParty\include\ktx\lib\checkheader.c" />
@@ -163,8 +165,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Sandbox\Examples\Base\Base.h" />
+    <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.h" />
     <ClInclude Include="..\..\Source\Sandbox\Examples\ExampleCore.h" />
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h" />
+    <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.h" />
     <ClInclude Include="..\..\Source\Sandbox\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>

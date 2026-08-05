@@ -23,6 +23,12 @@
     <Filter Include="Source\Examples\Base\Shaders">
       <UniqueIdentifier>{016b075d-bad3-4e72-98cf-f0f24c070beb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Examples\DescriptorSets">
+      <UniqueIdentifier>{dcadce47-8612-4919-8790-bba45758436a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Examples\DescriptorSets\Shaders">
+      <UniqueIdentifier>{02b2eefd-97ed-4c6c-9b22-bddfbc953241}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp">
@@ -58,6 +64,12 @@
     <ClCompile Include="..\..\Source\Sandbox\Sandbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.cpp">
+      <Filter>Source\Examples\DescriptorSets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.cpp">
+      <Filter>Source\glTFModel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h">
@@ -71,6 +83,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Sandbox\Examples\Base\Base.h">
       <Filter>Source\Examples\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.h">
+      <Filter>Source\Examples\DescriptorSets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.h">
+      <Filter>Source\glTFModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

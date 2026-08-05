@@ -37,7 +37,7 @@ struct CommandBufferAllocParams
     bool isSecondary = false;
 };
 
-NODISCARD APPARITION_API CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params);
+NODISCARD APPARITION_API CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params = CommandBufferAllocParams());
 APPARITION_API void FreeCommandBuffer(CommandBuffer commandBufferHandle);
 APPARITION_API void ResetCommandBuffer(CommandBuffer commandBuffer);
 

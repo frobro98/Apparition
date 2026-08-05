@@ -317,6 +317,24 @@ constexpr VkDescriptorType ApparitionDescriptorTypeToVk(Apparition::Descriptor::
 	return VK_DESCRIPTOR_TYPE_MAX_ENUM;
 }
 
+constexpr VkShaderStageFlags ApparitionShaderFlagsToVk(Apparition::ShaderStageFlags shaderFlags)
+{
+	using namespace Apparition;
+
+	VkShaderStageFlags flags = 0;
+	if (shaderFlags & ShaderStageFlagBits::Vertex)
+	{
+		flags |= VK_SHADER_STAGE_VERTEX_BIT;
+	}
+
+	if (shaderFlags & ShaderStageFlagBits::Fragment)
+	{
+		flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
+	}
+
+	return flags;
+}
+
 constexpr VkFilter ApparitionFilterToVk(Apparition::SamplerFilter::Type filter)
 {
 	using namespace Apparition;

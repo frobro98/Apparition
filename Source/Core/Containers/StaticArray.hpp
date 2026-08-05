@@ -36,7 +36,7 @@ struct CORE_TEMPLATE StaticArray
 
 		bool operator!=(const Iterator& other)
 		{
-			return elems != other.elems && index != other.index;
+			return index != other.index;
 		}
 
 		ValueType& operator*()

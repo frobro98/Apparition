@@ -130,7 +130,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 	this->device = device;
 	Apparition::CommandPoolCreationParams params
 	{
-		.queueIndex = Apparition::GetTransferQueueIndex(device)
+		.queueIndex = Apparition::GetGraphicsQueueIndex(device)
 	};
 	this->commandPool = Apparition::CreateCommandPool(device, params);
 
@@ -844,7 +844,7 @@ vkglTF::Mesh::Mesh(/*vks::VulkanDevice* device*/Apparition::Device device, glm::
 	u64 bufferSize = sizeof(uniformBlock);
 	Apparition::BufferCreationParams bufferParams
 	{
-		.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+		.usage = Apparition::BufferUsageFlagBits::UniformBuffer,
 		.size = bufferSize,
 		.supportsMappedMemory = true
 	};
@@ -863,10 +863,12 @@ vkglTF::Mesh::Mesh(/*vks::VulkanDevice* device*/Apparition::Device device, glm::
 		&uniformBlock));
 	VK_CHECK_RESULT(vkMapMemory(device->logicalDevice, uniformBuffer.memory, 0, sizeof(uniformBlock), 0, &uniformBuffer.mapped));
 	//*/
+	uniformBuffer.mapped = Apparition::MapBuffer(uniformBuffer.buffer);
 	uniformBuffer.descriptor = Apparition::BufferDescriptorInfo{ uniformBuffer.buffer, 0, sizeof(uniformBlock) };
 };
 
 vkglTF::Mesh::~Mesh() {
+	Apparition::UnmapBuffer(uniformBuffer.buffer);
 	Apparition::DestroyBuffer(uniformBuffer.buffer);
 	//vkDestroyBuffer(device->logicalDevice, uniformBuffer.buffer, nullptr);
 	//vkFreeMemory(device->logicalDevice, uniformBuffer.memory, nullptr);
@@ -933,7 +935,7 @@ vkglTF::Node::~Node() {
 
 Apparition::VertexBindingDescription vkglTF::Vertex::vertexInputBindingDescription;
 //VkVertexInputBindingDescription vkglTF::Vertex::vertexInputBindingDescription;
-std::vector<Apparition::VertexAttributeDescription> vkglTF::Vertex::vertexInputAttributeDescriptions;
+DynamicArray<Apparition::VertexAttributeDescription> vkglTF::Vertex::vertexInputAttributeDescriptions;
 //std::vector<VkVertexInputAttributeDescription> vkglTF::Vertex::vertexInputAttributeDescriptions;
 //VkPipelineVertexInputStateCreateInfo vkglTF::Vertex::pipelineVertexInputStateCreateInfo;
 
@@ -973,12 +975,12 @@ Apparition::VertexAttributeDescription vkglTF::Vertex::inputAttributeDescription
 	}
 }
 
-std::vector<Apparition::VertexAttributeDescription> vkglTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
+DynamicArray<Apparition::VertexAttributeDescription> vkglTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
 //std::vector<VkVertexInputAttributeDescription> vkglTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
-	std::vector<Apparition::VertexAttributeDescription> result;
+	DynamicArray<Apparition::VertexAttributeDescription> result;
 	uint32_t location = 0;
 	for (VertexComponent component : components) {
-		result.push_back(Vertex::inputAttributeDescription(binding, location, component));
+		result.Add(Vertex::inputAttributeDescription(binding, location, component));
 		location++;
 	}
 	return result;
@@ -1098,9 +1100,10 @@ void vkglTF::Model::createEmptyTexture(Apparition::Queue transferQueue)
 
 	Apparition::CommandPoolCreationParams params
 	{
-		.queueIndex = Apparition::GetTransferQueueIndex(device)
+		.queueIndex = Apparition::GetGraphicsQueueIndex(device)
 	};
-	Apparition::CommandPool commandPool = Apparition::CreateCommandPool(device, params);
+	emptyTexture.commandPool = Apparition::CreateCommandPool(device, params);
+	Apparition::CommandPool commandPool = emptyTexture.commandPool;
 	Apparition::CommandBufferAllocParams cmdBuffParams;
 	Apparition::CommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 	Apparition::BeginCommandBuffer(copyCmd);
@@ -1157,7 +1160,7 @@ void vkglTF::Model::createEmptyTexture(Apparition::Queue transferQueue)
 	Apparition::SubmitCommandBuffer(transferQueue, copyCmd);
 	Apparition::WaitForIdle(transferQueue);
 	Apparition::FreeCommandBuffer(copyCmd);
-	Apparition::DestroyCommandPool(commandPool);
+	//Apparition::DestroyCommandPool(commandPool);
 	//device->flushCommandBuffer(copyCmd, transferQueue);
 	emptyTexture.access = Apparition::ImageAccess::ColorRead;
 	//emptyTexture.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -1220,6 +1223,14 @@ void vkglTF::Model::createEmptyTexture(Apparition::Queue transferQueue)
 */
 vkglTF::Model::~Model()
 {
+	if (!resourcesReleased)
+	{
+		releaseResources();
+	}
+}
+
+void vkglTF::Model::releaseResources()
+{
 	Apparition::DestroyBuffer(vertices.buffer);
 	Apparition::DestroyBuffer(indices.buffer);
 	/*
@@ -1250,6 +1261,8 @@ vkglTF::Model::~Model()
 	Apparition::DestroyDescriptorPool(descriptorPool);
 	//vkDestroyDescriptorPool(device->logicalDevice, descriptorPool, nullptr);
 	emptyTexture.destroy();
+
+	resourcesReleased = true;
 }
 
 void vkglTF::Model::loadNode(vkglTF::Node *parent, const tinygltf::Node &node, uint32_t nodeIndex, const tinygltf::Model &model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
@@ -1854,7 +1867,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	// Copy from staging buffers
 	Apparition::CommandPoolCreationParams params
 	{
-		.queueIndex = Apparition::GetTransferQueueIndex(device)
+		.queueIndex = Apparition::GetGraphicsQueueIndex(device)
 	};
 	Apparition::CommandPool commandPool = Apparition::CreateCommandPool(device, params);
 	Apparition::CommandBufferAllocParams cmdBuffParams;
@@ -1917,15 +1930,36 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 		}
 	}
 	
-	Apparition::DescriptorPoolCreationParams poolParams;
+	Apparition::DescriptorPoolCreationParams poolParams
+	{
+		.poolSizes
+		{
+			Apparition::DescriptorPoolSize
+			{
+				.poolType = Apparition::Descriptor::UniformBuffer,
+				.size = uboCount
+			}
+		}
+	};
 	auto& poolSizes = poolParams.poolSizes;
-	poolSizes[Apparition::Descriptor::UniformBuffer] = uboCount;
 	if (imageCount > 0) {
 		if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) {
-			poolSizes[Apparition::Descriptor::CombinedImageSampler] = imageCount;
+			poolSizes.Add(
+				Apparition::DescriptorPoolSize
+				{
+					.poolType = Apparition::Descriptor::CombinedImageSampler,
+					.size = imageCount
+				}
+			);
 		}
 		if (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap) {
-			poolSizes[Apparition::Descriptor::CombinedImageSampler] = imageCount;
+			poolSizes.Add(
+				Apparition::DescriptorPoolSize
+				{
+					.poolType = Apparition::Descriptor::CombinedImageSampler,
+					.size = imageCount
+				}
+			);
 		}
 	}
 
@@ -1964,7 +1998,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 						.binding = 0,
 						.descriptorType = Apparition::Descriptor::UniformBuffer,
 						.descriptorCount = 1,
-						.shaderStageFlags = Apparition::ShaderStage::Vertex
+						.shaderStageFlags = Apparition::ShaderStageFlagBits::Vertex
 					}
 				}
 			};
@@ -1993,7 +2027,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 						.binding = params.bindings.Size(),
 						.descriptorType = Apparition::Descriptor::CombinedImageSampler,
 						.descriptorCount = 1,
-						.shaderStageFlags = Apparition::ShaderStage::Fragment
+						.shaderStageFlags = Apparition::ShaderStageFlagBits::Fragment
 					});
 			}
 			if (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap)
@@ -2004,7 +2038,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 						.binding = params.bindings.Size(),
 						.descriptorType = Apparition::Descriptor::CombinedImageSampler,
 						.descriptorCount = 1,
-						.shaderStageFlags = Apparition::ShaderStage::Fragment
+						.shaderStageFlags = Apparition::ShaderStageFlagBits::Fragment
 					});
 			}
 
@@ -2053,7 +2087,7 @@ void vkglTF::Model::bindBuffers(/*VkCommandBuffer commandBuffer*/Apparition::Com
 	buffersBound = true;
 }
 
-void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription pipelineDesc, uint32_t bindImageSet)
+void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription& pipelineDesc, uint32_t bindImageSet)
 {
 	if (node->mesh) {
 		for (Primitive* primitive : node->mesh->primitives) {
@@ -2090,7 +2124,7 @@ void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/Appari
 	}
 }
 
-void vkglTF::Model::draw(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription pipelineDesc, uint32_t bindImageSet)
+void vkglTF::Model::draw(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription& pipelineDesc, uint32_t bindImageSet)
 {
 	if (!buffersBound) {
 		Apparition::BindVertexBufferDesc vertBind

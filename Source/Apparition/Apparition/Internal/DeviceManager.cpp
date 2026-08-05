@@ -393,6 +393,10 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 	}
 	//*/
 
+	VkPhysicalDeviceFeatures enabledFeatures{};
+	enabledFeatures.samplerAnisotropy = VK_TRUE;
+	supportedGpuFeatures.features = enabledFeatures;
+
 	VkDeviceCreateInfo deviceInfo;
 	Vk::ZeroInfoStruct(deviceInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
 	deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -576,6 +580,40 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 		deviceInternal.imageViewResourceHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
 
 		deviceInternal.imageViewResources.Resize(initialPoolSize + extraSwapchainImages);
+	}
+
+	// Sampler
+	{
+		HandlePool& samplerResourceHandlePool = deviceInternal.samplerResourceHandlePool;
+		Assert(samplerResourceHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.samplerResourceHandlePool = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.samplerResources.Resize(initialPoolSize);
+	}
+
+	// Descriptor Set Internals
+	{
+		HandlePool& descriptorSetLayoutHandlePool = deviceInternal.descriptorSetLayoutHandlePools;
+		Assert(descriptorSetLayoutHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.descriptorSetLayoutHandlePools = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.descriptorSetLayoutResources.Resize(initialPoolSize);
+	}
+
+	{
+		HandlePool& descriptorPoolHandlePool = deviceInternal.descriptorPoolHandlePools;
+		Assert(descriptorPoolHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.descriptorPoolHandlePools = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.descriptorPoolResources.Resize(initialPoolSize);
+	}
+
+	{
+		HandlePool& descriptorSetHandlePool = deviceInternal.descriptorSetHandlePools;
+		Assert(descriptorSetHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.descriptorSetHandlePools = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.descriptorSetResources.Resize(initialPoolSize);
 	}
 }
 
@@ -795,13 +833,7 @@ void DeviceManager::DestroyCommandPool(CommandPool commandPoolHandle)
 
 CommandBuffer DeviceManager::AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params)
 {
-	// TODO: having to REMEMBER to subtract 1 from the index is error prone. It might be better to have
-	// accessors to this for you when passing in the index that's from the handle
-	// 
-	// NOTE: there currently isn't a reason other than array management to have access to these arrays. It might
-	// make sense to prevent this from being allowed outside of resizing/deallocation
-	u32 deviceIndex = GetDeviceIndexFromHandle(commandPoolHandle);
-	DeviceInternal& deviceInternal = deviceInternals[deviceIndex-1];
+	DeviceInternal& deviceInternal = GetDeviceInternal(commandPoolHandle);
 	u32 cmdPoolIndex = GetHandleIndex(commandPoolHandle);
 	CommandPoolInternal& commandPoolInternal = deviceInternal.commandPools[cmdPoolIndex-1];
 
@@ -828,7 +860,7 @@ CommandBuffer DeviceManager::AllocateCommandBuffer(CommandPool commandPoolHandle
 
 			const u32 indexGeneration = GetHandleGeneration(deviceInternal.commandBufferHandlePool, handleIndex);
 			// TODO(nblane): this MUST be moved so that it can be reused
-			const u64 handleData = ((u64)deviceIndex << DEVICE_INDEX_SHIFT)
+			const u64 handleData = ((u64)GetDeviceIndexFromHandle(commandPoolHandle) << DEVICE_INDEX_SHIFT)
 				| ((u64)cmdPoolIndex << POOL_INDEX_SHIFT)
 				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
 				| (handleIndex & RESOURCE_INDEX_MASK);

@@ -15,19 +15,12 @@
 
 #pragma once
 
-#include "CoreFlags.hpp"
-
-WALL_WRN_PUSH
 #include <stdlib.h>
 #include <string>
 #include <fstream>
 #include <vector>
 
-#include "vulkan/vulkan.h"
-//#include "VulkanDevice.h"
-
-#include <ktx/include/ktx.h>
-#include <ktx/include/ktxvulkan.h>
+#include <vulkan/vulkan.h>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -36,14 +29,7 @@ WALL_WRN_PUSH
 #include "glm/gtc/type_ptr.hpp"
 
 #define TINYGLTF_NO_STB_IMAGE_WRITE
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
-#define TINYGLTF_ANDROID_LOAD_FROM_ASSETS
-#endif
 #include "tinygltf/tiny_gltf.h"
-WALL_WRN_POP
-//#if defined(__ANDROID__)
-//#include <android/asset_manager.h>
-//#endif
 
 #include "Apparition/Buffer.h"
 #include "Apparition/CommandBuffer.h"
@@ -53,6 +39,9 @@ WALL_WRN_POP
 #include "Apparition/ImageDescription.h"
 #include "Apparition/Pipeline.h"
 #include "Apparition/Queue.h"
+
+#include "ktx/include/ktx.h"
+#include "ktx/include/ktxvulkan.h"
 
 namespace vkglTF
 {
@@ -255,14 +244,14 @@ namespace vkglTF
 		glm::vec4 tangent;
 		static Apparition::VertexBindingDescription vertexInputBindingDescription;
 		//static VkVertexInputBindingDescription vertexInputBindingDescription;
-		static std::vector<Apparition::VertexAttributeDescription> vertexInputAttributeDescriptions;
+		static DynamicArray<Apparition::VertexAttributeDescription> vertexInputAttributeDescriptions;
 		//static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 		//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
 		static Apparition::VertexBindingDescription inputBindingDescription(uint32_t binding);
 		//static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
 		static Apparition::VertexAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
 		//static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
-		static std::vector<Apparition::VertexAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
+		static DynamicArray<Apparition::VertexAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
 		//static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
 		/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
 		//static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
@@ -330,10 +319,12 @@ namespace vkglTF
 
 		bool metallicRoughnessWorkflow = true;
 		bool buffersBound = false;
+		bool resourcesReleased = false;
 		std::string path;
 
 		Model() {};
 		~Model();
+		void releaseResources();
 		void loadNode(vkglTF::Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
 		void loadSkins(tinygltf::Model& gltfModel);
 		void loadImages(tinygltf::Model& gltfModel, /*vks::VulkanDevice* device*/Apparition::Device device, /*VkQueue transferQueue*/Apparition::Queue transferQueue);
@@ -341,8 +332,8 @@ namespace vkglTF
 		void loadAnimations(tinygltf::Model& gltfModel);
 		void loadFromFile(std::string filename, /*vks::VulkanDevice* device*/Apparition::Device device, /*VkQueue transferQueue*/Apparition::Queue transferQueue, uint32_t fileLoadingFlags = vkglTF::FileLoadingFlags::None, float scale = 1.0f);
 		void bindBuffers(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer);
-		void drawNode(Node* node, /*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription pipelineDesc = {}, uint32_t bindImageSet = 1);
-		void draw(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription pipelineDesc = {}, uint32_t bindImageSet = 1);
+		void drawNode(Node* node, /*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription& pipelineDesc = {}, uint32_t bindImageSet = 1);
+		void draw(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription& pipelineDesc = {}, uint32_t bindImageSet = 1);
 		void getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max);
 		void getSceneDimensions();
 		void updateAnimation(uint32_t index, float time);

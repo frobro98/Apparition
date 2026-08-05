@@ -102,7 +102,7 @@ public:
 	Image CreateImage(Device device, const ImageCreationParams& params);
 	void DestroyImage(Image image);
 
-	ImageView CreateImageView(Device device, const ImageViewCreationParams& params);
+	ImageView CreateImageView(Image image, const ImageViewCreationParams& params);
 	void DestroyImageView(ImageView imageView);
 
 	Sampler CreateSampler(Device device, const SamplerCreationParams& params);

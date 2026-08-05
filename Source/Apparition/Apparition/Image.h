@@ -32,7 +32,6 @@ APPARITION_API void DestroyImage(Image image);
 
 struct ImageViewCreationParams
 {
-    Image image;
     ImageFormat::Type format = ImageFormat::Invalid;
     ImageAspect::Type aspect = ImageAspect::Color;
     u32 mipCount = 1;
@@ -41,7 +40,4 @@ struct ImageViewCreationParams
 
 APPARITION_API ImageView CreateImageView(Image image, const ImageViewCreationParams& params);
 APPARITION_API void DestroyImageView(ImageView imageView);
-
-// TEMPORARILY HERE
-APPARITION_API VkImageView GetVulkanHandle(ImageView viewHandle);
 }

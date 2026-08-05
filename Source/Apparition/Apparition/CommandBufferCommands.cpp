@@ -176,7 +176,7 @@ void BindIndexBuffer(CommandBuffer commandBuffer, const BindIndexBufferDesc& des
 
 	// TODO: VK_INDEX_TYPE must be a consistent setting for index buffers. Vulkan will catch this issue, theoretically,
 	// but we'd like to catch it in some way too
-	vkCmdBindIndexBuffer(cbInternal.commandBuffer, ibBuffer, 0, VK_INDEX_TYPE_UINT16);
+	vkCmdBindIndexBuffer(cbInternal.commandBuffer, ibBuffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
 void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& viewDesc, const ScissorDesc& scissorDesc)
@@ -216,7 +216,8 @@ void BindDescriptorSets(CommandBuffer commandBuffer, const BindDescriptorSetsDes
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	DynamicArray<VkDescriptorSet> setHandles(bindDescriptorSetsDesc.descriptorSets.Size());
+	DynamicArray<VkDescriptorSet> setHandles;
+	setHandles.Reserve(bindDescriptorSetsDesc.descriptorSets.Size());
 	for (const DescriptorSet& descriptorSet : bindDescriptorSetsDesc.descriptorSets)
 	{
 		DescriptorSetInternal& setInternal = GetDescriptorSetInternal(descriptorSet);
@@ -264,14 +265,18 @@ void CopyBufferToImage(CommandBuffer commandBuffer, const BufferToImageCopyDesc&
 	VkImage vkDstImage = GetImageInternal(copyDesc.dstImage).image;
 
 	const BufferToImageCopyOutline& outline = copyDesc.outline;
-	VkBufferImageCopy bufferCopyRegion{
-		.imageSubresource = {
+	VkBufferImageCopy bufferCopyRegion
+	{
+		.bufferOffset = copyDesc.outline.bufferOffset,
+		.imageSubresource
+		{
 			.aspectMask = ApparitionImageViewAspectToVkAspectFlags(outline.aspect),
 			.mipLevel = outline.mipLevel,
 			.baseArrayLayer = 0,
 			.layerCount = 1
 		},
-		.imageExtent = {
+		.imageExtent
+		{
 			.width = outline.imgWidth,
 			.height = outline.imgHeight,
 			.depth = 1
@@ -293,14 +298,18 @@ void CopyBufferRegionsToImage(CommandBuffer commandBuffer, const BufferRegionsTo
 	bufferCopyRegions.Reserve(outlines.Size());
 	for (const BufferToImageCopyOutline& outline : outlines)
 	{
-		VkBufferImageCopy bufferCopyRegion{
-			.imageSubresource = {
+		VkBufferImageCopy bufferCopyRegion
+		{
+			.bufferOffset = outline.bufferOffset,
+			.imageSubresource
+			{
 				.aspectMask = ApparitionImageViewAspectToVkAspectFlags(outline.aspect),
 				.mipLevel = outline.mipLevel,
 				.baseArrayLayer = 0,
 				.layerCount = 1
 			},
-			.imageExtent = {
+			.imageExtent
+			{
 				.width = outline.imgWidth,
 				.height = outline.imgHeight,
 				.depth = 1

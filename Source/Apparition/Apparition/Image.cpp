@@ -1,38 +1,36 @@
 
 #include "Apparition/Image.h"
 
+#include "Internal/ApparitionInternals.h"
+#include "Internal/DeviceManager.h"
+
 namespace Apparition
 {
 Image CreateImage(Device device, const ImageCreationParams& params)
 {
-    Assert(false);
-    UNUSED(device, params);
-    return { InvalidHandle };
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    return deviceManager.CreateImage(device, params);
 }
 
 void DestroyImage(Image image)
 {
-    Assert(false);
-    UNUSED(image);
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    deviceManager.DestroyImage(image);
 }
 
 ImageView CreateImageView(Image image, const ImageViewCreationParams& params)
 {
-    Assert(false);
-    UNUSED(image, params);
-    return { InvalidHandle };
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    return deviceManager.CreateImageView(image, params);
 }
 
 void DestroyImageView(ImageView imageView)
 {
-    Assert(false);
-    UNUSED(imageView);
-}
-
-VkImageView GetVulkanHandle(ImageView viewHandle)
-{
-    Assert(false);
-    UNUSED(viewHandle);
-    return nullptr;
+    Assert(apparition.deviceManager);
+    DeviceManager& deviceManager = *apparition.deviceManager;
+    deviceManager.DestroyImageView(imageView);
 }
 }

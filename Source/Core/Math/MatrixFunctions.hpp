@@ -11,6 +11,7 @@ namespace Math
 CORE_API Matrix4 ConstructViewMatrix(const Vector4& position, const Vector4& lookAt, const Vector4& up);
 CORE_API Matrix4 ConstructViewMatrix(const Vector4& position, const Vector4& forward, const Vector4& right, const Vector4& up);
 CORE_API Matrix4 ConstructViewMatrix(const Vector4& position, const Quat& rotation);
+CORE_API Matrix4 ConstructViewMatrix(const Vector4& position, const Quat& rotation, bool orbit);
 
 CORE_API Matrix4 ConstructPerspectiveMatrix(f32 fov, f32 aspectRatio, f32 nearPlane, f32 farPlane);
 CORE_API Matrix4 ConstructOrthographicMatrix(f32 width, f32 height, f32 nearPlane, f32 farPlane);

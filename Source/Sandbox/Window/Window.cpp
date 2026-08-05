@@ -9,6 +9,11 @@ WALL_WRN_PUSH
 WALL_WRN_POP
 
 bool windowOpen = false;
+bool mouseLeftDown = false;
+f32 trackedMousePosX = 0.f;
+f32 trackedMousePosY = 0.f;
+f32 cameraRotationX = 0.f;
+f32 cameraRotationY = 0.f;
 
 //----------------------------------------------------------------
 // Basic Window callback
@@ -90,6 +95,11 @@ LRESULT CALLBACK WindowCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		}break;
 
 		case WM_LBUTTONDOWN:
+		{
+			trackedMousePosX = (f32)LOWORD(lParam);
+			trackedMousePosY = (f32)HIWORD(lParam);
+			mouseLeftDown = true;
+		}break;
 		case WM_RBUTTONDOWN:
 		case WM_MBUTTONDOWN:
 		case WM_XBUTTONDOWN:
@@ -102,6 +112,9 @@ LRESULT CALLBACK WindowCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 		}break;
 
 		case WM_LBUTTONUP:
+		{
+			mouseLeftDown = false;
+		}break;
 		case WM_RBUTTONUP:
 		case WM_MBUTTONUP:
 		case WM_XBUTTONUP:
@@ -200,6 +213,13 @@ LRESULT CALLBACK WindowCallback(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 
 		case WM_MOUSEMOVE:
 		{
+			if (mouseLeftDown)
+			{
+				const i32 dx = (i32)trackedMousePosX - LOWORD(lParam);
+				const i32 dy = (i32)trackedMousePosY - HIWORD(lParam);
+				cameraRotationX = dy;
+				cameraRotationY = -dx;
+			}
 			//POINT screenSpaceCursor;
 			//::GetCursorPos(&screenSpaceCursor);
 			//// TODO - Make this a function on the Win32 side of things

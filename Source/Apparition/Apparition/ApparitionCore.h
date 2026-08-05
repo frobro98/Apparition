@@ -55,7 +55,7 @@ APPARITION_API void InitializeApparition(const InitializeParams& initParams);
 #define HANDLE_TYPE_ISVALID(HandleType)						\
 	constexpr bool IsValid(HandleType handle)				\
 	{														\
-		return handle.handle == Apparition::InvalidHandle;	\
+		return handle.handle != Apparition::InvalidHandle;	\
 	}
 
 // Compare ops for InvalidHandle

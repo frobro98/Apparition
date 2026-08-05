@@ -62,6 +62,11 @@ Matrix4::Matrix4(MatrixScaleType scaleEnum, const Vector4& scaleVec)
 	Set(scaleEnum, scaleVec);
 }
 
+Matrix4::Matrix4(MatrixScaleType scaleEnum, f32 sxyz)
+	: Matrix4(scaleEnum, sxyz, sxyz, sxyz)
+{
+}
+
 Matrix4::Matrix4(MatrixScaleType scaleEnum, f32 sx, f32 sy, f32 sz)
 {
 	Set(scaleEnum, sx, sy, sz);

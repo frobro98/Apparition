@@ -20,6 +20,8 @@ constexpr VkImageAspectFlags ApparitionImageViewAspectToVkAspectFlags(Apparition
 		return VK_IMAGE_ASPECT_DEPTH_BIT;
 	case Apparition::ImageAspect::Stencil:
 		return VK_IMAGE_ASPECT_STENCIL_BIT;
+	case Apparition::ImageAspect::DepthStencil:
+		return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 	default:
 		return VK_IMAGE_ASPECT_NONE;
 	}

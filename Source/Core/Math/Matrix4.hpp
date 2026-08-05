@@ -27,6 +27,7 @@ public:
 	explicit Matrix4(RotAxisAngleType axisEnum, const Vector4& vect, f32 angleRads);
 	explicit Matrix4(RotOrientType orientEnum, const Vector4& dof, const Vector4& up);
 	explicit Matrix4(MatrixScaleType scaleEnum, const Vector4& scaleVec);
+	explicit Matrix4(MatrixScaleType scaleEnum, f32 sxyz);
 	explicit Matrix4(MatrixScaleType scaleEnum, f32 sx, f32 sy, f32 sz);
 	Matrix4(const Quat& q);
 
