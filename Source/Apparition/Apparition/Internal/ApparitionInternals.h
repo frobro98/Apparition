@@ -42,6 +42,8 @@ struct Backbuffer
 struct QueueInternal
 {
 	VkQueue queue = VK_NULL_HANDLE;
+	u32 queueFamilyIndex = 0;
+	bool canPresent = false;
 	// Maybe have the type of queue this is?
 };
 
@@ -49,8 +51,10 @@ struct CommandBufferInternal
 {
 	VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 	// General state information.
+	u32 queueFamilyIndex = 0;
 	// TODO: Will need more specific state info about where we are in the CB's lifetime
 	bool hasBegun = false;
+	bool renderBegun = false;
 };
 
 struct CommandPoolInternal
@@ -142,16 +146,8 @@ struct DeviceInternal
 	VkDevice device = VK_NULL_HANDLE;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VmaAllocator allocator = VK_NULL_HANDLE;
-
-	// The sizes of these pools relates to internal queue family properties
-	HandlePool graphicsQueueHandlePool;
-	HandlePool transferQueueHandlePool;
-	HandlePool computeQueueHandlePool;
-	// This contains queues that are live within the ecosystem, not all queues available
-	DynamicArray<QueueInternal> graphicsQueues;
-	DynamicArray<QueueInternal> transferQueues;
-	DynamicArray<QueueInternal> computeQueues;
-
+	
+	HandlePool queueHandlePool;
 	HandlePool commandPoolsHandlePool;
 	HandlePool commandBufferHandlePool;
 	HandlePool bufferResourceHandlePool;
@@ -167,6 +163,7 @@ struct DeviceInternal
 	HandlePool descriptorPoolHandlePools;
 	HandlePool descriptorSetHandlePools;
 
+	DynamicArray<QueueInternal> queues;
 	DynamicArray<CommandPoolInternal> commandPools;
 	DynamicArray<CommandBufferInternal> commandBuffers;
 	DynamicArray<BufferInternal> bufferResources;
@@ -186,6 +183,8 @@ struct DeviceInternal
 	u32 transferFamilyIndex = 0;
 	u32 computeFamilyIndex = 0;
 };
+
+REGISTER_HANDLE_TYPE(Queue, queues);
 
 REGISTER_HANDLE_TYPE(CommandPool, commandPools);
 REGISTER_HANDLE_TYPE(CommandBuffer, commandBuffers);

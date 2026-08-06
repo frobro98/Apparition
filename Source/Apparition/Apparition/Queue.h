@@ -22,4 +22,6 @@ APPARITION_API void FreeQueue(Queue queue);
 
 APPARITION_API void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer);
 APPARITION_API void WaitForIdle(Queue queue);
+
+APPARITION_API u32 GetQueueIndex(Queue queue);
 }

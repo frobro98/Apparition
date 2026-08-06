@@ -21,6 +21,19 @@ struct Device
 };
 HANDLE_TYPE_OPERATORS(Device);
 
+enum class QueueType
+{
+	Graphics,
+	Compute,
+	Transfer
+};
+
+struct QueueCreationParams
+{
+	QueueType queueType = QueueType::Graphics;
+	f32 priority = 1.f;
+};
+
 // ONLY SUPPORTS DISCRETE GPUS CURRENTLY. WILL CHANGE TO PRIORITIZING DISCRETE
 // ONLY SUPPORTS DEVICE THAT WILL PRESENT
 // DEVICE CREATION CALLBACK ALLOWS CUSTOM DEVICE OPTIONS
@@ -31,13 +44,7 @@ struct DeviceCreationParams
 		(const VkPhysicalDeviceFeatures& /*supportedFeatures*/, 
 		 VkPhysicalDeviceFeatures& /*enabledDeviceFeatures*/)> featureSetupCallback;
 	// Optional callback to allow for custom queue setup by user
-	FunctionRef<
-		DynamicArray<VkDeviceQueueCreateInfo>
-			(const DynamicArray<VkQueueFamilyProperties>&, 
-			 u32 /*gfxQueueIdx*/, u32 /*tfrQueueIdx*/, u32 /*compQueueIdx*/)> queueCreationCallback;
-	u32 graphicsSupport : 1;
-	u32 computeSupport : 1;
-	u32 transferSupport : 1;
+	DynamicArray<QueueCreationParams> queueCreationParams;
 };
 
 // ---- Device Functionality ----
@@ -46,9 +53,4 @@ struct DeviceCreationParams
 
 NODISCARD APPARITION_API Device CreateDevice(const DeviceCreationParams& params);
 APPARITION_API void DestroyDevice(Device deviceHandle);
-APPARITION_API u32 GetGraphicsQueueIndex(Device deviceHandle);
-APPARITION_API u32 GetComputeQueueIndex(Device deviceHandle);
-APPARITION_API u32 GetTransferQueueIndex(Device deviceHandle);
-// TODO - Expose native functionality of Vulkan in a separate file
-APPARITION_API VkDevice GetVulkanDevice(Device deviceHandle);
 }

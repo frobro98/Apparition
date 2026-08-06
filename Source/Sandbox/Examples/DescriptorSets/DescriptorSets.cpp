@@ -285,7 +285,7 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
     // Draw Command Buffers
     {
         Apparition::CommandPoolCreationParams createParams{
-            .queueIndex = Apparition::GetGraphicsQueueIndex(device),
+            .queueIndex = Apparition::GetQueueIndex(graphicsQueue),
             .canResetCommandBuffers = true
         };
         commandPool = Apparition::CreateCommandPool(device, createParams);

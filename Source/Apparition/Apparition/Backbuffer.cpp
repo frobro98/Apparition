@@ -40,9 +40,7 @@ void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue)
     const CommandBufferInternal& cbInternal = GetCommandBufferInternalFromIndex(deviceInternal, handleIndex);
     Assert(!cbInternal.hasBegun);
 
-    const u32 queueIndex = GetHandleIndex(queue);
-    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(queue));
-    QueueInternal queueInternal = queueArray[queueIndex - 1];
+    QueueInternal& queueInternal = GetQueueInternal(queue);
 
     const Backbuffer& backbuffer = deviceInternal.backbuffer;
     NOT_USED const u32 imageIndex = backbuffer.currentImageIndex;
@@ -77,9 +75,8 @@ void PresentBackbuffer(Queue presentQueue)
     const u32 deviceIndex = GetDeviceIndexFromHandle(presentQueue);
     const DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
 
-    const u32 queueIndex = GetHandleIndex(presentQueue);
-    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(presentQueue));
-    QueueInternal queueInternal = queueArray[queueIndex - 1];
+    QueueInternal& queueInternal = GetQueueInternal(presentQueue);
+    Assert(queueInternal.canPresent);
 
     const Backbuffer& backbuffer = deviceInternal.backbuffer;
     NOT_USED const u32 imageIndex = backbuffer.currentImageIndex;

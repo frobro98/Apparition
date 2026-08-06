@@ -51,8 +51,6 @@ WALL_WRN_POP
 
 DEFINE_LOG_CHANNEL(VkValidation);
 
-#define CHECK_VK(expression) Assert(expression == VK_SUCCESS)
-
 //////////////////////////////////////////////////////
 
 // Things that are needed for support
@@ -87,14 +85,22 @@ DEFINE_LOG_CHANNEL(VkValidation);
 //     - Image vs ImageView would be separate handles
 //   - Direct management of the device via handle
 //     - Query information via device-based C api interface
-//   - Render Pass API
-//     - Validation of resource access within the pass
-//     - Subpass API
-//       - Need to investigate this....
 //   - Async compute support
 //     - No shit...
 // 
 //
+
+// State of API notes
+// - TODO - Need to have some sort of distinction between structs/handles and functions
+// -- Need to move the Apparition namespace to Apr namespace(??)
+// - TODO - Add lots of validation to internal API
+// - TODO - Determine whether raw buffers should instead be VertexBuffer, IndexBuffer, UniformBuffer, etc.
+// -- If buffers are like that, should images be like that too??
+// -- Global buffer functionality?
+// -- What does this give me and the API?
+// - TODO - Maybe focus on bindless descriptors?
+// -- This would mean that regular descriptors might not be supported?
+// -- Shouldn't support everything
 
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
@@ -203,9 +209,21 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Apparition::Device deviceHandle;
 	{
 		Apparition::DeviceCreationParams createParams{
-			.graphicsSupport = true,
-			.computeSupport = true,
-			.transferSupport = true,
+			.queueCreationParams
+			{
+				Apparition::QueueCreationParams
+				{
+					.queueType = Apparition::QueueType::Graphics
+				},
+							Apparition::QueueCreationParams
+				{
+					.queueType = Apparition::QueueType::Compute
+				},
+							Apparition::QueueCreationParams
+				{
+					.queueType = Apparition::QueueType::Transfer
+				}
+			}
 		};
 		deviceHandle = Apparition::CreateDevice(createParams);
 	}

@@ -130,7 +130,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 	this->device = device;
 	Apparition::CommandPoolCreationParams params
 	{
-		.queueIndex = Apparition::GetGraphicsQueueIndex(device)
+		.queueIndex = Apparition::GetQueueIndex(copyQueue)
 	};
 	this->commandPool = Apparition::CreateCommandPool(device, params);
 
@@ -1100,7 +1100,7 @@ void vkglTF::Model::createEmptyTexture(Apparition::Queue transferQueue)
 
 	Apparition::CommandPoolCreationParams params
 	{
-		.queueIndex = Apparition::GetGraphicsQueueIndex(device)
+		.queueIndex = Apparition::GetQueueIndex(transferQueue)
 	};
 	emptyTexture.commandPool = Apparition::CreateCommandPool(device, params);
 	Apparition::CommandPool commandPool = emptyTexture.commandPool;
@@ -1867,7 +1867,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	// Copy from staging buffers
 	Apparition::CommandPoolCreationParams params
 	{
-		.queueIndex = Apparition::GetGraphicsQueueIndex(device)
+		.queueIndex = Apparition::GetQueueIndex(transferQueue)
 	};
 	Apparition::CommandPool commandPool = Apparition::CreateCommandPool(device, params);
 	Apparition::CommandBufferAllocParams cmdBuffParams;

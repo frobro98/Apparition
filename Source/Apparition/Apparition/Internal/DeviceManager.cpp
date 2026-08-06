@@ -162,7 +162,28 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 	u32 transferFamilyIndex = invalidFamilyIndex;
 	u32 computeFamilyIndex = invalidFamilyIndex;
 
-	const auto IsGpuSuitable = [&params, &graphicsFamilyIndex, &transferFamilyIndex, &computeFamilyIndex](VkPhysicalDevice physicalDevice)
+	u32 graphicsSupport = false;
+	u32 computeSupport = false;
+	u32 transferSupport = false;
+	Assert(!params.queueCreationParams.IsEmpty());
+	for (const QueueCreationParams& queueParams : params.queueCreationParams)
+	{
+		if (queueParams.queueType == QueueType::Graphics)
+		{
+			graphicsSupport = true;
+		}
+		else if (queueParams.queueType == QueueType::Compute)
+		{
+			computeSupport = true;
+		}
+		else if (queueParams.queueType == QueueType::Transfer)
+		{
+			transferSupport = true;
+		}
+	}
+
+	const auto IsGpuSuitable = [&graphicsFamilyIndex, &transferFamilyIndex, &computeFamilyIndex,
+								graphicsSupport, transferSupport, computeSupport](VkPhysicalDevice physicalDevice)
 		{
 			VkPhysicalDeviceProperties properties;
 			vkGetPhysicalDeviceProperties(physicalDevice, &properties);
@@ -183,14 +204,14 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 				{
 					const VkBool32 presentationSupported = vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, i);
 
-					const u32 desiredQueues = [&params]() -> u32
+					const u32 desiredQueues = [=]() -> u32
 						{
-							if (params.graphicsSupport)
+							if (graphicsSupport)
 							{
-								return params.computeSupport ?
+								return computeSupport ?
 									VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT : VK_QUEUE_GRAPHICS_BIT;
 							}
-							else if (params.computeSupport)
+							else if (computeSupport)
 							{
 								return VK_QUEUE_COMPUTE_BIT;
 							}
@@ -204,13 +225,13 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 						if (graphicsFamilyIndex == std::numeric_limits<u32>::max() && presentationSupported)
 						{
 							graphicsFamilyIndex = i;
-							if (params.computeSupport)
+							if (computeSupport)
 							{
 								computeFamilyIndex = i;
 							}
 						}
 					}
-					else if (params.transferSupport &&
+					else if (transferSupport &&
 						queueFamilyProperties[i].queueCount > 0 &&
 						queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
 					{
@@ -238,63 +259,56 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 		}
 	}
 
-	if (graphicsFamilyIndex == invalidFamilyIndex && params.graphicsSupport)
+	if (graphicsFamilyIndex == invalidFamilyIndex && graphicsSupport)
 	{
 		// TODO- Assert and return
 	}
 
-	if (transferFamilyIndex == invalidFamilyIndex && params.transferSupport)
+	if (transferSupport)
 	{
+		if (transferFamilyIndex == invalidFamilyIndex)
+		{
+
+		}
 		// TODO- Assert and return
 	}
 
-	if (computeFamilyIndex == invalidFamilyIndex && params.computeSupport)
+	if (computeFamilyIndex == invalidFamilyIndex && computeSupport)
 	{
 		// TODO- Assert and return
 	}
 
 	u32 graphicsQueueCount = 0;
 	u32 transferQueueCount = 0;
-	NOT_USED u32 computeQueueCount = 0;
+	u32 computeQueueCount = 0;
 	DynamicArray<VkDeviceQueueCreateInfo> queueInfos;
-	if (params.queueCreationCallback.IsValid())
-	{
-		u32 queueFamilyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(selectedGpu, &queueFamilyCount, nullptr);
-		Assert(queueFamilyCount > 0);
-		DynamicArray<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
-		queueInfos = params.queueCreationCallback(queueFamilyProperties, graphicsFamilyIndex, transferFamilyIndex, computeFamilyIndex);
-		Assertf(false, "We currently don't support custom queue setup due to the handle pooling system. This will be supported soon");
-	}
-	else
-	{
-		f32 priorities[] = { 1.f };
-		VkDeviceQueueCreateInfo queueInfo;
-		Vk::ZeroInfoStruct(queueInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
-		if (params.graphicsSupport)
-		{
-			queueInfo.queueFamilyIndex = graphicsFamilyIndex;
-			queueInfo.queueCount = 1;
-			queueInfo.pQueuePriorities = priorities;
-		}
 
-		queueInfos.Reserve(3);
+	f32 priorities[] = { 1.f };
+	VkDeviceQueueCreateInfo queueInfo;
+	Vk::ZeroInfoStruct(queueInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
+	if (graphicsSupport)
+	{
+		queueInfo.queueFamilyIndex = graphicsFamilyIndex;
+		queueInfo.queueCount = 1;
+		queueInfo.pQueuePriorities = priorities;
+	}
+
+	queueInfos.Reserve(3);
+	queueInfos.Add(queueInfo);
+	graphicsQueueCount = 1;
+	if (transferSupport)
+	{
+		queueInfo.queueFamilyIndex = transferFamilyIndex;
 		queueInfos.Add(queueInfo);
-		graphicsQueueCount = 1;
-		if (params.transferSupport)
+		transferQueueCount = 1;
+	}
+	if (computeSupport)
+	{
+		if (!graphicsSupport || computeFamilyIndex != graphicsFamilyIndex)
 		{
-			queueInfo.queueFamilyIndex = transferFamilyIndex;
+			queueInfo.queueFamilyIndex = computeFamilyIndex;
 			queueInfos.Add(queueInfo);
-			transferQueueCount = 1;
-		}
-		if (params.computeSupport)
-		{
-			if (!params.graphicsSupport || computeFamilyIndex != graphicsFamilyIndex)
-			{
-				queueInfo.queueFamilyIndex = computeFamilyIndex;
-				queueInfos.Add(queueInfo);
-				computeQueueCount = 1;
-			}
+			computeQueueCount = 1;
 		}
 	}
 
@@ -410,12 +424,9 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 	CHECK_VK(result);
 
 	{
-		internalDevice.graphicsQueueHandlePool = CreateHandlePool(graphicsQueueCount);
-		internalDevice.graphicsQueues.Resize(graphicsQueueCount);
-	}
-	{
-		internalDevice.transferQueueHandlePool = CreateHandlePool(transferQueueCount);
-		internalDevice.transferQueues.Resize(transferQueueCount);
+		const u32 queueCount = graphicsQueueCount + transferQueueCount + computeQueueCount;
+		internalDevice.queueHandlePool = CreateHandlePool(queueCount);
+		internalDevice.queues.Resize(queueCount);
 	}
 
 	// We want zero to be reserved, since that's the "invalid handle" value
@@ -438,36 +449,7 @@ Apparition::Device DeviceManager::CreateDevice(const Apparition::DeviceCreationP
 
 	VkPhysicalDeviceProperties gpuProperties;
 	vkGetPhysicalDeviceProperties(internalDevice.physicalDevice, &gpuProperties);
-	const VkPhysicalDeviceLimits limits = gpuProperties.limits;
-
-	VkDescriptorPoolSize poolSizes[8] = {};
-	poolSizes[0].descriptorCount = 10000;//maxSamplerPoolSize;
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = 10000;//maxUniformBufferPoolSize;
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[2].descriptorCount = limits.maxDescriptorSetUniformBuffersDynamic;
-	poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	poolSizes[3].descriptorCount = 10000;//maxStorageBufferPoolSize;
-	poolSizes[3].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	poolSizes[4].descriptorCount = limits.maxDescriptorSetStorageBuffersDynamic;
-	poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-	poolSizes[5].descriptorCount = 10000;// maxStorageImagePoolSize;
-	poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	poolSizes[6].descriptorCount = 10000;// maxSampledImagePoolSize;
-	poolSizes[6].type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-	poolSizes[7].descriptorCount = 10000;// maxInputAttachmentPoolSize;
-	poolSizes[7].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-
-	VkDescriptorPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = (u32)ArraySize(poolSizes);
-	poolInfo.pPoolSizes = poolSizes;
-	// TODO - This is a horrible allocation scheme and it holds onto the memory the entire time. Must be a lot more conservative with my pools...
-	poolInfo.maxSets = 10000;//logicalDevice.GetDeviceLimits().maxBoundDescriptorSets;
-	// TODO - Figure out what this flag specifically does
-	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-	result = vkCreateDescriptorPool(internalDevice.device, &poolInfo, nullptr, &internalDevice.descriptorPool);
-	CHECK_VK(result);
+	//const VkPhysicalDeviceLimits limits = gpuProperties.limits;
 
 	deviceInternals.Add(internalDevice);
 	// Sets up extention functionality
@@ -617,29 +599,49 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 	}
 }
 
+bool DeviceManager::CanAllocateQueue(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const
+{
+	for (const QueueInternal& queueInternal : deviceInternal.queues)
+	{
+		if (queueInternal.queue != VK_NULL_HANDLE && queueInternal.queueFamilyIndex == queueFamilyIndex)
+		{
+			// TODO - Right now, we only support one queue per type. More than that should be supported
+			Assert(false);
+			return false;
+		}
+	}
+
+	return true;
+}
+
 Queue DeviceManager::AllocateGraphicsQueue(Device device)
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
-	Assert(deviceInternal.graphicsQueues.Size() > 0);
-	u32 handleIndex = PopFreeHandleIndex(deviceInternal.graphicsQueueHandlePool);
-	if (handleIndex != InvalidHandleIndex)
+	if (CanAllocateQueue(deviceInternal, deviceInternal.graphicsFamilyIndex))
 	{
-		const u32 queueIndex = handleIndex - 1;
-		VkQueue queue = VK_NULL_HANDLE;
-		vkGetDeviceQueue(deviceInternal.device, deviceInternal.graphicsFamilyIndex, queueIndex, &queue);
+		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.queueHandlePool);
+		if (handleIndex != InvalidHandleIndex)
+		{
+			constexpr u32 queueIndex = 0;
+			VkQueue queue = VK_NULL_HANDLE;
+			vkGetDeviceQueue(deviceInternal.device, deviceInternal.graphicsFamilyIndex, queueIndex, &queue);
 
-		QueueInternal queueInternal{
-			.queue = queue
-		};
-		deviceInternal.graphicsQueues[queueIndex] = queueInternal;
+			QueueInternal queueInternal{
+				.queue = queue,
+				.queueFamilyIndex = deviceInternal.graphicsFamilyIndex,
+				.canPresent = true
+			};
+			
+			GetQueueInternalFromIndex(deviceInternal, handleIndex) = queueInternal;
 
-		const u32 indexGeneration = GetHandleGeneration(deviceInternal.graphicsQueueHandlePool, handleIndex);
-		// TODO(nblane): this MUST be moved so that it can be reused
-		const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
-			| (((u64)deviceInternal.graphicsFamilyIndex) << POOL_INDEX_SHIFT)
-			| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
-			| (handleIndex & RESOURCE_INDEX_MASK);
-		return Queue{ handleData };
+			const u32 indexGeneration = GetHandleGeneration(deviceInternal.queueHandlePool, handleIndex);
+			// TODO(nblane): this MUST be moved so that it can be reused
+			const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+				| (((u64)deviceInternal.graphicsFamilyIndex) << POOL_INDEX_SHIFT)
+				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+				| (handleIndex & RESOURCE_INDEX_MASK);
+			return Queue{ handleData };
+		}
 	}
 
 	return { InvalidHandle };
@@ -648,26 +650,29 @@ Queue DeviceManager::AllocateGraphicsQueue(Device device)
 Queue DeviceManager::AllocateTransferQueue(Device device)
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
-	Assert(deviceInternal.transferQueues.Size() > 0);
-	const u32 handleIndex = PopFreeHandleIndex(deviceInternal.transferQueueHandlePool);
-	if (handleIndex != InvalidHandleIndex)
+	if (CanAllocateQueue(deviceInternal, deviceInternal.graphicsFamilyIndex))
 	{
-		const u32 queueIndex = handleIndex - 1;
-		VkQueue queue = VK_NULL_HANDLE;
-		vkGetDeviceQueue(deviceInternal.device, deviceInternal.transferFamilyIndex, queueIndex, &queue);
+		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.queueHandlePool);
+		if (handleIndex != InvalidHandleIndex)
+		{
+			constexpr u32 queueIndex = 0;
+			VkQueue queue = VK_NULL_HANDLE;
+			vkGetDeviceQueue(deviceInternal.device, deviceInternal.transferFamilyIndex, queueIndex, &queue);
 
-		QueueInternal queueInternal{
-			.queue = queue
-		};
-		deviceInternal.transferQueues[queueIndex] = queueInternal;
+			QueueInternal queueInternal{
+				.queue = queue,
+				.queueFamilyIndex = deviceInternal.transferFamilyIndex
+			};
+			GetQueueInternalFromIndex(deviceInternal, handleIndex) = queueInternal;
 
-		const u32 indexGeneration = GetHandleGeneration(deviceInternal.transferQueueHandlePool, handleIndex);
-		// TODO(nblane): this MUST be moved so that it can be reused
-		const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
-			| (((u64)deviceInternal.transferFamilyIndex) << POOL_INDEX_SHIFT)
-			| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
-			| (handleIndex & RESOURCE_INDEX_MASK);
-		return Queue{ handleData };
+			const u32 indexGeneration = GetHandleGeneration(deviceInternal.queueHandlePool, handleIndex);
+			// TODO(nblane): this MUST be moved so that it can be reused
+			const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
+				| (((u64)deviceInternal.transferFamilyIndex) << POOL_INDEX_SHIFT)
+				| (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
+				| (handleIndex & RESOURCE_INDEX_MASK);
+			return Queue{ handleData };
+		}
 	}
 
 	// Here we need to log an error, since all queues are taken at this point
@@ -688,6 +693,7 @@ Queue DeviceManager::AllocateTransferQueue(Device device)
 //
 //		QueueInternal queueInternal{
 //			.queue = queue
+//			.queueFamilyIndex = deviceInternal.computeFamilyIndex
 //		};
 //		deviceInternal.computeQueues[queueIndex] = queueInternal;
 //
@@ -703,57 +709,11 @@ Queue DeviceManager::AllocateTransferQueue(Device device)
 //	return { InvalidHandle };
 //}
 
-HandlePool& DeviceManager::GetQueueHandlePool(DeviceInternal& deviceInternal, u32 queueFamilyIndex)
-{
-	if (queueFamilyIndex == deviceInternal.graphicsFamilyIndex)
-	{
-		return deviceInternal.graphicsQueueHandlePool;
-	}
-	else if (queueFamilyIndex == deviceInternal.transferFamilyIndex)
-	{
-		return deviceInternal.transferQueueHandlePool;
-	}
-	else if (queueFamilyIndex == deviceInternal.computeFamilyIndex)
-	{
-		return deviceInternal.computeQueueHandlePool;
-	}
-	else
-	{
-		Assertf(false, "Unknown queueFamilyIndex value: {}", queueFamilyIndex);
-		return deviceInternal.graphicsQueueHandlePool;
-	}
-}
-
-const DynamicArray<QueueInternal>& DeviceManager::GetQueueArray(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const
-{
-	if (queueFamilyIndex == deviceInternal.graphicsFamilyIndex)
-	{
-		return deviceInternal.graphicsQueues;
-	}
-	else if (queueFamilyIndex == deviceInternal.transferFamilyIndex)
-	{
-		return deviceInternal.transferQueues;
-	}
-	else if (queueFamilyIndex == deviceInternal.computeFamilyIndex)
-	{
-		return deviceInternal.computeQueues;
-	}
-	else
-	{
-		Assertf(false, "Unknown queueFamilyIndex value: {}", queueFamilyIndex);
-		return deviceInternal.graphicsQueues;
-	}
-}
-
 void DeviceManager::FreeQueue(Queue queue)
 {
 	// TODO: Assert handle is valid AND handle generation is correct
-	u32 deviceIndex = GetDeviceIndexFromHandle(queue);
-	DeviceInternal deviceInternal = deviceInternals[deviceIndex - 1];
-	u32 queueFamilyIndex = GetResourcePoolIndexFromHandle(queue);
-	HandlePool& queueHandlePool = GetQueueHandlePool(deviceInternal, queueFamilyIndex);
-	const u32 handleIndex = GetHandleIndex(queue);
-	PushFreedHandleIndex(queueHandlePool, handleIndex);
+	DeviceInternal& deviceInternal = GetDeviceInternal(queue);
+	PushFreedHandleIndex(deviceInternal.queueHandlePool, GetHandleIndex(queue));
 }
 
 bool DeviceManager::BroadcastDebugCallback(
@@ -849,7 +809,8 @@ CommandBuffer DeviceManager::AllocateCommandBuffer(CommandPool commandPoolHandle
 	{
 		CommandBufferInternal commandBufferInternal
 		{
-			.commandBuffer = cmdBuffer
+			.commandBuffer = cmdBuffer,
+			.queueFamilyIndex = commandPoolInternal.queueFamilyIndex
 		};
 		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.commandBufferHandlePool);
 		if (handleIndex != InvalidHandleIndex)

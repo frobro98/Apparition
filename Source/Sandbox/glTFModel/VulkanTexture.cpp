@@ -79,7 +79,7 @@ namespace vks
 		// Use a separate command buffer for texture loading
 		Apparition::CommandPoolCreationParams poolParams
 		{
-			.queueIndex = Apparition::GetGraphicsQueueIndex(device),
+			.queueIndex = Apparition::GetQueueIndex(copyQueue),
 			.canResetCommandBuffers = false
 		};
 		Apparition::CommandPool cmdPool = Apparition::CreateCommandPool(device, poolParams);
@@ -285,7 +285,7 @@ namespace vks
 		// Use a separate command buffer for texture loading
 		Apparition::CommandPoolCreationParams poolParams
 		{
-			.queueIndex = Apparition::GetGraphicsQueueIndex(device),
+			.queueIndex = Apparition::GetQueueIndex(copyQueue),
 			.canResetCommandBuffers = false
 		};
 		Apparition::CommandPool cmdPool = Apparition::CreateCommandPool(device, poolParams);

@@ -36,21 +36,12 @@ void FreeQueue(Queue queue)
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.FreeQueue(queue);
 }
-APPARITION_API void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer)
+void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer)
 {
-    Assert(apparition.deviceManager);
-    DeviceManager& deviceManager = *apparition.deviceManager;
-    const u32 deviceIndex = GetDeviceIndexFromHandle(queue);
-    DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
-    // Queue internals
-    const u32 queueIndex = GetHandleIndex(queue);
-    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(queue));
-    QueueInternal queueInternal = queueArray[queueIndex - 1];
-
-    // Command Buffer internals
-    const u32 commandBufferIndex = GetHandleIndex(commandBuffer);
-    const CommandBufferInternal& cbInternal = deviceInternal.commandBuffers[commandBufferIndex - 1];
+    QueueInternal& queueInternal = GetQueueInternal(queue);
+    const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
     Assert(!cbInternal.hasBegun);
+    Assert(cbInternal.queueFamilyIndex == queueInternal.queueFamilyIndex);
 
     VkSubmitInfo submitInfo = {};
     Vk::ZeroInfoStruct(submitInfo, VK_STRUCTURE_TYPE_SUBMIT_INFO);
@@ -59,17 +50,15 @@ APPARITION_API void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer
     VkResult result = vkQueueSubmit(queueInternal.queue, 1, &submitInfo, VK_NULL_HANDLE);
     CHECK_VK(result);
 }
-APPARITION_API void WaitForIdle(Queue queue)
+void WaitForIdle(Queue queue)
 {
-    Assert(apparition.deviceManager);
-    DeviceManager& deviceManager = *apparition.deviceManager;
-    const u32 deviceIndex = GetDeviceIndexFromHandle(queue);
-    DeviceInternal& deviceInternal = deviceManager.DeviceInternalFrom(deviceIndex);
-    // Queue internals
-    const u32 queueIndex = GetHandleIndex(queue);
-    const DynamicArray<QueueInternal> queueArray = deviceManager.GetQueueArray(deviceInternal, GetResourcePoolIndexFromHandle(queue));
-    QueueInternal queueInternal = queueArray[queueIndex - 1];
+    QueueInternal& queueInternal = GetQueueInternal(queue);
 
     vkQueueWaitIdle(queueInternal.queue);
+}
+
+u32 GetQueueIndex(Queue queue)
+{
+    return GetQueueInternal(queue).queueFamilyIndex;
 }
 }

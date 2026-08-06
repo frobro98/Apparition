@@ -52,8 +52,7 @@ public:
 	//Queue AllocateComputeQueue(Device device);
 	void FreeQueue(Queue queue);
 
-	HandlePool& GetQueueHandlePool(DeviceInternal& deviceInternal, u32 queueFamilyIndex);
-	const DynamicArray<QueueInternal>& GetQueueArray(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const;
+	bool CanAllocateQueue(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const;
 #pragma endregion
 
 #pragma region Debug Callback

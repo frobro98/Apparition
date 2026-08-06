@@ -164,7 +164,7 @@ void InitializeBaseExample(Apparition::Device inDevice)
 	// Command Buffer Setup
 	{
 		Apparition::CommandPoolCreationParams createParams{
-			.queueIndex = Apparition::GetGraphicsQueueIndex(device),
+			.queueIndex = Apparition::GetQueueIndex(graphicsQueue),
 			.canResetCommandBuffers = true
 		};
 		commandPool = Apparition::CreateCommandPool(device, createParams);
