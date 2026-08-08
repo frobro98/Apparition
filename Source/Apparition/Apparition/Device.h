@@ -12,45 +12,39 @@ struct VkQueueFamilyProperties;
 struct VkDevice_T;
 typedef struct VkDevice_T* VkDevice;
 
-namespace Apparition
-{
+HANDLE_TYPE(AptnDevice)
 
-struct Device
-{
-	u64 handle;
-};
-HANDLE_TYPE_OPERATORS(Device);
-
-enum class QueueType
+enum class AptnQueueType
 {
 	Graphics,
 	Compute,
 	Transfer
 };
 
-struct QueueCreationParams
+struct AptnQueueCreationParams
 {
-	QueueType queueType = QueueType::Graphics;
+	AptnQueueType queueType = AptnQueueType::Graphics;
 	f32 priority = 1.f;
 };
 
 // ONLY SUPPORTS DISCRETE GPUS CURRENTLY. WILL CHANGE TO PRIORITIZING DISCRETE
 // ONLY SUPPORTS DEVICE THAT WILL PRESENT
 // DEVICE CREATION CALLBACK ALLOWS CUSTOM DEVICE OPTIONS
-struct DeviceCreationParams
+struct AptnDeviceCreationParams
 {
 	// Optional callback to set custom features on your device
 	FunctionRef<void
 		(const VkPhysicalDeviceFeatures& /*supportedFeatures*/, 
 		 VkPhysicalDeviceFeatures& /*enabledDeviceFeatures*/)> featureSetupCallback;
 	// Optional callback to allow for custom queue setup by user
-	DynamicArray<QueueCreationParams> queueCreationParams;
+	DynamicArray<AptnQueueCreationParams> queueCreationParams;
 };
 
 // ---- Device Functionality ----
 
 // No need to expose Vulkan Instance creation, will check upon creation of a device
-
-NODISCARD APPARITION_API Device CreateDevice(const DeviceCreationParams& params);
-APPARITION_API void DestroyDevice(Device deviceHandle);
+namespace Apparition
+{
+NODISCARD APPARITION_API AptnDevice CreateDevice(const AptnDeviceCreationParams& params);
+APPARITION_API void DestroyDevice(AptnDevice deviceHandle);
 }

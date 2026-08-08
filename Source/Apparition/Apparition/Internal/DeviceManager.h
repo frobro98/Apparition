@@ -25,21 +25,21 @@ public:
 	struct UserAllocationCallbacks;
 	struct UserValidationCallbackData
 	{
-		ValidationDelegate delegate;
+		AptnValidationDelegate delegate;
 		void* userData;
 	};
 
 public:
 	~DeviceManager();
 
-	void Initialize(const InitializeParams& params);
+	void Initialize(const AptnInitializeParams& params);
 	void Deinitialize();
 
 #pragma region Device Management
-	Apparition::Device CreateDevice(const DeviceCreationParams& params);
-	void DestroyDevice(Device deviceHandle);
+	AptnDevice CreateDevice(const AptnDeviceCreationParams& params);
+	void DestroyDevice(AptnDevice deviceHandle);
 
-	DeviceInternal& DeviceInternalFrom(Device deviceHandle);
+	DeviceInternal& DeviceInternalFrom(AptnDevice deviceHandle);
 	DeviceInternal& DeviceInternalFrom(u32 deviceIndex);
 private:
 	void InitializeDeviceHandlePools(DeviceInternal& deviceInternal);
@@ -47,10 +47,10 @@ public:
 #pragma endregion
 
 #pragma region Queue
-	Queue AllocateGraphicsQueue(Device device);
-	Queue AllocateTransferQueue(Device device);
+	AptnQueue AllocateGraphicsQueue(AptnDevice device);
+	AptnQueue AllocateTransferQueue(AptnDevice device);
 	//Queue AllocateComputeQueue(Device device);
-	void FreeQueue(Queue queue);
+	void FreeQueue(AptnQueue queue);
 
 	bool CanAllocateQueue(const DeviceInternal& deviceInternal, u32 queueFamilyIndex) const;
 #pragma endregion
@@ -72,75 +72,71 @@ public:
 #pragma endregion
 
 #pragma region Backbuffer
-	void SetupBackbuffer(Device device, const BackbufferSetupParams& params);
-	void TeardownBackbuffer(Device device);
+	void SetupBackbuffer(AptnDevice device, const AptnBackbufferSetupParams& params);
+	void TeardownBackbuffer(AptnDevice device);
 
-	BackbufferStatus AcquireNextBackbufferImage(Device device);
-	ImageView GetBackbufferImageView(Device device);
-	Image GetAcquiredBackbufferImage(Device device);
+	AptnBackbufferStatus AcquireNextBackbufferImage(AptnDevice device);
+	AptnImageView GetBackbufferImageView(AptnDevice device);
+	AptnImage GetAcquiredBackbufferImage(AptnDevice device);
 
 public:
 #pragma endregion
 
 #pragma region Command Buffer
-	CommandPool CreateCommandPool(Device deviceHandle, const CommandPoolCreationParams& params);
-	void DestroyCommandPool(CommandPool commandPoolHandle);
+	AptnCommandPool CreateCommandPool(AptnDevice deviceHandle, const AptnCommandPoolCreationParams& params);
+	void DestroyCommandPool(AptnCommandPool commandPoolHandle);
 
-	CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params);
-	void FreeCommandBuffer(CommandBuffer commandBufferHandle);
-	void ResetCommandBuffer(CommandBuffer commandBuffer);
+	AptnCommandBuffer AllocateCommandBuffer(AptnCommandPool commandPoolHandle, const AptnCommandBufferAllocParams& params);
+	void FreeCommandBuffer(AptnCommandBuffer commandBufferHandle);
+	void ResetCommandBuffer(AptnCommandBuffer commandBuffer);
 
 	// TEMP
-	VkCommandBuffer GetCommandBufferHandle(CommandBuffer cbHandle);
+	VkCommandBuffer GetCommandBufferHandle(AptnCommandBuffer cbHandle);
 #pragma endregion
 
 #pragma region Resources
-	Buffer CreateBuffer(Device device, const BufferCreationParams& params);
-	void DestroyBuffer(Buffer buffer);
+	AptnBuffer CreateBuffer(AptnDevice device, const AptnBufferCreationParams& params);
+	void DestroyBuffer(AptnBuffer buffer);
 
-	Image CreateImage(Device device, const ImageCreationParams& params);
-	void DestroyImage(Image image);
+	AptnImage CreateImage(AptnDevice device, const AptnImageCreationParams& params);
+	void DestroyImage(AptnImage image);
 
-	ImageView CreateImageView(Image image, const ImageViewCreationParams& params);
-	void DestroyImageView(ImageView imageView);
+	AptnImageView CreateImageView(AptnImage image, const AptnImageViewCreationParams& params);
+	void DestroyImageView(AptnImageView imageView);
 
-	Sampler CreateSampler(Device device, const SamplerCreationParams& params);
-	void DestroySampler(Sampler sampler);
+	AptnSampler CreateSampler(AptnDevice device, const AptnSamplerCreationParams& params);
+	void DestroySampler(AptnSampler sampler);
 
-	//RetVal GetBufferDescription(Buffer buffer) const;
-
-	// TEMP
-	VkBuffer GetBufferHandle(Buffer bufferHandle);
 #pragma endregion
 
 #pragma region Pipeline State
-	VertexInputPipelineState CreateVertexInputPipelineState(Device device, const VertexInputPipelineStateCreationParams& params);
-	PrerasterShadersPipelineState CreatePrerasterShadersPipelineState(Device device, const PreRasterShadersPipelineStateCreationParams& params);
-	FragmentShaderPipelineState CreateFragmentShaderPipelineState(Device device, const FragmentShaderPipelineStateCreationParams& params);
-	FragmentOutputPipelineState CreateFragmentOutputPipelineState(Device device, const FragmentOutputPipelineStateCreationParams& params);
+	AptnVertexInputPipelineState CreateVertexInputPipelineState(AptnDevice device, const AptnVertexInputPipelineStateCreationParams& params);
+	AptnPrerasterShadersPipelineState CreatePrerasterShadersPipelineState(AptnDevice device, const AptnPreRasterShadersPipelineStateCreationParams& params);
+	AptnFragmentShaderPipelineState CreateFragmentShaderPipelineState(AptnDevice device, const AptnFragmentShaderPipelineStateCreationParams& params);
+	AptnFragmentOutputPipelineState CreateFragmentOutputPipelineState(AptnDevice device, const AptnFragmentOutputPipelineStateCreationParams& params);
 
-	void DestroyVertexInputPipelineState(VertexInputPipelineState state);
-	void DestroyPrerasterShadersPipelineState(PrerasterShadersPipelineState state);
-	void DestroyFragmentShaderPipelineState(FragmentShaderPipelineState state);
-	void DestroyFragmentOutputPipelineState(FragmentOutputPipelineState state);
+	void DestroyVertexInputPipelineState(AptnVertexInputPipelineState state);
+	void DestroyPrerasterShadersPipelineState(AptnPrerasterShadersPipelineState state);
+	void DestroyFragmentShaderPipelineState(AptnFragmentShaderPipelineState state);
+	void DestroyFragmentOutputPipelineState(AptnFragmentOutputPipelineState state);
 
-	Pipeline CreatePipeline(Device device, const PipelineCreationParams& params);
-	void DestroyPipeline(Pipeline pipeline);
+	AptnPipeline CreatePipeline(AptnDevice device, const AptnPipelineCreationParams& params);
+	void DestroyPipeline(AptnPipeline pipeline);
 #pragma endregion
 
 #pragma region Descriptor Set
-	DescriptorSetLayout CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params);
-	void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
+	AptnDescriptorSetLayout CreateDescriptorSetLayout(AptnDevice device, const AptnDescriptorSetLayoutCreationParams& params);
+	void DestroyDescriptorSetLayout(AptnDescriptorSetLayout descriptorSetLayout);
 
-	DescriptorPool CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params);
-	void DestroyDescriptorPool(DescriptorPool descriptorPool);
+	AptnDescriptorPool CreateDescriptorPool(AptnDevice device, const AptnDescriptorPoolCreationParams& params);
+	void DestroyDescriptorPool(AptnDescriptorPool descriptorPool);
 
-	DescriptorSet AllocateDescriptorSet(DescriptorPool descriptorPool, const DescriptorSetAllocParams& allocParams);
-	void FreeDescriptorSet(DescriptorSet descriptorSet);
-	void AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSetAllocParams>& allocParams);
-	void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets);
+	AptnDescriptorSet AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams);
+	void FreeDescriptorSet(AptnDescriptorSet descriptorSet);
+	void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams);
+	void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets);
 
-	void UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetDesc>& descriptorSetUpdates);
+	void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates);
 #pragma endregion
 private:
 	UserValidationCallbackData userValidation;

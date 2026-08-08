@@ -8,14 +8,14 @@
 
 namespace Apparition
 {
-Queue AllocateGraphicsQueue(Device device)
+AptnQueue AllocateGraphicsQueue(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.AllocateGraphicsQueue(device);
 }
 
-Queue AllocateTransferQueue(Device device)
+AptnQueue AllocateTransferQueue(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
@@ -30,13 +30,13 @@ Queue AllocateTransferQueue(Device device)
 //    return deviceManager.AllocateComputeQueue(device);
 //}
 
-void FreeQueue(Queue queue)
+void FreeQueue(AptnQueue queue)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.FreeQueue(queue);
 }
-void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer)
+void SubmitCommandBuffer(AptnQueue queue, AptnCommandBuffer commandBuffer)
 {
     QueueInternal& queueInternal = GetQueueInternal(queue);
     const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
@@ -50,14 +50,14 @@ void SubmitCommandBuffer(Queue queue, CommandBuffer commandBuffer)
     VkResult result = vkQueueSubmit(queueInternal.queue, 1, &submitInfo, VK_NULL_HANDLE);
     CHECK_VK(result);
 }
-void WaitForIdle(Queue queue)
+void WaitForIdle(AptnQueue queue)
 {
     QueueInternal& queueInternal = GetQueueInternal(queue);
 
     vkQueueWaitIdle(queueInternal.queue);
 }
 
-u32 GetQueueIndex(Queue queue)
+u32 GetQueueIndex(AptnQueue queue)
 {
     return GetQueueInternal(queue).queueFamilyIndex;
 }

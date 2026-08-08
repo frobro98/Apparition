@@ -50,8 +50,8 @@ namespace vkglTF
 		ImageNormalMap = 0x00000002
 	};
 
-	extern Apparition::DescriptorSetLayout descriptorSetLayoutImage;
-	extern Apparition::DescriptorSetLayout descriptorSetLayoutUbo;
+	extern AptnDescriptorSetLayout descriptorSetLayoutImage;
+	extern AptnDescriptorSetLayout descriptorSetLayoutUbo;
 	//extern VkDescriptorSetLayout descriptorSetLayoutImage;
 	//extern VkDescriptorSetLayout descriptorSetLayoutUbo;
 	extern VkMemoryPropertyFlags memoryPropertyFlags;
@@ -64,33 +64,33 @@ namespace vkglTF
 	*/
 	struct Texture {
 		//vks::VulkanDevice* device = nullptr;
-		Apparition::Device device;
-		Apparition::CommandPool commandPool;
+		AptnDevice device;
+		AptnCommandPool commandPool;
 		//VkImage image;
-		Apparition::Image image;
-		Apparition::ImageView view;
-		Apparition::ImageAccess::Type access;
+		AptnImage image;
+		AptnImageView view;
+		AptnImageAccess::Type access;
 		//VkImageLayout imageLayout;
 		//VkDeviceMemory deviceMemory;
 		//VkImageView view;
 		uint32_t width, height;
 		uint32_t mipLevels;
 		uint32_t layerCount;
-		Apparition::ImageDescriptorInfo descriptor;
+		AptnImageDescriptorInfo descriptor;
 		//VkDescriptorImageInfo descriptor;
-		Apparition::Sampler sampler;
+		AptnSampler sampler;
 		//VkSampler sampler;
 		uint32_t index;
 		void updateDescriptor();
 		void destroy();
-		void fromglTfImage(tinygltf::Image& gltfimage, std::string path, Apparition::Device device, Apparition::Queue copyQueue);
+		void fromglTfImage(tinygltf::Image& gltfimage, std::string path, AptnDevice device, AptnQueue copyQueue);
 	};
 
 	/*
 		glTF material class
 	*/
 	struct Material {
-		Apparition::Device device;
+		AptnDevice device;
 		//vks::VulkanDevice* device = nullptr;
 		enum AlphaMode { ALPHAMODE_OPAQUE, ALPHAMODE_MASK, ALPHAMODE_BLEND };
 		AlphaMode alphaMode = ALPHAMODE_OPAQUE;
@@ -107,11 +107,11 @@ namespace vkglTF
 		vkglTF::Texture* specularGlossinessTexture;
 		vkglTF::Texture* diffuseTexture;
 
-		Apparition::DescriptorSet descriptorSet;
+		AptnDescriptorSet descriptorSet;
 		//VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 
-		Material(Apparition::Device device) : device(device) {};
-		void createDescriptorSet(/*VkDescriptorPool descriptorPool*/Apparition::DescriptorPool descriptorPool, /*VkDescriptorSetLayout descriptorSetLayout*/Apparition::DescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags);
+		Material(AptnDevice device) : device(device) {};
+		void createDescriptorSet(/*VkDescriptorPool descriptorPool*/AptnDescriptorPool descriptorPool, /*VkDescriptorSetLayout descriptorSetLayout*/AptnDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags);
 	};
 
 	/*
@@ -140,19 +140,19 @@ namespace vkglTF
 		glTF mesh
 	*/
 	struct Mesh {
-		Apparition::Device device;
+		AptnDevice device;
 		//vks::VulkanDevice* device;
 
 		std::vector<Primitive*> primitives;
 		std::string name;
 
 		struct UniformBuffer {
-			Apparition::Buffer buffer;
+			AptnBuffer buffer;
 			/*VkBuffer buffer;
 			VkDeviceMemory memory;*/
-			Apparition::BufferDescriptorInfo descriptor;
+			AptnBufferDescriptorInfo descriptor;
 			//VkDescriptorBufferInfo descriptor;
-			Apparition::DescriptorSet descriptorSet;
+			AptnDescriptorSet descriptorSet;
 			//VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
 			void* mapped;
 		} uniformBuffer;
@@ -163,7 +163,7 @@ namespace vkglTF
 			float jointcount{ 0 };
 		} uniformBlock;
 
-		Mesh(/*vks::VulkanDevice* device*/Apparition::Device device, glm::mat4 matrix);
+		Mesh(/*vks::VulkanDevice* device*/AptnDevice device, glm::mat4 matrix);
 		~Mesh();
 	};
 
@@ -242,16 +242,16 @@ namespace vkglTF
 		glm::vec4 joint0;
 		glm::vec4 weight0;
 		glm::vec4 tangent;
-		static Apparition::VertexBindingDescription vertexInputBindingDescription;
+		static AptnVertexBindingDescription vertexInputBindingDescription;
 		//static VkVertexInputBindingDescription vertexInputBindingDescription;
-		static DynamicArray<Apparition::VertexAttributeDescription> vertexInputAttributeDescriptions;
+		static DynamicArray<AptnVertexAttributeDescription> vertexInputAttributeDescriptions;
 		//static std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 		//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
-		static Apparition::VertexBindingDescription inputBindingDescription(uint32_t binding);
+		static AptnVertexBindingDescription inputBindingDescription(uint32_t binding);
 		//static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
-		static Apparition::VertexAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
+		static AptnVertexAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
 		//static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
-		static DynamicArray<Apparition::VertexAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
+		static DynamicArray<AptnVertexAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
 		//static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
 		/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
 		//static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
@@ -280,22 +280,22 @@ namespace vkglTF
 	private:
 		vkglTF::Texture* getTexture(uint32_t index);
 		vkglTF::Texture emptyTexture;
-		void createEmptyTexture(/*VkQueue transferQueue*/Apparition::Queue transferQueue);
+		void createEmptyTexture(/*VkQueue transferQueue*/AptnQueue transferQueue);
 	public:
-		Apparition::Device device;
+		AptnDevice device;
 		//vks::VulkanDevice* device;
-		Apparition::DescriptorPool descriptorPool;
+		AptnDescriptorPool descriptorPool;
 		//VkDescriptorPool descriptorPool;
 
 		struct Vertices {
 			int count;
-			Apparition::Buffer buffer;
+			AptnBuffer buffer;
 			//VkBuffer buffer;
 			//VkDeviceMemory memory;
 		} vertices;
 		struct Indices {
 			int count;
-			Apparition::Buffer buffer;
+			AptnBuffer buffer;
 			//VkBuffer buffer;
 			//VkDeviceMemory memory;
 		} indices;
@@ -327,19 +327,19 @@ namespace vkglTF
 		void releaseResources();
 		void loadNode(vkglTF::Node* parent, const tinygltf::Node& node, uint32_t nodeIndex, const tinygltf::Model& model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale);
 		void loadSkins(tinygltf::Model& gltfModel);
-		void loadImages(tinygltf::Model& gltfModel, /*vks::VulkanDevice* device*/Apparition::Device device, /*VkQueue transferQueue*/Apparition::Queue transferQueue);
+		void loadImages(tinygltf::Model& gltfModel, /*vks::VulkanDevice* device*/AptnDevice device, /*VkQueue transferQueue*/AptnQueue transferQueue);
 		void loadMaterials(tinygltf::Model& gltfModel);
 		void loadAnimations(tinygltf::Model& gltfModel);
-		void loadFromFile(std::string filename, /*vks::VulkanDevice* device*/Apparition::Device device, /*VkQueue transferQueue*/Apparition::Queue transferQueue, uint32_t fileLoadingFlags = vkglTF::FileLoadingFlags::None, float scale = 1.0f);
-		void bindBuffers(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer);
-		void drawNode(Node* node, /*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription& pipelineDesc = {}, uint32_t bindImageSet = 1);
-		void draw(/*VkCommandBuffer commandBuffer*/Apparition::CommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const Apparition::PipelineDescription& pipelineDesc = {}, uint32_t bindImageSet = 1);
+		void loadFromFile(std::string filename, /*vks::VulkanDevice* device*/AptnDevice device, /*VkQueue transferQueue*/AptnQueue transferQueue, uint32_t fileLoadingFlags = vkglTF::FileLoadingFlags::None, float scale = 1.0f);
+		void bindBuffers(/*VkCommandBuffer commandBuffer*/AptnCommandBuffer commandBuffer);
+		void drawNode(Node* node, /*VkCommandBuffer commandBuffer*/AptnCommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const AptnPipelineDescription& pipelineDesc = {}, uint32_t bindImageSet = 1);
+		void draw(/*VkCommandBuffer commandBuffer*/AptnCommandBuffer commandBuffer, uint32_t renderFlags = 0, /*VkPipelineLayout pipelineLayout*/const AptnPipelineDescription& pipelineDesc = {}, uint32_t bindImageSet = 1);
 		void getNodeDimensions(Node* node, glm::vec3& min, glm::vec3& max);
 		void getSceneDimensions();
 		void updateAnimation(uint32_t index, float time);
 		Node* findNode(Node* parent, uint32_t index);
 		Node* nodeFromIndex(uint32_t index);
 		Node* nodeFromName(const std::string name);
-		void prepareNodeDescriptor(vkglTF::Node* node, /*VkDescriptorSetLayout descriptorSetLayout*/Apparition::DescriptorSetLayout descriptorSetLayout);
+		void prepareNodeDescriptor(vkglTF::Node* node, /*VkDescriptorSetLayout descriptorSetLayout*/AptnDescriptorSetLayout descriptorSetLayout);
 	};
 }

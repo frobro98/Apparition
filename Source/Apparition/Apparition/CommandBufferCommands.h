@@ -10,28 +10,17 @@
 #include "Apparition/RenderingDescription.h"
 
 // TODO: Revisit when implementing specific Sascha Williams functionality
-namespace Apparition
+struct AptnBindVertexBufferDesc
 {
-APPARITION_API void BeginCommandBuffer(CommandBuffer commandBuffer, bool oneTimeSubmit = false);
-APPARITION_API void EndCommandBuffer(CommandBuffer commandBuffer);
-
-APPARITION_API void BeginRendering(CommandBuffer commandBuffer, const RenderSetupParams& renderSetupParams);
-APPARITION_API void EndRendering(CommandBuffer commandBuffer);
-
-struct BindVertexBufferDesc
-{
-    Buffer vertexBuffer;
+    AptnBuffer vertexBuffer;
 };
 
-struct BindIndexBufferDesc
+struct AptnBindIndexBufferDesc
 {
-    Buffer indexBuffer;
+    AptnBuffer indexBuffer;
 };
 
-APPARITION_API void BindVertexBuffers(CommandBuffer commandBuffer, const BindVertexBufferDesc& desc);
-APPARITION_API void BindIndexBuffer(CommandBuffer commandBuffer, const BindIndexBufferDesc& desc);
-
-struct ViewportDesc
+struct AptnViewportDesc
 {
     f32 x = 0.f;
     f32 y = 0.f;
@@ -39,7 +28,7 @@ struct ViewportDesc
     f32 height = 0.f;
 };
 
-struct ScissorDesc
+struct AptnScissorDesc
 {
     i32 offsetX = 0;
     i32 offsetY = 0;
@@ -47,11 +36,7 @@ struct ScissorDesc
     u32 extentY = 0;
 };
 
-APPARITION_API void SetViewportAndScissor(CommandBuffer commandBuffer, const ViewportDesc& viewDesc, const ScissorDesc& scissorDesc);
-
-APPARITION_API void BindGraphicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline);
-
-namespace BindPoint
+namespace AptnBindPoint
 {
 enum Type
 {
@@ -60,79 +45,104 @@ enum Type
 };
 }
 
-struct BindDescriptorSetsDesc
+struct AptnBindDescriptorSetsDesc
 {
-    PipelineDescription pipelineDesc;
-    BindPoint::Type bindPoint = BindPoint::Graphics;
+    AptnPipelineDescription pipelineDesc;
+    AptnBindPoint::Type bindPoint = AptnBindPoint::Graphics;
     u32 firstSet = 0;
-    DynamicArray<DescriptorSet> descriptorSets;
+    DynamicArray<AptnDescriptorSet> descriptorSets;
 };
 
-APPARITION_API void BindDescriptorSets(CommandBuffer commandBuffer, const BindDescriptorSetsDesc& bindDescriptorSetsDesc);
-
-// Draw Commands
-APPARITION_API void DrawIndexed(CommandBuffer commandBuffer, u32 indexCount);
-
-// Copy Commands
-
-struct BufferCopyDesc
+struct AptnBufferCopyDesc
 {
     size_t size = 0;
-    Buffer srcBuffer = { InvalidHandle };
-    Buffer dstBuffer = { InvalidHandle };
+    AptnBuffer srcBuffer = { AptnInvalidHandle };
+    AptnBuffer dstBuffer = { AptnInvalidHandle };
     // Optional
     size_t srcOffset = 0;
     size_t dstOffset = 0;
 };
 
-APPARITION_API void CopyBuffer(CommandBuffer commandBuffer, const BufferCopyDesc& copyDesc);
-
-struct BufferToImageCopyOutline
+struct AptnBufferToImageCopyOutline
 {
     u64 bufferOffset = 0;
     // Subresource
-    ImageAspect::Type aspect = ImageAspect::Color;
+    AptnImageAspect::Type aspect = AptnImageAspect::Color;
     u32 mipLevel = 0;
     // TODO - Support array layers
     u32 imgWidth = 0;
     u32 imgHeight = 0;
 };
 
-struct BufferToImageCopyDesc
+struct AptnBufferToImageCopyDesc
 {
-    Buffer srcBuffer = { InvalidHandle };
-    Image dstImage = { InvalidHandle };
-    BufferToImageCopyOutline outline;
+    AptnBuffer srcBuffer = { AptnInvalidHandle };
+    AptnImage dstImage = { AptnInvalidHandle };
+    AptnBufferToImageCopyOutline outline;
 };
-
-APPARITION_API void CopyBufferToImage(CommandBuffer commandBuffer, const BufferToImageCopyDesc& copyDesc);
 
 // TODO - the BuffertoImageCopyDesc struct has a reference to a buffer and an image, just like VkBufferImageCopy. This
 // needs to be changed because of clarity. Make a separate copy structure that is shared by all Buffer -> Image commands
-struct BufferRegionsToImageCopyDesc
+struct AptnBufferRegionsToImageCopyDesc
 {
-    Buffer srcBuffer = { InvalidHandle };
-    Image dstImage = { InvalidHandle };
-    DynamicArray<BufferToImageCopyOutline> outlines;
+    AptnBuffer srcBuffer = { AptnInvalidHandle };
+    AptnImage dstImage = { AptnInvalidHandle };
+    DynamicArray<AptnBufferToImageCopyOutline> outlines;
 };
-APPARITION_API void CopyBufferRegionsToImage(CommandBuffer commandBuffer, const BufferRegionsToImageCopyDesc& copyRegions);
 
-struct BlitImageDesc
+struct AptnBlitImageDesc
 {
-    Image srcImage;
-    ImageAspect::Type srcAspect = ImageAspect::Color;
+    AptnImage srcImage;
+    AptnImageAspect::Type srcAspect = AptnImageAspect::Color;
     u32 srcMipLevel = 0;
     // TODO - Better understand why there are multiple offsets for both src and dst
     i32 srcOffsetX[2] = { 0, 0 };
     i32 srcOffsetY[2] = { 0, 0 };
-    Image dstImage;
-    ImageAspect::Type dstAspect = ImageAspect::Color;
+    AptnImage dstImage;
+    AptnImageAspect::Type dstAspect = AptnImageAspect::Color;
     u32 dstMipLevel = 0;
     i32 dstOffsetX[2] = { 0, 0 };
     i32 dstOffsetY[2] = { 0, 0 };
 };
 
-APPARITION_API void BlitImage(CommandBuffer commandBuffer, const BlitImageDesc& blitDesc);
+struct AptnImageMemoryBarrierDesc
+{
+    AptnImage image;
+    AptnImageAccess::Type access = AptnImageAccess::Undefined;
+    // Subresource range
+    AptnImageAspect::Type aspect = AptnImageAspect::Color;
+    u32 baseMipLevel = 0;
+    u32 mipLevelCount = 0;
+};
+
+namespace Apparition
+{
+APPARITION_API void BeginCommandBuffer(AptnCommandBuffer commandBuffer, bool oneTimeSubmit = false);
+APPARITION_API void EndCommandBuffer(AptnCommandBuffer commandBuffer);
+
+APPARITION_API void BeginRendering(AptnCommandBuffer commandBuffer, const AptnRenderSetupParams& renderSetupParams);
+APPARITION_API void EndRendering(AptnCommandBuffer commandBuffer);
+
+APPARITION_API void BindVertexBuffers(AptnCommandBuffer commandBuffer, const AptnBindVertexBufferDesc& desc);
+APPARITION_API void BindIndexBuffer(AptnCommandBuffer commandBuffer, const AptnBindIndexBufferDesc& desc);
+
+APPARITION_API void SetViewportAndScissor(AptnCommandBuffer commandBuffer, const AptnViewportDesc& viewDesc, const AptnScissorDesc& scissorDesc);
+
+APPARITION_API void BindGraphicsPipeline(AptnCommandBuffer commandBuffer, AptnPipeline pipeline);
+
+
+APPARITION_API void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescriptorSetsDesc& bindDescriptorSetsDesc);
+
+// Draw Commands
+APPARITION_API void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount);
+
+// Copy Commands
+APPARITION_API void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyDesc);
+APPARITION_API void CopyBufferToImage(AptnCommandBuffer commandBuffer, const AptnBufferToImageCopyDesc& copyDesc);
+APPARITION_API void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferRegionsToImageCopyDesc& copyRegions);
+
+
+APPARITION_API void BlitImage(AptnCommandBuffer commandBuffer, const AptnBlitImageDesc& blitDesc);
 
 /* NOTES ON PIPELINE BARRIERS
 *  What we know:
@@ -149,16 +159,6 @@ APPARITION_API void BlitImage(CommandBuffer commandBuffer, const BlitImageDesc& 
 *    has unclear usage, so I'm not worried about it
 */
 
-struct ImageMemoryBarrierDesc
-{
-    Image image;
-    ImageAccess::Type access;
-    // Subresource range
-    ImageAspect::Type aspect = ImageAspect::Color;
-    u32 baseMipLevel = 0;
-    u32 mipLevelCount = 0;
-};
-
 // NOTE: current does not support multiple image transitions at one time, BUT will need to support this at some point
-APPARITION_API void ImageMemoryBarrier(CommandBuffer commandBuffer, const ImageMemoryBarrierDesc& barrierDesc);
+APPARITION_API void ImageMemoryBarrier(AptnCommandBuffer commandBuffer, const AptnImageMemoryBarrierDesc& barrierDesc);
 }

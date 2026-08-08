@@ -2,9 +2,7 @@
 
 #include "BasicTypes/Intrinsics.hpp"
 
-namespace Apparition
-{
-namespace ImageFormat
+namespace AptnImageFormat
 {
 enum Type
 {
@@ -29,10 +27,10 @@ enum Type
 
 	Max = 0x7FFFFFFF
 };
-} // ImageFormat
+} // AptnImageFormat
 
 // TODO - Make this a mask
-namespace ImageAspect
+namespace AptnImageAspect
 {
 enum Type
 {
@@ -41,9 +39,9 @@ enum Type
 	Stencil,
 	DepthStencil
 };
-}
+} // AptnImageAspect
 
-namespace ImageAccess
+namespace AptnImageAccess
 {
 enum Type
 {
@@ -56,9 +54,9 @@ enum Type
 	DepthStencilWrite,
 	DepthStencilRead
 };
-} // ImageAccess
+} // AptnImageAccess
 
-namespace ImageUsageFlagBits
+namespace AptnImageUsageFlagBits
 {
 enum Type
 {
@@ -70,6 +68,5 @@ enum Type
 
 	Max = 0x7FFFFFFF
 };
-} // ImageUsageFlagBits
-using ImageUsageFlags = u32;
-} // Apparition
+} // AptnImageUsageFlagBits
+using AptnImageUsageFlags = u32;

@@ -4,9 +4,7 @@
 #include "BasicTypes/Intrinsics.hpp"
 #include "Image.h"
 
-namespace Apparition
-{
-namespace LoadOperation
+namespace AptnLoadOperation
 {
 enum Type
 {
@@ -17,9 +15,9 @@ enum Type
 	Count = DontCare + 1
 };
 }// LoadOperation
-static_assert(LoadOperation::Count < 4, "LoadOperation must be less that 3 bit");
+static_assert(AptnLoadOperation::Count < 4, "LoadOperation must be less that 3 bit");
 
-namespace StoreOperation
+namespace AptnStoreOperation
 {
 enum Type
 {
@@ -29,11 +27,11 @@ enum Type
 	Count = DontCare + 1
 };
 }// StoreOperation
-static_assert(StoreOperation::Count < 4, "StoreOperation must be less that 3 bit");
+static_assert(AptnStoreOperation::Count < 4, "StoreOperation must be less that 3 bit");
 
 #define ATTACHMENT_OP_MASK 2
-#define CREATE_ATTACHMENT_OP(LoadOp, StoreOp) (((u8)LoadOperation::LoadOp << ATTACHMENT_OP_MASK) | ((u8)StoreOperation::StoreOp))
-namespace AttachmentOperations
+#define CREATE_ATTACHMENT_OP(LoadOp, StoreOp) (((u8)AptnLoadOperation::LoadOp << ATTACHMENT_OP_MASK) | ((u8)AptnStoreOperation::StoreOp))
+namespace AptnAttachmentOperations
 {
 enum Type
 {
@@ -46,28 +44,28 @@ enum Type
 };
 }// AttachmentOperations
 
-constexpr LoadOperation::Type LoadOperationFrom(AttachmentOperations::Type op)
+constexpr AptnLoadOperation::Type LoadOperationFrom(AptnAttachmentOperations::Type op)
 {
-	return (LoadOperation::Type)(op >> ATTACHMENT_OP_MASK);
+	return (AptnLoadOperation::Type)(op >> ATTACHMENT_OP_MASK);
 }
 
-constexpr StoreOperation::Type StoreOperationFrom(AttachmentOperations::Type op)
+constexpr AptnStoreOperation::Type StoreOperationFrom(AptnAttachmentOperations::Type op)
 {
-	return (StoreOperation::Type)(op & ((1 << ATTACHMENT_OP_MASK) - 1));
+	return (AptnStoreOperation::Type)(op & ((1 << ATTACHMENT_OP_MASK) - 1));
 }
 
-constexpr AttachmentOperations::Type AttachmentOperationsFrom(LoadOperation::Type loadOp, StoreOperation::Type storeOp)
+constexpr AptnAttachmentOperations::Type AttachmentOperationsFrom(AptnLoadOperation::Type loadOp, AptnStoreOperation::Type storeOp)
 {
-	return (AttachmentOperations::Type)((loadOp << ATTACHMENT_OP_MASK) | (storeOp));
+	return (AptnAttachmentOperations::Type)((loadOp << ATTACHMENT_OP_MASK) | (storeOp));
 }
 
 #undef ATTACHMENT_OP_MASK
 #undef CREATE_ATTACHMENT_OP
 
-union AttachmentClearValue
+union AptnAttachmentClearValue
 {
 	Color32 color;
-	struct DepthStencilValue
+	struct AptnDepthStencilValue
 	{
 		float depth;
 		u32 stencil;
@@ -75,19 +73,18 @@ union AttachmentClearValue
 };
 
 // TODO: Move this somewhere else
-struct RenderAttachment
+struct AptnRenderAttachment
 {
-	ImageView imageView;
-	AttachmentOperations::Type loadStoreOps;
-	AttachmentClearValue clearValue;
+	AptnImageView imageView;
+	AptnAttachmentOperations::Type loadStoreOps;
+	AptnAttachmentClearValue clearValue;
 };
 
-struct RenderSetupParams
+struct AptnRenderSetupParams
 {
-	DynamicArray<RenderAttachment> colorAttachments;
-	RenderAttachment depthAttachment;
-	RenderAttachment stencilAttachment;
+	DynamicArray<AptnRenderAttachment> colorAttachments;
+	AptnRenderAttachment depthAttachment;
+	AptnRenderAttachment stencilAttachment;
 	u32 renderWidth = 0;
 	u32 renderHeight = 0;
 };
-}

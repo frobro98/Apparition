@@ -10,12 +10,12 @@
 namespace
 {
 // Vk structs
-DynamicArray<VkVertexInputAttributeDescription> ApparitionAttributesToVk(const DynamicArray<VertexAttributeDescription>& attributes)
+DynamicArray<VkVertexInputAttributeDescription> ApparitionAttributesToVk(const DynamicArray<AptnVertexAttributeDescription>& attributes)
 {
     DynamicArray<VkVertexInputAttributeDescription> vkAttributes(attributes.Size());
     for (u32 i = 0; i < attributes.Size(); ++i)
     {
-        const VertexAttributeDescription& attribute = attributes[i];
+        const AptnVertexAttributeDescription& attribute = attributes[i];
         vkAttributes[i] = VkVertexInputAttributeDescription{
             .location = attribute.location,
             .binding = attribute.binding,
@@ -27,12 +27,12 @@ DynamicArray<VkVertexInputAttributeDescription> ApparitionAttributesToVk(const D
     return vkAttributes;
 }
 
-DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const DynamicArray<VertexBindingDescription>& bindings)
+DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const DynamicArray<AptnVertexBindingDescription>& bindings)
 {
     DynamicArray<VkVertexInputBindingDescription> vkBindings(bindings.Size());
     for (u32 i = 0; i < bindings.Size(); ++i)
     {
-        const VertexBindingDescription& binding = bindings[i];
+        const AptnVertexBindingDescription& binding = bindings[i];
         vkBindings[i] = VkVertexInputBindingDescription{
             .binding = binding.binding,
             .stride = binding.stride,
@@ -43,7 +43,7 @@ DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const Dynam
     return vkBindings;
 }
 
-DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<ImageFormat::Type>& formats)
+DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<AptnImageFormat::Type>& formats)
 {
     DynamicArray<VkFormat> vkFormats(formats.Size());
     for (u32 i = 0; i < formats.Size(); ++i)
@@ -54,16 +54,16 @@ DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<ImageFormat::Typ
     return vkFormats;
 }
 
-DynamicArray<VkPipelineColorBlendAttachmentState> ApparitionBlendAttachmentsToVk(const DynamicArray<ColorBlendAttachment>& blendAttachments)
+DynamicArray<VkPipelineColorBlendAttachmentState> ApparitionBlendAttachmentsToVk(const DynamicArray<AptnColorBlendAttachment>& blendAttachments)
 {
     DynamicArray<VkPipelineColorBlendAttachmentState> vkAttachments(blendAttachments.Size());
     for (u32 i = 0; i < blendAttachments.Size(); ++i)
     {
-        const ColorBlendAttachment& blendAttachment = blendAttachments[i];
+        const AptnColorBlendAttachment& blendAttachment = blendAttachments[i];
         vkAttachments[i] = VkPipelineColorBlendAttachmentState
         {
-            .blendEnable = blendAttachment.colorBlendOperation != BlendOperation::None ||
-                           blendAttachment.alphaBlendOperation != BlendOperation::None,
+            .blendEnable = blendAttachment.colorBlendOperation != AptnBlendOperation::None ||
+                           blendAttachment.alphaBlendOperation != AptnBlendOperation::None,
             .srcColorBlendFactor = ApparitionBlendFactorToVk(blendAttachment.srcColorFactor),
             .dstColorBlendFactor = ApparitionBlendFactorToVk(blendAttachment.dstColorFactor),
             .colorBlendOp = ApparitionBlendOpToVk(blendAttachment.colorBlendOperation),
@@ -80,7 +80,7 @@ DynamicArray<VkPipelineColorBlendAttachmentState> ApparitionBlendAttachmentsToVk
 
 ///////////////////////////////////////////////
 
-VertexInputPipelineState DeviceManager::CreateVertexInputPipelineState(Device device, const VertexInputPipelineStateCreationParams& params)
+AptnVertexInputPipelineState DeviceManager::CreateVertexInputPipelineState(AptnDevice device, const AptnVertexInputPipelineStateCreationParams& params)
 {
     // GraphicsPipelineLibrary setup
     const VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
@@ -139,13 +139,13 @@ VertexInputPipelineState DeviceManager::CreateVertexInputPipelineState(Device de
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return VertexInputPipelineState{ handleData };
+            return AptnVertexInputPipelineState{ handleData };
         }
     }
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-PrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineState(Device device, const PreRasterShadersPipelineStateCreationParams& params)
+AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineState(AptnDevice device, const AptnPreRasterShadersPipelineStateCreationParams& params)
 {
     // Dynamic State
     DynamicArray<VkDynamicState> dynamicStates = {
@@ -194,10 +194,10 @@ PrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineState
     // Create VkPipelineLayout for this operation
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     {
-        Apparition::PipelineDescription pipelineDesc = params.pipelineDesc;
+        AptnPipelineDescription pipelineDesc = params.pipelineDesc;
         DynamicArray<VkDescriptorSetLayout> vkLayouts;
         vkLayouts.Reserve(pipelineDesc.descriptorSets.Size());
-        for (const Apparition::DescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
+        for (const AptnDescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
         {
             const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
             vkLayouts.Add(dslInternal.descriptorSetLayout);
@@ -255,17 +255,17 @@ PrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineState
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return PrerasterShadersPipelineState{ handleData };
+            return AptnPrerasterShadersPipelineState{ handleData };
         }
     }
 
     // TODO - make this one call instead of multiple calls
     vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-FragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(Device device, const FragmentShaderPipelineStateCreationParams& params)
+AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(AptnDevice device, const AptnFragmentShaderPipelineStateCreationParams& params)
 {
     // Depth/Stencil
     VkPipelineDepthStencilStateCreateInfo depthStencilState{
@@ -312,10 +312,10 @@ FragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(Dev
     // Create VkPipelineLayout for this operation
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     {
-        Apparition::PipelineDescription pipelineDesc = params.pipelineDesc;
+        AptnPipelineDescription pipelineDesc = params.pipelineDesc;
         DynamicArray<VkDescriptorSetLayout> vkLayouts;
         vkLayouts.Reserve(pipelineDesc.descriptorSets.Size());
-        for (const Apparition::DescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
+        for (const AptnDescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
         {
             const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
             vkLayouts.Add(dslInternal.descriptorSetLayout);
@@ -365,15 +365,15 @@ FragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState(Dev
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return FragmentShaderPipelineState{ handleData };
+            return AptnFragmentShaderPipelineState{ handleData };
         }
     }
     vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-FragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState(Device device, const FragmentOutputPipelineStateCreationParams& params)
+AptnFragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState(AptnDevice device, const AptnFragmentOutputPipelineStateCreationParams& params)
 {
     // Color Blending
     DynamicArray<VkPipelineColorBlendAttachmentState> vkBlendAttachments = ApparitionBlendAttachmentsToVk(params.attachments);
@@ -449,33 +449,33 @@ FragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState(Dev
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return FragmentOutputPipelineState{ handleData };
+            return AptnFragmentOutputPipelineState{ handleData };
         }
     }
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyVertexInputPipelineState(VertexInputPipelineState /*state*/)
+void DeviceManager::DestroyVertexInputPipelineState(AptnVertexInputPipelineState /*state*/)
 {
-
+    // TODO - Destroy VI state
 }
 
-void DeviceManager::DestroyPrerasterShadersPipelineState(PrerasterShadersPipelineState /*state*/)
+void DeviceManager::DestroyPrerasterShadersPipelineState(AptnPrerasterShadersPipelineState /*state*/)
 {
-
+    // TODO - Destroy PS state
 }
 
-void DeviceManager::DestroyFragmentShaderPipelineState(FragmentShaderPipelineState /*state*/)
+void DeviceManager::DestroyFragmentShaderPipelineState(AptnFragmentShaderPipelineState /*state*/)
 {
-
+    // TODO - Destroy FS state
 }
 
-void DeviceManager::DestroyFragmentOutputPipelineState(FragmentOutputPipelineState /*state*/)
+void DeviceManager::DestroyFragmentOutputPipelineState(AptnFragmentOutputPipelineState /*state*/)
 {
-
+    // TODO - Destroy FO state
 }
 
-Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationParams& params)
+AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipelineCreationParams& params)
 {
     // Find VkPipeline handles for API handles
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
@@ -511,10 +511,10 @@ Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationPara
     // Create VkPipelineLayout
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     {
-        Apparition::PipelineDescription pipelineDesc = params.pipelineDesc;
+        AptnPipelineDescription pipelineDesc = params.pipelineDesc;
         DynamicArray<VkDescriptorSetLayout> vkLayouts;
         vkLayouts.Reserve(pipelineDesc.descriptorSets.Size());
-        for (const Apparition::DescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
+        for (const AptnDescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
         {
             const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
             vkLayouts.Add(dslInternal.descriptorSetLayout);
@@ -559,15 +559,15 @@ Pipeline DeviceManager::CreatePipeline(Device device, const PipelineCreationPara
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return Pipeline{ handleData };
+            return AptnPipeline{ handleData };
         }
     }
     vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyPipeline(Pipeline pipeline)
+void DeviceManager::DestroyPipeline(AptnPipeline pipeline)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(pipeline);
     PipelineInternal& pipelineInternal = GetPipelineInternal(pipeline);

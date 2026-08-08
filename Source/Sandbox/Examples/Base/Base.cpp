@@ -6,14 +6,14 @@
 
 namespace
 {
-Apparition::Device device;
-Apparition::Queue graphicsQueue;
-Apparition::CommandPool commandPool;
+AptnDevice device;
+AptnQueue graphicsQueue;
+AptnCommandPool commandPool;
 
-Apparition::Pipeline pipeline;
+AptnPipeline pipeline;
 
-Apparition::Buffer vertexBuffer;
-Apparition::Buffer indexBuffer;
+AptnBuffer vertexBuffer;
+AptnBuffer indexBuffer;
 
 struct Vertex
 {
@@ -32,46 +32,46 @@ static const StaticArray<u16, 6> indices = {
 	 2, 1, 0, 0, 3, 2
 };
 
-Apparition::Pipeline CreateBasicGraphicsPipeline(Apparition::Device deviceHandle, Apparition::ImageFormat::Type backbufferFormat)
+AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageFormat::Type backbufferFormat)
 {
 	// Vertex Input
-	Apparition::VertexInputPipelineState vertexInput;
+	AptnVertexInputPipelineState vertexInput;
 	{
-		Apparition::VertexInputPipelineStateCreationParams params
+		AptnVertexInputPipelineStateCreationParams params
 		{
-			.primitiveTopology = Apparition::PrimitiveTopology::TriangleList,
+			.primitiveTopology = AptnPrimitiveTopology::TriangleList,
 			.attributes{
-				Apparition::VertexAttributeDescription{
+				AptnVertexAttributeDescription{
 					.location = 0,
 					.binding = 0,
-					.format = Apparition::VertexInputFormat::F32_2,
+					.format = AptnVertexInputFormat::F32_2,
 					.offset = offsetof(Vertex, pos)
 				},
-				Apparition::VertexAttributeDescription{
+				AptnVertexAttributeDescription{
 					.location = 1,
 					.binding = 0,
-					.format = Apparition::VertexInputFormat::F32_3,
+					.format = AptnVertexInputFormat::F32_3,
 					.offset = offsetof(Vertex, color)
 				}
 			},
-			.bindings{{.binding = 0, .stride = sizeof(Vertex), .inputRate = Apparition::VertexInputRate::Vertex}}
+			.bindings{{.binding = 0, .stride = sizeof(Vertex), .inputRate = AptnVertexInputRate::Vertex}}
 		};
 
 		vertexInput = Apparition::CreateVertexInputPipelineState(deviceHandle, params);
 	}
 
 	// PreRaster shader state
-	Apparition::PrerasterShadersPipelineState prerasterShaders;
+	AptnPrerasterShadersPipelineState prerasterShaders;
 	{
 		const MemoryBuffer vertShaderCode = LoadShader("Base/base.vert.spv");
 		DynamicArray<u32> vertShader(vertShaderCode.Size() / sizeof(u32));
 		Memcpy(vertShader.GetData(), vertShaderCode.GetData(), vertShaderCode.Size());
-		Apparition::PreRasterShadersPipelineStateCreationParams params
+		AptnPreRasterShadersPipelineStateCreationParams params
 		{
 			//.pipelineDesc = No pipeline desc yet
-			.fillMode = Apparition::FillMode::Full,
-			.cullingMode = Apparition::CullMode::Back,
-			.frontFace = Apparition::FrontFace::CounterClockwise,
+			.fillMode = AptnFillMode::Full,
+			.cullingMode = AptnCullMode::Back,
+			.frontFace = AptnFrontFace::CounterClockwise,
 			.lineWidth = 1.f,
 			.vertexShader =
 			{
@@ -84,12 +84,12 @@ Apparition::Pipeline CreateBasicGraphicsPipeline(Apparition::Device deviceHandle
 	}
 
 	// Fragment Shader
-	Apparition::FragmentShaderPipelineState fragmentShader;
+	AptnFragmentShaderPipelineState fragmentShader;
 	{
 		MemoryBuffer fragShaderCode = LoadShader("Base/base.frag.spv");
 		DynamicArray<u32> fragShader(fragShaderCode.Size() / sizeof(u32));
 		Memcpy(fragShader.GetData(), fragShaderCode.GetData(), fragShaderCode.Size());
-		const Apparition::FragmentShaderPipelineStateCreationParams params
+		const AptnFragmentShaderPipelineStateCreationParams params
 		{
 			//.pipelineDesc = No pipeline desc yet
 			.fragmentShader =
@@ -99,28 +99,28 @@ Apparition::Pipeline CreateBasicGraphicsPipeline(Apparition::Device deviceHandle
 			},
 			.depthTestEnabled = false,
 			.depthWriteEnabled = false,
-			.depthCompareOp = Apparition::CompareOperation::LessThanOrEqual
+			.depthCompareOp = AptnCompareOperation::LessThanOrEqual
 		};
 
 		fragmentShader = Apparition::CreateFragmentShaderPipelineState(deviceHandle, params);
 	}
 
 	// Fragment Output
-	Apparition::FragmentOutputPipelineState fragmentOutput;
+	AptnFragmentOutputPipelineState fragmentOutput;
 	{
-		Apparition::FragmentOutputPipelineStateCreationParams params
+		AptnFragmentOutputPipelineStateCreationParams params
 		{
 			.attachments
 			{
-				Apparition::ColorBlendAttachment
+				AptnColorBlendAttachment
 				{
-					.srcColorFactor = Apparition::BlendFactor::One,
-					.dstColorFactor = Apparition::BlendFactor::Zero,
-					.colorBlendOperation = Apparition::BlendOperation::None,
-					.srcAlphaFactor = Apparition::BlendFactor::One,
-					.dstAlphaFactor = Apparition::BlendFactor::Zero,
-					.alphaBlendOperation = Apparition::BlendOperation::None,
-					.colorMask = Apparition::ColorComponentFlagBits::RGBA
+					.srcColorFactor = AptnBlendFactor::One,
+					.dstColorFactor = AptnBlendFactor::Zero,
+					.colorBlendOperation = AptnBlendOperation::None,
+					.srcAlphaFactor = AptnBlendFactor::One,
+					.dstAlphaFactor = AptnBlendFactor::Zero,
+					.alphaBlendOperation = AptnBlendOperation::None,
+					.colorMask = AptnColorComponentFlagBits::RGBA
 				}
 			},
 			.colorAttachmentFormats
@@ -132,7 +132,7 @@ Apparition::Pipeline CreateBasicGraphicsPipeline(Apparition::Device deviceHandle
 		fragmentOutput = Apparition::CreateFragmentOutputPipelineState(deviceHandle, params);
 	}
 
-	Apparition::PipelineCreationParams params
+	AptnPipelineCreationParams params
 	{
 		//.pipelineDesc = No pipeline desc yet
 
@@ -145,25 +145,25 @@ Apparition::Pipeline CreateBasicGraphicsPipeline(Apparition::Device deviceHandle
 }
 }
 
-void InitializeBaseExample(Apparition::Device inDevice)
+void InitializeBaseExample(AptnDevice inDevice)
 {
 	device = inDevice;
 
 	graphicsQueue = Apparition::AllocateGraphicsQueue(device);
 
-	Apparition::BackbufferSetupParams backbufferSetupParams{
+	AptnBackbufferSetupParams backbufferSetupParams{
 		.wndHandle = window->windowHandle,
 		.wndWidth = window->width,
 		.wndHeight = window->height
 	};
 	Apparition::SetupBackbuffer(device, backbufferSetupParams);
-	Apparition::ImageFormat::Type backbufferFormat = Apparition::GetBackbufferFormat(device);
+	AptnImageFormat::Type backbufferFormat = Apparition::GetBackbufferFormat(device);
 
 	pipeline = CreateBasicGraphicsPipeline(device, backbufferFormat);
 
 	// Command Buffer Setup
 	{
-		Apparition::CommandPoolCreationParams createParams{
+		AptnCommandPoolCreationParams createParams{
 			.queueIndex = Apparition::GetQueueIndex(graphicsQueue),
 			.canResetCommandBuffers = true
 		};
@@ -172,8 +172,8 @@ void InitializeBaseExample(Apparition::Device inDevice)
 
 	// Vertex Buffer Setup
 	{
-		Apparition::BufferCreationParams params{
-			.usage = Apparition::BufferUsageFlagBits::VertexBuffer | Apparition::BufferUsageFlagBits::TransferDst,
+		AptnBufferCreationParams params{
+			.usage = AptnBufferUsageFlagBits::VertexBuffer | AptnBufferUsageFlagBits::TransferDst,
 			.size = sizeof(vertices[0]) * vertices.Size()
 		};
 		vertexBuffer = Apparition::CreateBuffer(device, params);
@@ -181,8 +181,8 @@ void InitializeBaseExample(Apparition::Device inDevice)
 
 	// Index Buffer Setup
 	{
-		Apparition::BufferCreationParams params{
-			.usage = Apparition::BufferUsageFlagBits::IndexBuffer | Apparition::BufferUsageFlagBits::TransferDst,
+		AptnBufferCreationParams params{
+			.usage = AptnBufferUsageFlagBits::IndexBuffer | AptnBufferUsageFlagBits::TransferDst,
 			.size = sizeof(vertices[0]) * vertices.Size()
 		};
 		indexBuffer = Apparition::CreateBuffer(device, params);
@@ -190,10 +190,10 @@ void InitializeBaseExample(Apparition::Device inDevice)
 
 	{
 		// Copy verts && indices
-		Apparition::Buffer vertStagingBuffer;
+		AptnBuffer vertStagingBuffer;
 		{
-			Apparition::BufferCreationParams params{
-				.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+			AptnBufferCreationParams params{
+				.usage = AptnBufferUsageFlagBits::TransferSrc,
 				.size = sizeof(vertices[0]) * vertices.Size(),
 				.supportsMappedMemory = true
 			};
@@ -205,10 +205,10 @@ void InitializeBaseExample(Apparition::Device inDevice)
 			data = nullptr;
 		}
 
-		Apparition::Buffer idxStagingBuffer;
+		AptnBuffer idxStagingBuffer;
 		{
-			Apparition::BufferCreationParams params{
-				.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+			AptnBufferCreationParams params{
+				.usage = AptnBufferUsageFlagBits::TransferSrc,
 				.size = sizeof(indices[0]) * indices.Size(),
 				.supportsMappedMemory = true
 			};
@@ -220,9 +220,9 @@ void InitializeBaseExample(Apparition::Device inDevice)
 			data = nullptr;
 		}
 
-		Apparition::CommandBuffer copyBuffer;
+		AptnCommandBuffer copyBuffer;
 		{
-			Apparition::CommandBufferAllocParams params{
+			AptnCommandBufferAllocParams params{
 				.isSecondary = false
 			};
 			copyBuffer = Apparition::AllocateCommandBuffer(commandPool, params);
@@ -231,7 +231,7 @@ void InitializeBaseExample(Apparition::Device inDevice)
 		Apparition::BeginCommandBuffer(copyBuffer, /* oneTime= */true);
 
 		{
-			Apparition::BufferCopyDesc copyDesc{
+			AptnBufferCopyDesc copyDesc{
 				.size = vertices.Size() * sizeof(Vertex),
 				.srcBuffer = vertStagingBuffer,
 				.dstBuffer = vertexBuffer,
@@ -242,7 +242,7 @@ void InitializeBaseExample(Apparition::Device inDevice)
 		}
 
 		{
-			Apparition::BufferCopyDesc copyDesc{
+			AptnBufferCopyDesc copyDesc{
 				.size = indices.Size() * sizeof(u16),
 				.srcBuffer = idxStagingBuffer,
 				.dstBuffer = indexBuffer,
@@ -263,15 +263,15 @@ void InitializeBaseExample(Apparition::Device inDevice)
 	}
 }
 
-void TickBaseExample(/*Apparition::Device device*/)
+void TickBaseExample(/*AptnDevice device*/)
 {
-	Apparition::BackbufferStatus preparationStatus = Apparition::AcquireBackbufferImage(device);
-	Assert(preparationStatus != Apparition::BackbufferStatus::Unavailable);
-	Apparition::ImageView backbufferView = Apparition::GetBackBufferImageView(device);
+	AptnBackbufferStatus preparationStatus = Apparition::AcquireBackbufferImage(device);
+	Assert(preparationStatus != AptnBackbufferStatus::Unavailable);
+	AptnImageView backbufferView = Apparition::GetBackBufferImageView(device);
 
-	Apparition::CommandBuffer commandBuffer;
+	AptnCommandBuffer commandBuffer;
 	{
-		Apparition::CommandBufferAllocParams allocParams{
+		AptnCommandBufferAllocParams allocParams{
 			.isSecondary = false
 		};
 		commandBuffer = Apparition::AllocateCommandBuffer(commandPool, allocParams);
@@ -280,27 +280,27 @@ void TickBaseExample(/*Apparition::Device device*/)
 	Apparition::BeginCommandBuffer(commandBuffer);
 
 	{
-		Apparition::ImageMemoryBarrierDesc barrierDesc = {
+		AptnImageMemoryBarrierDesc barrierDesc = {
 			.image = Apparition::GetAcquiredBackbufferImage(device),
-			.access = Apparition::ImageAccess::ColorWrite,
-			.aspect = Apparition::ImageAspect::Color,
+			.access = AptnImageAccess::ColorWrite,
+			.aspect = AptnImageAspect::Color,
 			.mipLevelCount = 1
 		};
 
 		Apparition::ImageMemoryBarrier(commandBuffer, barrierDesc);
 	}
 
-	Apparition::RenderAttachment colorAttachment
+	AptnRenderAttachment colorAttachment
 	{
 		.imageView = backbufferView,
-		.loadStoreOps = Apparition::AttachmentOperations::Clear_Store,
+		.loadStoreOps = AptnAttachmentOperations::Clear_Store,
 		.clearValue = {{.5f, .5f, .5f, 1.f}}
 	};
 
 	const u32 backbufferWidth = Apparition::GetBackbufferWidth(device);
 	const u32 backbufferHeight = Apparition::GetBackbufferHeight(device);
 
-	Apparition::RenderSetupParams renderSetup = {};
+	AptnRenderSetupParams renderSetup = {};
 	renderSetup.colorAttachments.Add(colorAttachment);
 	renderSetup.renderWidth = backbufferWidth;
 	renderSetup.renderHeight = backbufferHeight;
@@ -309,26 +309,26 @@ void TickBaseExample(/*Apparition::Device device*/)
 	Apparition::BindGraphicsPipeline(commandBuffer, pipeline);
 
 	{
-		Apparition::BindVertexBufferDesc desc = {
+		AptnBindVertexBufferDesc desc = {
 			.vertexBuffer = vertexBuffer
 		};
 		Apparition::BindVertexBuffers(commandBuffer, desc);
 	}
 
 	{
-		Apparition::BindIndexBufferDesc desc = {
+		AptnBindIndexBufferDesc desc = {
 			.indexBuffer = indexBuffer
 		};
 		Apparition::BindIndexBuffer(commandBuffer, desc);
 	}
 
-	Apparition::ViewportDesc viewportDesc = {
+	AptnViewportDesc viewportDesc = {
 		.x = 0.f,
 		.y = 0.f,
 		.width = static_cast<float>(backbufferWidth),
 		.height = static_cast<float>(backbufferHeight)
 	};
-	Apparition::ScissorDesc scissorDesc = {
+	AptnScissorDesc scissorDesc = {
 		.offsetX = 0,
 		.offsetY = 0,
 		.extentX = backbufferWidth,
@@ -344,10 +344,10 @@ void TickBaseExample(/*Apparition::Device device*/)
 
 	// Prep image for present
 	{
-		Apparition::ImageMemoryBarrierDesc barrierDesc = {
+		AptnImageMemoryBarrierDesc barrierDesc = {
 			.image = Apparition::GetAcquiredBackbufferImage(device),
-			.access = Apparition::ImageAccess::Present,
-			.aspect = Apparition::ImageAspect::Color,
+			.access = AptnImageAccess::Present,
+			.aspect = AptnImageAspect::Color,
 			.mipLevelCount = 1
 		};
 
@@ -366,7 +366,7 @@ void TickBaseExample(/*Apparition::Device device*/)
 	Apparition::FreeCommandBuffer(commandBuffer);
 }
 
-void DestroyBaseExample(/*Apparition::Device device*/)
+void DestroyBaseExample(/*AptnDevice device*/)
 {
 	Apparition::WaitForIdle(graphicsQueue);
 

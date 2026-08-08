@@ -8,21 +8,21 @@
 
 namespace Apparition
 {
-Buffer CreateBuffer(Device device, const BufferCreationParams& params)
+AptnBuffer CreateBuffer(AptnDevice device, const AptnBufferCreationParams& params)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	return deviceManager.CreateBuffer(device, params);
 }
 
-void DestroyBuffer(Buffer buffer)
+void DestroyBuffer(AptnBuffer buffer)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	deviceManager.DestroyBuffer(buffer);
 }
 
-void* MapBuffer(Buffer buffer)
+void* MapBuffer(AptnBuffer buffer)
 {
 	Assert(apparition.deviceManager);
 	DeviceInternal& deviceInternal = GetDeviceInternal(buffer);
@@ -37,7 +37,7 @@ void* MapBuffer(Buffer buffer)
 	return mappedData;
 }
 
-void UnmapBuffer(Buffer buffer)
+void UnmapBuffer(AptnBuffer buffer)
 {
 	Assert(apparition.deviceManager);
 	DeviceInternal& deviceInternal = GetDeviceInternal(buffer);
@@ -45,12 +45,5 @@ void UnmapBuffer(Buffer buffer)
 	BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
 
 	vmaUnmapMemory(deviceInternal.allocator, bufferInternal.allocation);
-}
-
-VkBuffer GetVulkanHandle(Buffer bufferHandle)
-{
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	return deviceManager.GetBufferHandle(bufferHandle);
 }
 }

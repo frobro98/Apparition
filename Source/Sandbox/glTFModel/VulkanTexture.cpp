@@ -23,7 +23,7 @@ namespace vks
 	{
 		Apparition::DestroyImageView(view);
 		Apparition::DestroyImage(image);
-		if (Apparition::IsValid(sampler))
+		if (IsValid(sampler))
 		{
 			Apparition::DestroySampler(sampler);
 		}
@@ -61,7 +61,7 @@ namespace vks
 	* @param (Optional) imageLayout Usage layout for the texture (defaults VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	*
 	*/
-	void Texture2D::loadFromFile(std::string filename, Apparition::ImageFormat::Type format, Apparition::Device device, Apparition::Queue copyQueue, Apparition::ImageUsageFlags imageUsageFlags, Apparition::ImageAccess::Type imageAccess)
+	void Texture2D::loadFromFile(std::string filename, AptnImageFormat::Type format, AptnDevice device, AptnQueue copyQueue, AptnImageUsageFlags imageUsageFlags, AptnImageAccess::Type imageAccess)
 	{
 		ktxTexture* ktxTexture;
 		ktxResult result = loadKTXFile(filename, &ktxTexture);
@@ -77,23 +77,23 @@ namespace vks
 		ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
 
 		// Use a separate command buffer for texture loading
-		Apparition::CommandPoolCreationParams poolParams
+		AptnCommandPoolCreationParams poolParams
 		{
 			.queueIndex = Apparition::GetQueueIndex(copyQueue),
 			.canResetCommandBuffers = false
 		};
-		Apparition::CommandPool cmdPool = Apparition::CreateCommandPool(device, poolParams);
-		Apparition::CommandBuffer copyCmd = Apparition::AllocateCommandBuffer(cmdPool);
+		AptnCommandPool cmdPool = Apparition::CreateCommandPool(device, poolParams);
+		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(cmdPool);
 		Apparition::BeginCommandBuffer(copyCmd);
 
 		// Create a host-visible staging buffer that contains the raw image data
-		Apparition::BufferCreationParams bufferParams
+		AptnBufferCreationParams bufferParams
 		{
 			.size = ktxTextureSize,
-			.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+			.usage = AptnBufferUsageFlagBits::TransferSrc,
 			.supportsMappedMemory = true
 		};
-		Apparition::Buffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
+		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
 
 		// Copy texture data into staging buffer
 		void* data = Apparition::MapBuffer(stagingBuffer);
@@ -101,7 +101,7 @@ namespace vks
 		Apparition::UnmapBuffer(stagingBuffer);
 
 		// Setup buffer copy regions for each mip level
-		DynamicArray<Apparition::BufferToImageCopyOutline> bufferCopyRegions;
+		DynamicArray<AptnBufferToImageCopyOutline> bufferCopyRegions;
 		bufferCopyRegions.Reserve(mipLevels);
 		//std::vector<VkBufferImageCopy> bufferCopyRegions;
 
@@ -109,10 +109,10 @@ namespace vks
 			ktx_size_t offset;
 			KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
 			Assert(result == KTX_SUCCESS);
-			Apparition::BufferToImageCopyOutline bufferCopyRegion
+			AptnBufferToImageCopyOutline bufferCopyRegion
 			{
 				.bufferOffset = offset,
-				.aspect = Apparition::ImageAspect::Color,
+				.aspect = AptnImageAspect::Color,
 				.mipLevel = i,
 				.imgWidth = std::max(1u, ktxTexture->baseWidth >> i),
 				.imgHeight = std::max(1u, ktxTexture->baseHeight >> i)
@@ -120,30 +120,30 @@ namespace vks
 			bufferCopyRegions.Add(bufferCopyRegion);
 		}
 
-		Apparition::ImageCreationParams imageParams
+		AptnImageCreationParams imageParams
 		{
 			.width = width,
 			.height = height,
 			.format = format,
 			.mipLevels = mipLevels,
-			.usageFlags = imageUsageFlags | Apparition::ImageUsageFlagBits::TransferDst
+			.usageFlags = imageUsageFlags | AptnImageUsageFlagBits::TransferDst
 		};
 		image = Apparition::CreateImage(device, imageParams);
 
 		// Image barrier for optimal image (target)
 		// Optimal image will be used as destination for the copy
 		{
-			Apparition::ImageMemoryBarrierDesc imageBarrier
+			AptnImageMemoryBarrierDesc imageBarrier
 			{
 				.image = image,
-				.access = Apparition::ImageAccess::TransferDst,
-				.aspect = Apparition::ImageAspect::Color,
+				.access = AptnImageAccess::TransferDst,
+				.aspect = AptnImageAspect::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
 		}
 
-		Apparition::BufferRegionsToImageCopyDesc bufferRegionCopy
+		AptnBufferRegionsToImageCopyDesc bufferRegionCopy
 		{
 			.srcBuffer = stagingBuffer,
 			.dstImage = image,
@@ -155,11 +155,11 @@ namespace vks
 		// Change texture image layout to shader read after all mip levels have been copied
 		this->imageAccess = imageAccess;
 		{
-			Apparition::ImageMemoryBarrierDesc imageBarrier
+			AptnImageMemoryBarrierDesc imageBarrier
 			{
 				.image = image,
 				.access = imageAccess,
-				.aspect = Apparition::ImageAspect::Color,
+				.aspect = AptnImageAspect::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -177,10 +177,10 @@ namespace vks
 		ktxTexture_Destroy(ktxTexture);
 
 		// Create a default sampler
-		Apparition::SamplerCreationParams samplerParams
+		AptnSamplerCreationParams samplerParams
 		{
-			.addressModeU = Apparition::SamplerAddressMode::Repeat,
-			.addressModeV = Apparition::SamplerAddressMode::Repeat,
+			.addressModeU = AptnSamplerAddressMode::Repeat,
+			.addressModeV = AptnSamplerAddressMode::Repeat,
 			// TODO - WE NEED TO ENABLE THIS IF IT'S ENABLED
 			.maxAnisotropy = 1.f,
 			.minLod = 0,
@@ -208,10 +208,10 @@ namespace vks
 		// Textures are not directly accessed by the shaders and
 		// are abstracted by image views containing additional
 		// information and sub resource ranges
-		Apparition::ImageViewCreationParams viewParams
+		AptnImageViewCreationParams viewParams
 		{
 			.format = format,
-			.aspect = Apparition::ImageAspect::Color,
+			.aspect = AptnImageAspect::Color,
 			.mipCount = mipLevels,
 			.baseMipLevel = 0
 		};
@@ -235,7 +235,7 @@ namespace vks
 	* @param (Optional) imageUsageFlags Usage flags for the texture's image (defaults to VK_IMAGE_USAGE_SAMPLED_BIT)
 	* @param (Optional) imageLayout Usage layout for the texture (defaults VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	*/
-	void Texture2D::fromBuffer(void* buffer, VkDeviceSize bufferSize, Apparition::ImageFormat::Type format, uint32_t texWidth, uint32_t texHeight, Apparition::Device device, Apparition::Queue copyQueue, Apparition::SamplerFilter::Type filter, Apparition::ImageUsageFlags imageUsageFlags, Apparition::ImageAccess::Type imageAccess)
+	void Texture2D::fromBuffer(void* buffer, VkDeviceSize bufferSize, AptnImageFormat::Type format, uint32_t texWidth, uint32_t texHeight, AptnDevice device, AptnQueue copyQueue, AptnSamplerFilter::Type filter, AptnImageUsageFlags imageUsageFlags, AptnImageAccess::Type imageAccess)
 	{
 		Assert(buffer);
 
@@ -245,61 +245,61 @@ namespace vks
 		mipLevels = 1;
 
 		// Create a host-visible staging buffer that contains the raw image data
-		Apparition::BufferCreationParams bufferParams
+		AptnBufferCreationParams bufferParams
 		{
 			.size = bufferSize,
-			.usage = Apparition::BufferUsageFlagBits::TransferSrc,
+			.usage = AptnBufferUsageFlagBits::TransferSrc,
 			.supportsMappedMemory = true
 		};
-		Apparition::Buffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
+		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
 
 		// Copy texture data into staging buffer
 		void* data = Apparition::MapBuffer(stagingBuffer);
 		memcpy(data, buffer, bufferSize);
 		Apparition::UnmapBuffer(stagingBuffer);
 
-		Apparition::BufferToImageCopyDesc bufferCopyRegion
+		AptnBufferToImageCopyDesc bufferCopyRegion
 		{
 			.outline
 			{
 				.bufferOffset = 0,
-				.aspect = Apparition::ImageAspect::Color,
+				.aspect = AptnImageAspect::Color,
 				.mipLevel = 0,
 				.imgWidth = width,
 				.imgHeight = height
 			}
 		};
 
-		Apparition::ImageCreationParams imageParams
+		AptnImageCreationParams imageParams
 		{
 			.width = width,
 			.height = height,
 			.format = format,
 			.mipLevels = mipLevels,
-			.usageFlags = imageUsageFlags | Apparition::ImageUsageFlagBits::TransferDst
+			.usageFlags = imageUsageFlags | AptnImageUsageFlagBits::TransferDst
 		};
 		image = Apparition::CreateImage(device, imageParams);
 
 		//VkImageSubresourceRange subresourceRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = mipLevels, .layerCount = 1 };
 
 		// Use a separate command buffer for texture loading
-		Apparition::CommandPoolCreationParams poolParams
+		AptnCommandPoolCreationParams poolParams
 		{
 			.queueIndex = Apparition::GetQueueIndex(copyQueue),
 			.canResetCommandBuffers = false
 		};
-		Apparition::CommandPool cmdPool = Apparition::CreateCommandPool(device, poolParams);
-		Apparition::CommandBuffer copyCmd = Apparition::AllocateCommandBuffer(cmdPool);
+		AptnCommandPool cmdPool = Apparition::CreateCommandPool(device, poolParams);
+		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(cmdPool);
 		Apparition::BeginCommandBuffer(copyCmd);
 
 		// Image barrier for optimal image (target)
 		// Optimal image will be used as destination for the copy
 		{
-			Apparition::ImageMemoryBarrierDesc imageBarrier
+			AptnImageMemoryBarrierDesc imageBarrier
 			{
 				.image = image,
-				.access = Apparition::ImageAccess::TransferDst,
-				.aspect = Apparition::ImageAspect::Color,
+				.access = AptnImageAccess::TransferDst,
+				.aspect = AptnImageAspect::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -312,11 +312,11 @@ namespace vks
 		// Change texture image layout to shader read after all mip levels have been copied
 		this->imageAccess = imageAccess;
 		{
-			Apparition::ImageMemoryBarrierDesc imageBarrier
+			AptnImageMemoryBarrierDesc imageBarrier
 			{
 				.image = image,
 				.access = imageAccess,
-				.aspect = Apparition::ImageAspect::Color,
+				.aspect = AptnImageAspect::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -332,11 +332,11 @@ namespace vks
 		Apparition::DestroyBuffer(stagingBuffer);
 
 		// Create sampler
-		Apparition::SamplerCreationParams samplerParams
+		AptnSamplerCreationParams samplerParams
 		{
 			.filter = filter,
-			.addressModeU = Apparition::SamplerAddressMode::Repeat,
-			.addressModeV = Apparition::SamplerAddressMode::Repeat,
+			.addressModeU = AptnSamplerAddressMode::Repeat,
+			.addressModeV = AptnSamplerAddressMode::Repeat,
 			// TODO - WE NEED TO ENABLE THIS IF IT'S ENABLED
 			.maxAnisotropy = 1.f,
 			.minLod = 0,
@@ -345,10 +345,10 @@ namespace vks
 		sampler = Apparition::CreateSampler(device, samplerParams);
 
 		// Create image view
-		Apparition::ImageViewCreationParams viewParams
+		AptnImageViewCreationParams viewParams
 		{
 			.format = format,
-			.aspect = Apparition::ImageAspect::Color,
+			.aspect = AptnImageAspect::Color,
 			.mipCount = 1,
 			.baseMipLevel = 0
 		};

@@ -8,35 +8,35 @@
 #include "Apparition/Queue.h"
 #include "BasicTypes/Intrinsics.hpp"
 
-namespace Apparition
-{
-struct BackbufferSetupParams
+struct AptnBackbufferSetupParams
 {
     void* wndHandle = nullptr;
     u32 wndWidth, wndHeight = 0;
 };
 
-enum class BackbufferStatus
+enum class AptnBackbufferStatus
 {
     Ready,
     Recreate,
     Unavailable
 };
 
+namespace Apparition
+{
 // NOTE: Will only set up rendering context once
-APPARITION_API void SetupBackbuffer(Device device, const BackbufferSetupParams& params);
-APPARITION_API void TeardownBackbuffer(Device device);
+APPARITION_API void SetupBackbuffer(AptnDevice device, const AptnBackbufferSetupParams& params);
+APPARITION_API void TeardownBackbuffer(AptnDevice device);
 
 // Backing image acquisition
-APPARITION_API BackbufferStatus AcquireBackbufferImage(Device device);
-APPARITION_API void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue);
-APPARITION_API void PresentBackbuffer(Queue presentQueue);
+APPARITION_API AptnBackbufferStatus AcquireBackbufferImage(AptnDevice device);
+APPARITION_API void SubmitBackbufferCommandBuffer(AptnCommandBuffer commandBuffer, AptnQueue queue);
+APPARITION_API void PresentBackbuffer(AptnQueue presentQueue);
 
-APPARITION_API ImageView GetBackBufferImageView(Device device);
-APPARITION_API Image GetAcquiredBackbufferImage(Device device);
+APPARITION_API AptnImageView GetBackBufferImageView(AptnDevice device);
+APPARITION_API AptnImage GetAcquiredBackbufferImage(AptnDevice device);
 
 // Query backbuffer data
-APPARITION_API u32 GetBackbufferWidth(Device device);
-APPARITION_API u32 GetBackbufferHeight(Device device);
-APPARITION_API ImageFormat::Type GetBackbufferFormat(Device device);
+APPARITION_API u32 GetBackbufferWidth(AptnDevice device);
+APPARITION_API u32 GetBackbufferHeight(AptnDevice device);
+APPARITION_API AptnImageFormat::Type GetBackbufferFormat(AptnDevice device);
 }

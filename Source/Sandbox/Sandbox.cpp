@@ -194,7 +194,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	window = CreateSandboxWindow(hInstance, 0, 0, windowWidth, windowHeight);
 
 
-	Apparition::InitializeParams initParams{
+	AptnInitializeParams initParams{
 		.applicationName = "Apparition Sandbox",
 		.engineName = "Apparition",
 		.applicationVersion = 0,
@@ -202,26 +202,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		.vulkanAPIVersion = APPARITION_MAKE_VERSION(1,3,290)
 	};
 
-	Apparition::ValidationDelegate debugCallback = &VulkanDebugMessengerCallback;
+	AptnValidationDelegate debugCallback = &VulkanDebugMessengerCallback;
 	Apparition::SetErrorLogCallback(MOVE(debugCallback), nullptr);
 	Apparition::InitializeApparition(initParams);
 
-	Apparition::Device deviceHandle;
+	AptnDevice deviceHandle;
 	{
-		Apparition::DeviceCreationParams createParams{
+		AptnDeviceCreationParams createParams{
 			.queueCreationParams
 			{
-				Apparition::QueueCreationParams
+				AptnQueueCreationParams
 				{
-					.queueType = Apparition::QueueType::Graphics
+					.queueType = AptnQueueType::Graphics
 				},
-							Apparition::QueueCreationParams
+				AptnQueueCreationParams
 				{
-					.queueType = Apparition::QueueType::Compute
+					.queueType = AptnQueueType::Compute
 				},
-							Apparition::QueueCreationParams
+				AptnQueueCreationParams
 				{
-					.queueType = Apparition::QueueType::Transfer
+					.queueType = AptnQueueType::Transfer
 				}
 			}
 		};

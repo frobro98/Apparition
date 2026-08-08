@@ -6,28 +6,28 @@
 
 namespace Apparition
 {
-Image CreateImage(Device device, const ImageCreationParams& params)
+AptnImage CreateImage(AptnDevice device, const AptnImageCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateImage(device, params);
 }
 
-void DestroyImage(Image image)
+void DestroyImage(AptnImage image)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyImage(image);
 }
 
-ImageView CreateImageView(Image image, const ImageViewCreationParams& params)
+AptnImageView CreateImageView(AptnImage image, const AptnImageViewCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateImageView(image, params);
 }
 
-void DestroyImageView(ImageView imageView)
+void DestroyImageView(AptnImageView imageView)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

@@ -5,70 +5,70 @@
 
 namespace Apparition
 {
-VertexInputPipelineState CreateVertexInputPipelineState(Device device, const VertexInputPipelineStateCreationParams& params)
+AptnVertexInputPipelineState CreateVertexInputPipelineState(AptnDevice device, const AptnVertexInputPipelineStateCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateVertexInputPipelineState(device, params);
 }
 
-void DestroyVertexInputPipelineState(VertexInputPipelineState state)
+void DestroyVertexInputPipelineState(AptnVertexInputPipelineState state)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyVertexInputPipelineState(state);
 }
 
-PrerasterShadersPipelineState CreatePrerasterShadersPipelineState(Device device, const PreRasterShadersPipelineStateCreationParams& params)
+AptnPrerasterShadersPipelineState CreatePrerasterShadersPipelineState(AptnDevice device, const AptnPreRasterShadersPipelineStateCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreatePrerasterShadersPipelineState(device, params);
 }
 
-void DestroyPrerasterShadersPipelineState(PrerasterShadersPipelineState state)
+void DestroyPrerasterShadersPipelineState(AptnPrerasterShadersPipelineState state)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyPrerasterShadersPipelineState(state);
 }
 
-FragmentShaderPipelineState CreateFragmentShaderPipelineState(Device device, const FragmentShaderPipelineStateCreationParams& params)
+AptnFragmentShaderPipelineState CreateFragmentShaderPipelineState(AptnDevice device, const AptnFragmentShaderPipelineStateCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateFragmentShaderPipelineState(device, params);
 }
 
-void DestroyFragmentShaderPipelineState(FragmentShaderPipelineState state)
+void DestroyFragmentShaderPipelineState(AptnFragmentShaderPipelineState state)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyFragmentShaderPipelineState(state);
 }
 
-FragmentOutputPipelineState CreateFragmentOutputPipelineState(Device device, const FragmentOutputPipelineStateCreationParams& params)
+AptnFragmentOutputPipelineState CreateFragmentOutputPipelineState(AptnDevice device, const AptnFragmentOutputPipelineStateCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateFragmentOutputPipelineState(device, params);
 }
 
-void DestroyFragmentOutputPipelineState(FragmentOutputPipelineState state)
+void DestroyFragmentOutputPipelineState(AptnFragmentOutputPipelineState state)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyFragmentOutputPipelineState(state);
 }
 
-Pipeline CreatePipeline(Device device, const PipelineCreationParams& params)
+AptnPipeline CreatePipeline(AptnDevice device, const AptnPipelineCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreatePipeline(device, params);
 }
 
-void DestroyPipeline(Pipeline pipeline)
+void DestroyPipeline(AptnPipeline pipeline)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

@@ -2,12 +2,10 @@
 
 #include "BasicTypes/Intrinsics.hpp"
 
-namespace Apparition
-{
 ////////////////////////
 // Vertex Input State
 ////////////////////////
-namespace VertexInputFormat
+namespace AptnVertexInputFormat
 {
 enum Type
 {
@@ -21,7 +19,7 @@ enum Type
 };
 }// VertexInputFormat
 
-namespace VertexInputRate
+namespace AptnVertexInputRate
 {
 enum Type
 {
@@ -36,7 +34,7 @@ enum Type
 // Input Assembly State
 ////////////////////////
 
-namespace PrimitiveTopology
+namespace AptnPrimitiveTopology
 {
 enum Type
 {
@@ -56,7 +54,7 @@ enum Type
 // Rasterization State
 ////////////////////////
 
-namespace FillMode
+namespace AptnFillMode
 {
 enum Type
 {
@@ -67,7 +65,7 @@ enum Type
 };
 }// FillMode
 
-namespace CullMode
+namespace AptnCullMode
 {
 enum Type
 {
@@ -81,7 +79,7 @@ enum Type
 }// CullMode
 
 // TODO - rename this to something more straightforward
-namespace FrontFace
+namespace AptnFrontFace
 {
 enum Type
 {
@@ -96,7 +94,7 @@ enum Type
 // Depth/Stencil State
 ////////////////////////
 
-namespace CompareOperation
+namespace AptnCompareOperation
 {
 enum Type
 {
@@ -111,7 +109,7 @@ enum Type
 };
 }// CompareOperation
 
-namespace StencilOperation
+namespace AptnStencilOperation
 {
 enum Type
 {
@@ -130,7 +128,7 @@ enum Type
 // Multisampling State
 ////////////////////////
 
-namespace SampleCountFlagBits
+namespace AptnSampleCountFlagBits
 {
 enum Type
 {
@@ -145,13 +143,13 @@ enum Type
 	MAX = 0x7FFFFFFF
 };
 } // SampleCountFlagBits
-using SampleCountFlags = u32;
+using AptnSampleCountFlags = u32;
 
 ////////////////////////
 // Color Blend State
 ////////////////////////
 
-namespace BlendMode
+namespace AptnBlendMode
 {
 enum Type
 {
@@ -162,7 +160,7 @@ enum Type
 };
 }// BlendMode
 
-namespace ColorComponentFlagBits
+namespace AptnColorComponentFlagBits
 {
 enum Type
 {
@@ -175,9 +173,9 @@ enum Type
     RGBA = Red | Green | Blue | Alpha
 };
 } // ColorComponentFlagBits
-using ColorComponentFlags = u32;
+using AptnColorComponentFlags = u32;
 
-namespace BlendOperation
+namespace AptnBlendOperation
 {
 enum Type
 {
@@ -187,7 +185,7 @@ enum Type
 };
 }// BlendOperation
 
-namespace BlendFactor
+namespace AptnBlendFactor
 {
 enum Type
 {
@@ -207,7 +205,3 @@ enum Type
 	OneMinusConstAlpha
 };
 }// BlendFactor
-
-
-
-}

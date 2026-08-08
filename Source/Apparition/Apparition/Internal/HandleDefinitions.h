@@ -48,7 +48,7 @@
 template <typename Handle>
 inline u32 GetDeviceIndexFromHandle(Handle handle)
 {
-	Assert(handle.handle != Apparition::InvalidHandle);
+	Assert(handle.handle != AptnInvalidHandle);
 	const u64 handleData = handle.handle;
 	return (handleData >> DEVICE_INDEX_SHIFT);
 }
@@ -56,7 +56,7 @@ inline u32 GetDeviceIndexFromHandle(Handle handle)
 template <typename Handle>
 inline u32 GetResourcePoolIndexFromHandle(Handle handle)
 {
-	Assert(handle.handle != Apparition::InvalidHandle);
+	Assert(handle.handle != AptnInvalidHandle);
 	const u64 poolIndexDataShifted = (handle.handle >> POOL_INDEX_SHIFT);
 	return (poolIndexDataShifted & POOL_INDEX_MASK);
 }
@@ -64,17 +64,17 @@ inline u32 GetResourcePoolIndexFromHandle(Handle handle)
 template <typename Handle>
 inline u32 GetHandleIndex(Handle handle)
 {
-	Assert(handle.handle != Apparition::InvalidHandle);
+	Assert(handle.handle != AptnInvalidHandle);
 	return (handle.handle & RESOURCE_INDEX_MASK);
 }
 
-#define _REGISTER_HANDLE_TYPE_DEVICE(HandleType)											\
-inline DeviceInternal& GetDeviceInternal(Apparition::HandleType handleType)					\
-{																							\
-	Assert(apparition.deviceManager);														\
-	DeviceManager& deviceManager = *apparition.deviceManager;								\
-	const u32 deviceIndex = GetDeviceIndexFromHandle(handleType);							\
-	return deviceManager.DeviceInternalFrom(deviceIndex);									\
+#define _REGISTER_HANDLE_TYPE_DEVICE(HandleType)								\
+inline DeviceInternal& GetDeviceInternal(Aptn##HandleType handleType)			\
+{																				\
+	Assert(apparition.deviceManager);											\
+	DeviceManager& deviceManager = *apparition.deviceManager;					\
+	const u32 deviceIndex = GetDeviceIndexFromHandle(handleType);				\
+	return deviceManager.DeviceInternalFrom(deviceIndex);						\
 }
 
 #define _REGISTER_HANDLE_TYPE_GET_INTERNALS(HandleType, InternalName)															\
@@ -87,7 +87,7 @@ inline const HandleType##Internal& Get##HandleType##InternalFromIndex(const Devi
 	return deviceInternal.InternalName[handleIndex - 1];																		\
 }																																\
 																																\
-inline HandleType##Internal& Get##HandleType##Internal(Apparition::HandleType handle)											\
+inline HandleType##Internal& Get##HandleType##Internal(Aptn##HandleType handle)													\
 {																																\
 	Assert(apparition.deviceManager);																							\
 	DeviceManager& deviceManager = *apparition.deviceManager;																	\

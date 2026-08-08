@@ -2,9 +2,8 @@
 
 #include "BasicTypes/Intrinsics.hpp"
 
-namespace Apparition
-{
-namespace BufferUsageFlagBits
+
+namespace AptnBufferUsageFlagBits
 {
 enum Type
 {
@@ -19,7 +18,6 @@ enum Type
     MAX = 0x7FFFFFFF
 };
 } // BufferUsageFlags
-using BufferUsageFlags = u32;
-} // Apparition
+using AptnBufferUsageFlags = u32;
 
 

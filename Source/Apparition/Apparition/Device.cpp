@@ -6,14 +6,14 @@
 
 namespace Apparition
 {
-Device CreateDevice(const DeviceCreationParams& params)
+AptnDevice CreateDevice(const AptnDeviceCreationParams& params)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	return deviceManager.CreateDevice(params);
 }
 
-void DestroyDevice(Device deviceHandle)
+void DestroyDevice(AptnDevice deviceHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;

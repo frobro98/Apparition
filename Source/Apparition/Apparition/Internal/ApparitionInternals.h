@@ -14,9 +14,9 @@ class CommandBufferManager;
 
 struct ApparitionInternals
 {
-	Apparition::AllocationCallbacks allocCallbacks;
+	AptnAllocationCallbacks allocCallbacks;
 	DeviceManager* deviceManager = nullptr;
-	Apparition::ValidationDelegate userValidationDelegate;
+	AptnValidationDelegate userValidationDelegate;
 	void* validationUserData = nullptr;
 };
 
@@ -31,7 +31,7 @@ struct Backbuffer
 	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
 	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
 	VkExtent2D extents = {};
-	Apparition::ImageFormat::Type format = Apparition::ImageFormat::Invalid;
+	AptnImageFormat::Type format = AptnImageFormat::Invalid;
 	VkSemaphore acquireImageSemaphores[numSwapchainImages];
 	VkSemaphore submitRenderSemaphores[numSwapchainImages];
 	VkSemaphore isImageAvailableSem = VK_NULL_HANDLE;
@@ -77,8 +77,8 @@ struct ImageInternal
 
 	// Image formatting and access
 	// Access per mip level of the image. Defaults all to Undefined until access occurs
-	DynamicArray<Apparition::ImageAccess::Type> access;
-	Apparition::ImageFormat::Type format;
+	DynamicArray<AptnImageAccess::Type> access;
+	AptnImageFormat::Type format;
 };
 
 struct ImageViewInternal

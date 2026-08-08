@@ -10,32 +10,30 @@
 #include "ImageFormatConversion.h"
 #include "VulkanInfos.h"
 
-using namespace Apparition;
-
-static VkBufferUsageFlags ApparitionToVkBufferUsage(BufferUsageFlags usageFlags)
+static VkBufferUsageFlags ApparitionToVkBufferUsage(AptnBufferUsageFlags usageFlags)
 {
     VkBufferUsageFlags vkUsageFlags = 0;
-    if (usageFlags & BufferUsageFlagBits::TransferSrc)
+    if (usageFlags & AptnBufferUsageFlagBits::TransferSrc)
     {
         vkUsageFlags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
     }
-    if (usageFlags & BufferUsageFlagBits::TransferDst)
+    if (usageFlags & AptnBufferUsageFlagBits::TransferDst)
     {
         vkUsageFlags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
     }
-    if (usageFlags & BufferUsageFlagBits::UniformBuffer)
+    if (usageFlags & AptnBufferUsageFlagBits::UniformBuffer)
     {
         vkUsageFlags |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     }
-    if (usageFlags & BufferUsageFlagBits::StorageBuffer)
+    if (usageFlags & AptnBufferUsageFlagBits::StorageBuffer)
     {
         vkUsageFlags |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
     }
-    if (usageFlags & BufferUsageFlagBits::VertexBuffer)
+    if (usageFlags & AptnBufferUsageFlagBits::VertexBuffer)
     {
         vkUsageFlags |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     }
-    if (usageFlags & BufferUsageFlagBits::IndexBuffer)
+    if (usageFlags & AptnBufferUsageFlagBits::IndexBuffer)
     {
         vkUsageFlags |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
     }
@@ -43,7 +41,7 @@ static VkBufferUsageFlags ApparitionToVkBufferUsage(BufferUsageFlags usageFlags)
     return vkUsageFlags;
 }
 
-Buffer DeviceManager::CreateBuffer(Device device, const BufferCreationParams& params)
+AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreationParams& params)
 {
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
@@ -82,14 +80,14 @@ Buffer DeviceManager::CreateBuffer(Device device, const BufferCreationParams& pa
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return Buffer{ handleData };
+            return AptnBuffer{ handleData };
         }
     }
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyBuffer(Buffer buffer)
+void DeviceManager::DestroyBuffer(AptnBuffer buffer)
 {
     u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
     DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
@@ -103,7 +101,7 @@ void DeviceManager::DestroyBuffer(Buffer buffer)
     PushFreedHandleIndex(deviceInternal.bufferResourceHandlePool, handleIndex);
 }
 
-Image DeviceManager::CreateImage(Device device, const ImageCreationParams& params)
+AptnImage DeviceManager::CreateImage(AptnDevice device, const AptnImageCreationParams& params)
 {
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
     VkImageCreateInfo imageInfo
@@ -144,7 +142,7 @@ Image DeviceManager::CreateImage(Device device, const ImageCreationParams& param
         imageInternal.access.Resize(params.mipLevels);
         for (auto& access : imageInternal.access)
         {
-            access = Apparition::ImageAccess::Undefined;
+            access = AptnImageAccess::Undefined;
         }
 
         u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageResourceHandlePool);
@@ -158,14 +156,14 @@ Image DeviceManager::CreateImage(Device device, const ImageCreationParams& param
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return Image{ handleData };
+            return AptnImage{ handleData };
         }
     }
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyImage(Image image)
+void DeviceManager::DestroyImage(AptnImage image)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(image);
     ImageInternal& imageInternal = GetImageInternal(image);
@@ -176,7 +174,7 @@ void DeviceManager::DestroyImage(Image image)
     PushFreedHandleIndex(deviceInternal.imageResourceHandlePool, GetHandleIndex(image));
 }
 
-ImageView DeviceManager::CreateImageView(Image image, const ImageViewCreationParams& params)
+AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageViewCreationParams& params)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(image);
     ImageInternal& imageInternal = GetImageInternal(image);
@@ -224,14 +222,14 @@ ImageView DeviceManager::CreateImageView(Image image, const ImageViewCreationPar
             u64 handleData = ((u64)GetDeviceIndexFromHandle(image) << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return ImageView{ handleData };
+            return AptnImageView{ handleData };
         }
     }
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyImageView(ImageView imageView)
+void DeviceManager::DestroyImageView(AptnImageView imageView)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(imageView);
     ImageViewInternal& imageViewInternal = GetImageViewInternal(imageView);
@@ -240,7 +238,7 @@ void DeviceManager::DestroyImageView(ImageView imageView)
     PushFreedHandleIndex(deviceInternal.imageViewResourceHandlePool, GetHandleIndex(imageView));
 }
 
-Sampler DeviceManager::CreateSampler(Device device, const SamplerCreationParams& params)
+AptnSampler DeviceManager::CreateSampler(AptnDevice device, const AptnSamplerCreationParams& params)
 {
     VkSamplerCreateInfo samplerInfo
     {
@@ -281,28 +279,18 @@ Sampler DeviceManager::CreateSampler(Device device, const SamplerCreationParams&
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return Sampler{ handleData };
+            return AptnSampler{ handleData };
         }
     }
 
-    return { InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroySampler(Sampler sampler)
+void DeviceManager::DestroySampler(AptnSampler sampler)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(sampler);
     SamplerInternal& samplerInternal = GetSamplerInternal(sampler);
     vkDestroySampler(deviceInternal.device, samplerInternal.sampler, nullptr);
 
     PushFreedHandleIndex(deviceInternal.samplerResourceHandlePool, GetHandleIndex(sampler));
-}
-
-VkBuffer DeviceManager::GetBufferHandle(Buffer bufferHandle)
-{
-    u32 deviceIndex = GetDeviceIndexFromHandle(bufferHandle);
-    DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
-    u32 cmdBufferIndex = GetHandleIndex(bufferHandle);
-    BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, cmdBufferIndex);
-
-    return bufferInternal.buffer;
 }

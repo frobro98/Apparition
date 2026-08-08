@@ -7,11 +7,11 @@
 #include "Apparition/Internal/Conversions.h"
 #include "Apparition/Internal/ImageFormatConversion.h"
 
-DescriptorSetLayout DeviceManager::CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params)
+AptnDescriptorSetLayout DeviceManager::CreateDescriptorSetLayout(AptnDevice device, const AptnDescriptorSetLayoutCreationParams& params)
 {
     DynamicArray<VkDescriptorSetLayoutBinding> bindings;
     bindings.Reserve(params.bindings.Size());
-    for (const Apparition::DescriptorSetLayoutDesc& desc : params.bindings)
+    for (const AptnDescriptorSetLayoutDesc& desc : params.bindings)
     {
         VkDescriptorSetLayoutBinding binding
         {
@@ -51,14 +51,14 @@ DescriptorSetLayout DeviceManager::CreateDescriptorSetLayout(Device device, cons
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return DescriptorSetLayout{ handleData };
+            return AptnDescriptorSetLayout{ handleData };
         }
     }
 
-    return { Apparition::InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout)
+void DeviceManager::DestroyDescriptorSetLayout(AptnDescriptorSetLayout descriptorSetLayout)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorSetLayout);
     DescriptorSetLayoutInternal& dsLayoutInternal = GetDescriptorSetLayoutInternal(descriptorSetLayout);
@@ -67,7 +67,7 @@ void DeviceManager::DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSet
     PushFreedHandleIndex(deviceInternal.descriptorSetLayoutHandlePools, GetHandleIndex(descriptorSetLayout));
 }
 
-DescriptorPool DeviceManager::CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params)
+AptnDescriptorPool DeviceManager::CreateDescriptorPool(AptnDevice device, const AptnDescriptorPoolCreationParams& params)
 {
     u32 maxSets = 0;
     DynamicArray<VkDescriptorPoolSize> poolSizes(params.poolSizes.Size());
@@ -112,14 +112,14 @@ DescriptorPool DeviceManager::CreateDescriptorPool(Device device, const Descript
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return DescriptorPool{ handleData };
+            return AptnDescriptorPool{ handleData };
         }
     }
 
-    return { Apparition::InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::DestroyDescriptorPool(DescriptorPool descriptorPool)
+void DeviceManager::DestroyDescriptorPool(AptnDescriptorPool descriptorPool)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorPool);
     DescriptorPoolInternal& descriptorPoolInternal = GetDescriptorPoolInternal(descriptorPool);
@@ -128,7 +128,7 @@ void DeviceManager::DestroyDescriptorPool(DescriptorPool descriptorPool)
     PushFreedHandleIndex(deviceInternal.descriptorPoolHandlePools, GetHandleIndex(descriptorPool));
 }
 
-DescriptorSet DeviceManager::AllocateDescriptorSet(DescriptorPool descriptorPool, const DescriptorSetAllocParams& allocParams)
+AptnDescriptorSet DeviceManager::AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorPool);
     DescriptorPoolInternal& poolInternal = GetDescriptorPoolInternal(descriptorPool);
@@ -161,13 +161,13 @@ DescriptorSet DeviceManager::AllocateDescriptorSet(DescriptorPool descriptorPool
                 | ((u64)GetHandleIndex(descriptorPool) << POOL_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
                 | (handleIndex & RESOURCE_INDEX_MASK);
-            return DescriptorSet{ handleData };
+            return AptnDescriptorSet{ handleData };
         }
     }
-    return { Apparition::InvalidHandle };
+    return { AptnInvalidHandle };
 }
 
-void DeviceManager::FreeDescriptorSet(DescriptorSet descriptorSet)
+void DeviceManager::FreeDescriptorSet(AptnDescriptorSet descriptorSet)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorSet);
     u32 dsPoolIndex = GetResourcePoolIndexFromHandle(descriptorSet);
@@ -179,18 +179,18 @@ void DeviceManager::FreeDescriptorSet(DescriptorSet descriptorSet)
     PushFreedHandleIndex(deviceInternal.descriptorSetHandlePools, GetHandleIndex(descriptorSet));
 }
 
-void DeviceManager::AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSetAllocParams>& allocParams)
+void DeviceManager::AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams)
 {
     UNUSED(descriptorPool, allocParams);
     //return { Apparition::InvalidHandle };
 }
 
-void DeviceManager::FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets)
+void DeviceManager::FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets)
 {
     UNUSED(descriptorSets);
 }
 
-void DeviceManager::UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetDesc>& descriptorSetUpdates)
+void DeviceManager::UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates)
 {
     if (!descriptorSetUpdates.IsEmpty())
     {
@@ -198,7 +198,7 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetD
 
         DynamicArray<VkWriteDescriptorSet> writeDescriptorSets;
         writeDescriptorSets.Reserve(descriptorSetUpdates.Size());
-        for (const UpdateDescriptorSetDesc& updateDescriptorSetDesc : descriptorSetUpdates)
+        for (const AptnUpdateDescriptorSetDesc& updateDescriptorSetDesc : descriptorSetUpdates)
         {
             const DescriptorSetInternal& setInternal = GetDescriptorSetInternal(updateDescriptorSetDesc.descriptorSet);
             VkWriteDescriptorSet writeSet
@@ -215,9 +215,9 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetD
             if (updateDescriptorSetDesc.imageDescriptor)
             {
                 
-                ImageAccess::Type access = updateDescriptorSetDesc.imageDescriptor->access;
-                ImageView view = updateDescriptorSetDesc.imageDescriptor->imageView;
-                Sampler sampler = updateDescriptorSetDesc.imageDescriptor->sampler;
+                AptnImageAccess::Type access = updateDescriptorSetDesc.imageDescriptor->access;
+                AptnImageView view = updateDescriptorSetDesc.imageDescriptor->imageView;
+                AptnSampler sampler = updateDescriptorSetDesc.imageDescriptor->sampler;
 
                 VkImageView vkView = IsValid(view) ? GetImageViewInternal(view).imageView : VK_NULL_HANDLE;
                 VkSampler vkSampler = IsValid(sampler) ? GetSamplerInternal(sampler).sampler : VK_NULL_HANDLE;
@@ -234,7 +234,7 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetD
             }
             else if (updateDescriptorSetDesc.bufferDescriptor)
             {
-                Buffer buffer = updateDescriptorSetDesc.bufferDescriptor->buffer;
+                AptnBuffer buffer = updateDescriptorSetDesc.bufferDescriptor->buffer;
                 Assert(IsValid(buffer));
                 VkBuffer vkBuffer = GetBufferInternal(buffer).buffer;
 

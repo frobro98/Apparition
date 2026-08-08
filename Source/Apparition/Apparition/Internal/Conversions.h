@@ -4,26 +4,26 @@
 #include "Apparition/PipelineStateDefinitions.h"
 #include "VulkanDefinitions.h"
 
-constexpr VkImageUsageFlags ApparitionImageUsageToVk(Apparition::ImageUsageFlags imageUsageFlags)
+constexpr VkImageUsageFlags ApparitionImageUsageToVk(AptnImageUsageFlags imageUsageFlags)
 {
 	VkImageUsageFlags vkUsageFlags = 0;
-	if (imageUsageFlags & Apparition::ImageUsageFlagBits::TransferSrc)
+	if (imageUsageFlags & AptnImageUsageFlagBits::TransferSrc)
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	}
-	if (imageUsageFlags & Apparition::ImageUsageFlagBits::TransferDst)
+	if (imageUsageFlags & AptnImageUsageFlagBits::TransferDst)
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}
-	if (imageUsageFlags & Apparition::ImageUsageFlagBits::Sampled)
+	if (imageUsageFlags & AptnImageUsageFlagBits::Sampled)
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_SAMPLED_BIT;
 	}
-	if (imageUsageFlags & Apparition::ImageUsageFlagBits::ColorAttachment)
+	if (imageUsageFlags & AptnImageUsageFlagBits::ColorAttachment)
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
-	if (imageUsageFlags & Apparition::ImageUsageFlagBits::DepthStencilAttachment)
+	if (imageUsageFlags & AptnImageUsageFlagBits::DepthStencilAttachment)
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
@@ -31,20 +31,19 @@ constexpr VkImageUsageFlags ApparitionImageUsageToVk(Apparition::ImageUsageFlags
 	return vkUsageFlags;
 }
 
-constexpr VkFormat ApparitionInputFormatToVk(Apparition::VertexInputFormat::Type type)
+constexpr VkFormat ApparitionInputFormatToVk(AptnVertexInputFormat::Type type)
 {
-	using namespace Apparition;
 	switch (type)
 	{
-	case VertexInputFormat::F32_1:
+	case AptnVertexInputFormat::F32_1:
 		return VK_FORMAT_R32_SFLOAT;
-	case VertexInputFormat::F32_2:
+	case AptnVertexInputFormat::F32_2:
 		return VK_FORMAT_R32G32_SFLOAT;
-	case VertexInputFormat::F32_3:
+	case AptnVertexInputFormat::F32_3:
 		return VK_FORMAT_R32G32B32_SFLOAT;
-	case VertexInputFormat::F32_4:
+	case AptnVertexInputFormat::F32_4:
 		return VK_FORMAT_R32G32B32A32_SFLOAT;
-	case VertexInputFormat::U32:
+	case AptnVertexInputFormat::U32:
 		return VK_FORMAT_R8G8B8A8_UNORM;
 	default:
 		Assert(false);
@@ -52,14 +51,13 @@ constexpr VkFormat ApparitionInputFormatToVk(Apparition::VertexInputFormat::Type
 	}
 }
 
-constexpr VkVertexInputRate ApparitionInputRateToVk(Apparition::VertexInputRate::Type rate)
+constexpr VkVertexInputRate ApparitionInputRateToVk(AptnVertexInputRate::Type rate)
 {
-	using namespace Apparition;
 	switch (rate)
 	{
-	case VertexInputRate::Vertex:
+	case AptnVertexInputRate::Vertex:
 		return VK_VERTEX_INPUT_RATE_VERTEX;
-	case VertexInputRate::Instance:
+	case AptnVertexInputRate::Instance:
 		return VK_VERTEX_INPUT_RATE_INSTANCE;
 	default:
 		Assert(false);
@@ -67,22 +65,21 @@ constexpr VkVertexInputRate ApparitionInputRateToVk(Apparition::VertexInputRate:
 	}
 }
 
-constexpr VkPrimitiveTopology ApparitionTopologyToVk(Apparition::PrimitiveTopology::Type topology)
+constexpr VkPrimitiveTopology ApparitionTopologyToVk(AptnPrimitiveTopology::Type topology)
 {
-	using namespace Apparition;
 	switch (topology)
 	{
-	case PrimitiveTopology::TriangleList:
+	case AptnPrimitiveTopology::TriangleList:
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	case PrimitiveTopology::TriangleStrip:
+	case AptnPrimitiveTopology::TriangleStrip:
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-	case PrimitiveTopology::TriangleFan:
+	case AptnPrimitiveTopology::TriangleFan:
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-	case PrimitiveTopology::LineList:
+	case AptnPrimitiveTopology::LineList:
 		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-	case PrimitiveTopology::LineStrip:
+	case AptnPrimitiveTopology::LineStrip:
 		return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-	case PrimitiveTopology::PointList:
+	case AptnPrimitiveTopology::PointList:
 		return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 	default:
 		Assert(false);
@@ -90,16 +87,15 @@ constexpr VkPrimitiveTopology ApparitionTopologyToVk(Apparition::PrimitiveTopolo
 	}
 }
 
-constexpr VkPolygonMode ApparitionFillToVk(Apparition::FillMode::Type mode)
+constexpr VkPolygonMode ApparitionFillToVk(AptnFillMode::Type mode)
 {
-	using namespace Apparition;
 	switch (mode)
 	{
-	case FillMode::Full:
+	case AptnFillMode::Full:
 		return VK_POLYGON_MODE_FILL;
-	case FillMode::Wireframe:
+	case AptnFillMode::Wireframe:
 		return VK_POLYGON_MODE_LINE;
-	case FillMode::Point:
+	case AptnFillMode::Point:
 		return VK_POLYGON_MODE_POINT;
 	default:
 		Assert(false);
@@ -107,18 +103,17 @@ constexpr VkPolygonMode ApparitionFillToVk(Apparition::FillMode::Type mode)
 	}
 }
 
-constexpr VkCullModeFlags ApparitionCullToVk(Apparition::CullMode::Type mode)
+constexpr VkCullModeFlags ApparitionCullToVk(AptnCullMode::Type mode)
 {
-	using namespace Apparition;
 	switch (mode)
 	{
-	case CullMode::None:
+	case AptnCullMode::None:
 		return VK_CULL_MODE_NONE;
-	case CullMode::Back:
+	case AptnCullMode::Back:
 		return VK_CULL_MODE_BACK_BIT;
-	case CullMode::Front:
+	case AptnCullMode::Front:
 		return VK_CULL_MODE_FRONT_BIT;
-	case CullMode::FrontAndBack:
+	case AptnCullMode::FrontAndBack:
 		return VK_CULL_MODE_FRONT_AND_BACK;
 	default:
 		Assert(false);
@@ -126,14 +121,13 @@ constexpr VkCullModeFlags ApparitionCullToVk(Apparition::CullMode::Type mode)
 	}
 }
 
-constexpr VkFrontFace ApparitionFrontFaceToVk(Apparition::FrontFace::Type frontFace)
+constexpr VkFrontFace ApparitionFrontFaceToVk(AptnFrontFace::Type frontFace)
 {
-	using namespace Apparition;
 	switch (frontFace)
 	{
-	case FrontFace::Clockwise:
+	case AptnFrontFace::Clockwise:
 		return VK_FRONT_FACE_CLOCKWISE;
-	case FrontFace::CounterClockwise:
+	case AptnFrontFace::CounterClockwise:
 		return VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	default:
 		Assert(false);
@@ -141,26 +135,25 @@ constexpr VkFrontFace ApparitionFrontFaceToVk(Apparition::FrontFace::Type frontF
 	}
 }
 
-constexpr VkCompareOp ApparitionCompareOpToVk(CompareOperation::Type op)
+constexpr VkCompareOp ApparitionCompareOpToVk(AptnCompareOperation::Type op)
 {
-	using namespace Apparition;
 	switch (op)
 	{
-	case CompareOperation::None:
+	case AptnCompareOperation::None:
 		return VK_COMPARE_OP_NEVER;
-	case CompareOperation::Equal:
+	case AptnCompareOperation::Equal:
 		return VK_COMPARE_OP_EQUAL;
-	case CompareOperation::NotEqual:
+	case AptnCompareOperation::NotEqual:
 		return VK_COMPARE_OP_NOT_EQUAL;
-	case CompareOperation::Less:
+	case AptnCompareOperation::Less:
 		return VK_COMPARE_OP_LESS;
-	case CompareOperation::LessThanOrEqual:
+	case AptnCompareOperation::LessThanOrEqual:
 		return VK_COMPARE_OP_LESS_OR_EQUAL;
-	case CompareOperation::Greater:
+	case AptnCompareOperation::Greater:
 		return VK_COMPARE_OP_GREATER;
-	case CompareOperation::GreaterThanOrEqual:
+	case AptnCompareOperation::GreaterThanOrEqual:
 		return VK_COMPARE_OP_GREATER_OR_EQUAL;
-	case CompareOperation::Always:
+	case AptnCompareOperation::Always:
 		return VK_COMPARE_OP_ALWAYS;
 	default:
 		Assert(false);
@@ -168,17 +161,15 @@ constexpr VkCompareOp ApparitionCompareOpToVk(CompareOperation::Type op)
 	}
 }
 
-constexpr VkAttachmentLoadOp ApparitionLoadToVkLoad(Apparition::LoadOperation::Type loadOp)
+constexpr VkAttachmentLoadOp ApparitionLoadToVkLoad(AptnLoadOperation::Type loadOp)
 {
-	using namespace Apparition;
-
 	switch (loadOp)
 	{
-	case LoadOperation::Load:
+	case AptnLoadOperation::Load:
 		return VK_ATTACHMENT_LOAD_OP_LOAD;
-	case LoadOperation::Clear:
+	case AptnLoadOperation::Clear:
 		return VK_ATTACHMENT_LOAD_OP_CLEAR;
-	case LoadOperation::DontCare:
+	case AptnLoadOperation::DontCare:
 		return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	default:
 		Assert(false);
@@ -186,15 +177,13 @@ constexpr VkAttachmentLoadOp ApparitionLoadToVkLoad(Apparition::LoadOperation::T
 	}
 }
 
-constexpr VkAttachmentStoreOp ApparitionStoreToVkStore(Apparition::StoreOperation::Type storeOp)
+constexpr VkAttachmentStoreOp ApparitionStoreToVkStore(AptnStoreOperation::Type storeOp)
 {
-	using namespace Apparition;
-
 	switch (storeOp)
 	{
-	case StoreOperation::Store:
+	case AptnStoreOperation::Store:
 		return VK_ATTACHMENT_STORE_OP_STORE;
-	case StoreOperation::DontCare:
+	case AptnStoreOperation::DontCare:
 		return VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	default:
 		Assert(false);
@@ -202,24 +191,22 @@ constexpr VkAttachmentStoreOp ApparitionStoreToVkStore(Apparition::StoreOperatio
 	}
 }
 
-constexpr VkColorComponentFlags ApparitionColorWriteMaskToVk(Apparition::ColorComponentFlags colorMaskFlags)
+constexpr VkColorComponentFlags ApparitionColorWriteMaskToVk(AptnColorComponentFlags colorMaskFlags)
 {
-	using namespace Apparition;
-
 	VkColorComponentFlags vkColorMask = 0;
-	if (colorMaskFlags & ColorComponentFlagBits::Red)
+	if (colorMaskFlags & AptnColorComponentFlagBits::Red)
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_R_BIT;
 	}
-	if (colorMaskFlags & ColorComponentFlagBits::Green)
+	if (colorMaskFlags & AptnColorComponentFlagBits::Green)
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_G_BIT;
 	}
-	if (colorMaskFlags & ColorComponentFlagBits::Blue)
+	if (colorMaskFlags & AptnColorComponentFlagBits::Blue)
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_B_BIT;
 	}
-	if (colorMaskFlags & ColorComponentFlagBits::Alpha)
+	if (colorMaskFlags & AptnColorComponentFlagBits::Alpha)
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_A_BIT;
 	}
@@ -227,89 +214,86 @@ constexpr VkColorComponentFlags ApparitionColorWriteMaskToVk(Apparition::ColorCo
 	return vkColorMask;
 }
 
-constexpr VkBlendOp ApparitionBlendOpToVk(Apparition::BlendOperation::Type op)
+constexpr VkBlendOp ApparitionBlendOpToVk(AptnBlendOperation::Type op)
 {
-	using namespace Apparition;
 	switch (op)
 	{
-	case BlendOperation::None:
+	case AptnBlendOperation::None:
 		return VK_BLEND_OP_ADD;
-	case BlendOperation::Add:
+	case AptnBlendOperation::Add:
 		return VK_BLEND_OP_ADD;
-	case BlendOperation::Subtract:
+	case AptnBlendOperation::Subtract:
 		return VK_BLEND_OP_SUBTRACT;
 	default:
 		return VK_BLEND_OP_MAX_ENUM;
 	}
 }
 
-constexpr VkBlendFactor ApparitionBlendFactorToVk(Apparition::BlendFactor::Type factor)
+constexpr VkBlendFactor ApparitionBlendFactorToVk(AptnBlendFactor::Type factor)
 {
-	using namespace Apparition;
 	switch (factor)
 	{
-	case BlendFactor::Zero:
+	case AptnBlendFactor::Zero:
 		return VK_BLEND_FACTOR_ZERO;
-	case BlendFactor::One:
+	case AptnBlendFactor::One:
 		return VK_BLEND_FACTOR_ONE;
-	case BlendFactor::SrcColor:
+	case AptnBlendFactor::SrcColor:
 		return VK_BLEND_FACTOR_SRC_COLOR;
-	case BlendFactor::OneMinusSrcColor:
+	case AptnBlendFactor::OneMinusSrcColor:
 		return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
-	case BlendFactor::DstColor:
+	case AptnBlendFactor::DstColor:
 		return VK_BLEND_FACTOR_DST_COLOR;
-	case BlendFactor::OneMinusDstColor:
+	case AptnBlendFactor::OneMinusDstColor:
 		return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
-	case BlendFactor::SrcAlpha:
+	case AptnBlendFactor::SrcAlpha:
 		return VK_BLEND_FACTOR_SRC_ALPHA;
-	case BlendFactor::OneMinusSrcAlpha:
+	case AptnBlendFactor::OneMinusSrcAlpha:
 		return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-	case BlendFactor::DstAlpha:
+	case AptnBlendFactor::DstAlpha:
 		return VK_BLEND_FACTOR_DST_ALPHA;
-	case BlendFactor::OneMinusDstAlpha:
+	case AptnBlendFactor::OneMinusDstAlpha:
 		return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
-	case BlendFactor::ConstColor:
+	case AptnBlendFactor::ConstColor:
 		return VK_BLEND_FACTOR_CONSTANT_COLOR;
-	case BlendFactor::OneMinusConstColor:
+	case AptnBlendFactor::OneMinusConstColor:
 		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
-	case BlendFactor::ConstAlpha:
+	case AptnBlendFactor::ConstAlpha:
 		return VK_BLEND_FACTOR_CONSTANT_ALPHA;
-	case BlendFactor::OneMinusConstAlpha:
+	case AptnBlendFactor::OneMinusConstAlpha:
 		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
 	default:
 		return VK_BLEND_FACTOR_MAX_ENUM;
 	}
 }
 
-constexpr VkDescriptorType ApparitionDescriptorTypeToVk(Apparition::Descriptor::Type descriptorType)
+constexpr VkDescriptorType ApparitionDescriptorTypeToVk(AptnDescriptor::Type descriptorType)
 {
-	using namespace Apparition;
 	switch (descriptorType)
 	{
-	case Apparition::Descriptor::Sampler:
+	case AptnDescriptor::Sampler:
 		return VK_DESCRIPTOR_TYPE_SAMPLER;
-	case Apparition::Descriptor::CombinedImageSampler:
+	case AptnDescriptor::CombinedImageSampler:
 		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	case Apparition::Descriptor::SampledImage:
+	case AptnDescriptor::SampledImage:
 		return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-	case Apparition::Descriptor::StorageImage:
+	case AptnDescriptor::StorageImage:
 		return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	case Apparition::Descriptor::UniformTexelBuffer:
+	case AptnDescriptor::UniformTexelBuffer:
 		return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-	case Apparition::Descriptor::StorageTexelBuffer:
+	case AptnDescriptor::StorageTexelBuffer:
 		return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
-	case Apparition::Descriptor::UniformBuffer:
+	case AptnDescriptor::UniformBuffer:
 		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	case Apparition::Descriptor::StorageBuffer:
+	case AptnDescriptor::StorageBuffer:
 		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	case Apparition::Descriptor::UniformBufferDynamic:
+	case AptnDescriptor::UniformBufferDynamic:
 		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	case Apparition::Descriptor::StorageBufferDynamic:
+	case AptnDescriptor::StorageBufferDynamic:
 		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-	case Apparition::Descriptor::InputAttachment:
+	case AptnDescriptor::InputAttachment:
 		return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-	case Apparition::Descriptor::Count:
-	case Apparition::Descriptor::Max:
+	case AptnDescriptor::Count:
+	case AptnDescriptor::Max:
 	default:
 		Assert(false);
 	}
@@ -317,17 +301,15 @@ constexpr VkDescriptorType ApparitionDescriptorTypeToVk(Apparition::Descriptor::
 	return VK_DESCRIPTOR_TYPE_MAX_ENUM;
 }
 
-constexpr VkShaderStageFlags ApparitionShaderFlagsToVk(Apparition::ShaderStageFlags shaderFlags)
+constexpr VkShaderStageFlags ApparitionShaderFlagsToVk(AptnShaderStageFlags shaderFlags)
 {
-	using namespace Apparition;
-
 	VkShaderStageFlags flags = 0;
-	if (shaderFlags & ShaderStageFlagBits::Vertex)
+	if (shaderFlags & AptnShaderStageFlagBits::Vertex)
 	{
 		flags |= VK_SHADER_STAGE_VERTEX_BIT;
 	}
 
-	if (shaderFlags & ShaderStageFlagBits::Fragment)
+	if (shaderFlags & AptnShaderStageFlagBits::Fragment)
 	{
 		flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
 	}
@@ -335,15 +317,13 @@ constexpr VkShaderStageFlags ApparitionShaderFlagsToVk(Apparition::ShaderStageFl
 	return flags;
 }
 
-constexpr VkFilter ApparitionFilterToVk(Apparition::SamplerFilter::Type filter)
+constexpr VkFilter ApparitionFilterToVk(AptnSamplerFilter::Type filter)
 {
-	using namespace Apparition;
-
 	switch (filter)
 	{
-	case SamplerFilter::Nearest:
+	case AptnSamplerFilter::Nearest:
 		return VK_FILTER_NEAREST;
-	case SamplerFilter::Linear:
+	case AptnSamplerFilter::Linear:
 		return VK_FILTER_LINEAR;
 	default:
 		Assert(false);
@@ -352,17 +332,15 @@ constexpr VkFilter ApparitionFilterToVk(Apparition::SamplerFilter::Type filter)
 	return VK_FILTER_MAX_ENUM;
 }
 
-constexpr VkSamplerAddressMode ApparitionAddressModeToVk(Apparition::SamplerAddressMode::Type addrMode)
+constexpr VkSamplerAddressMode ApparitionAddressModeToVk(AptnSamplerAddressMode::Type addrMode)
 {
-	using namespace Apparition;
-
 	switch (addrMode)
 	{
-	case SamplerAddressMode::Repeat:
+	case AptnSamplerAddressMode::Repeat:
 		return VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	case SamplerAddressMode::Clamp:
+	case AptnSamplerAddressMode::Clamp:
 		return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-	case SamplerAddressMode::Mirror:
+	case AptnSamplerAddressMode::Mirror:
 		return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 	default:
 		Assert(false);
@@ -371,15 +349,13 @@ constexpr VkSamplerAddressMode ApparitionAddressModeToVk(Apparition::SamplerAddr
 	return VK_SAMPLER_ADDRESS_MODE_MAX_ENUM;
 }
 
-constexpr VkSamplerMipmapMode ApparitionMipModeToVk(Apparition::SamplerMipmapMode::Type mipMode)
+constexpr VkSamplerMipmapMode ApparitionMipModeToVk(AptnSamplerMipmapMode::Type mipMode)
 {
-	using namespace Apparition;
-
 	switch (mipMode)
 	{
-	case SamplerMipmapMode::Nearest:
+	case AptnSamplerMipmapMode::Nearest:
 		return VK_SAMPLER_MIPMAP_MODE_NEAREST;
-	case SamplerMipmapMode::Linear:
+	case AptnSamplerMipmapMode::Linear:
 		return VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	default:
 		Assert(false);

@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorIndexing\DescriptorIndexing.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.cpp" />
@@ -165,6 +166,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Sandbox\Examples\Base\Base.h" />
+    <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.h" />
+    <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorIndexing\DescriptorIndexing.h" />
     <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.h" />
     <ClInclude Include="..\..\Source\Sandbox\Examples\ExampleCore.h" />
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h" />
@@ -174,6 +177,8 @@
   <ItemGroup>
     <None Include="..\..\Assets\Shaders\Base\base.frag" />
     <None Include="..\..\Assets\Shaders\Base\base.vert" />
+    <None Include="..\..\Assets\Shaders\DescriptorSets\cube.frag" />
+    <None Include="..\..\Assets\Shaders\DescriptorSets\cube.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,9 +11,7 @@
 struct VkSampler_T;
 typedef struct VkSampler_T* VkSampler;
 
-namespace Apparition
-{
-namespace Descriptor
+namespace AptnDescriptor
 {
 enum Type
 {
@@ -33,9 +31,9 @@ enum Type
     Max = 0x7FFFFFFF
 };
 }
-static_assert(Descriptor::Type::Count == Descriptor::Type::InputAttachment + 1);
+static_assert(AptnDescriptor::Count == AptnDescriptor::InputAttachment + 1);
 
-namespace ShaderStageFlagBits
+namespace AptnShaderStageFlagBits
 {
 enum Type
 {
@@ -45,54 +43,59 @@ enum Type
     Max = 0x7FFFFFFF
 };
 }
-using ShaderStageFlags = u32;
+using AptnShaderStageFlags = u32;
 
-HANDLE_TYPE(DescriptorSetLayout);
-HANDLE_TYPE(DescriptorPool);
-HANDLE_TYPE(DescriptorSet);
+HANDLE_TYPE(AptnDescriptorSetLayout);
+HANDLE_TYPE(AptnDescriptorPool);
+HANDLE_TYPE(AptnDescriptorSet);
 
-struct DescriptorSetLayoutDesc
+namespace AptnDescriptorFlagBits
+{
+enum Type
+{
+    UpdateAfter = 1 << 0,
+    UpdateUnusedWhilePending = 1 << 1,
+    PartiallyBound = 1 << 2,
+    VariableDescriptorCount = 1 << 3,
+
+    Max = 0x7FFFFFFF
+};
+}
+using AptnDescriptorFlags = u32;
+
+// TODO - Specify specific flags, related to descriptor_indexing
+struct AptnDescriptorSetLayoutDesc
 {
     u32 binding = 0;
-    Descriptor::Type descriptorType = Descriptor::Type::Max;
+    AptnDescriptor::Type descriptorType = AptnDescriptor::Type::Max;
     u32 descriptorCount = 0;
-    ShaderStageFlags shaderStageFlags = 0;
+    AptnShaderStageFlags shaderStageFlags = 0;
+    AptnDescriptorFlags flags = 0;
 };
-struct DescriptorSetLayoutCreationParams
+struct AptnDescriptorSetLayoutCreationParams
 {
-    DynamicArray<DescriptorSetLayoutDesc> bindings;
+    DynamicArray<AptnDescriptorSetLayoutDesc> bindings;
 };
 
-struct DescriptorPoolSize
+struct AptnDescriptorPoolSize
 {
-    Descriptor::Type poolType = Descriptor::Max;
+    AptnDescriptor::Type poolType = AptnDescriptor::Max;
     u32 size = 0;
 };
 
-struct DescriptorPoolCreationParams
+struct AptnDescriptorPoolCreationParams
 {
-    DynamicArray<DescriptorPoolSize> poolSizes;
+    DynamicArray<AptnDescriptorPoolSize> poolSizes;
 };
 
-struct DescriptorSetAllocParams
+struct AptnDescriptorSetAllocParams
 {
-    DescriptorSetLayout layout;
+    AptnDescriptorSetLayout layout;
 };
 
-NODISCARD APPARITION_API DescriptorSetLayout CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params);
-APPARITION_API void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
+HANDLE_TYPE(AptnSampler);
 
-NODISCARD APPARITION_API DescriptorPool CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params);
-APPARITION_API void DestroyDescriptorPool(DescriptorPool descriptorPool);
-
-NODISCARD APPARITION_API DescriptorSet AllocateDescriptorSet(DescriptorPool descriptorPool, const DescriptorSetAllocParams& allocParams);
-APPARITION_API void AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSetAllocParams>& allocParams);
-APPARITION_API void FreeDescriptorSet(DescriptorSet descriptorSet);
-APPARITION_API void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets);
-
-HANDLE_TYPE(Sampler);
-
-namespace SamplerAddressMode
+namespace AptnSamplerAddressMode
 {
 enum Type
 {
@@ -102,7 +105,7 @@ enum Type
 };
 }
 
-namespace SamplerFilter
+namespace AptnSamplerFilter
 {
 enum Type
 {
@@ -111,7 +114,7 @@ enum Type
 };
 }
 
-namespace SamplerMipmapMode
+namespace AptnSamplerMipmapMode
 {
 enum Type
 {
@@ -120,47 +123,57 @@ enum Type
 };
 }
 
-struct SamplerCreationParams
+struct AptnSamplerCreationParams
 {
-    SamplerFilter::Type filter = SamplerFilter::Linear;
-    SamplerAddressMode::Type addressModeU = SamplerAddressMode::Clamp;
-    SamplerAddressMode::Type addressModeV = SamplerAddressMode::Clamp;
-    SamplerMipmapMode::Type mipMode = SamplerMipmapMode::Linear;
+    AptnSamplerFilter::Type filter = AptnSamplerFilter::Linear;
+    AptnSamplerAddressMode::Type addressModeU = AptnSamplerAddressMode::Clamp;
+    AptnSamplerAddressMode::Type addressModeV = AptnSamplerAddressMode::Clamp;
+    AptnSamplerMipmapMode::Type mipMode = AptnSamplerMipmapMode::Linear;
     f32 maxAnisotropy = 0;
     f32 minLod = 0;
     f32 maxLod = 1;
 };
 
-NODISCARD APPARITION_API Sampler CreateSampler(Device device, const SamplerCreationParams& params);
-APPARITION_API void DestroySampler(Sampler sampler);
-
-// TEMPORARILY HERE
-APPARITION_API VkSampler GetVulkanHandle(Sampler samplerHandle);
 
 // Update Descriptor Set functionality
-struct BufferDescriptorInfo
+struct AptnBufferDescriptorInfo
 {
-    Buffer buffer = { InvalidHandle };
+    AptnBuffer buffer = { AptnInvalidHandle };
     u64 offset = 0;
     u64 range = 0;
 };
 
-struct ImageDescriptorInfo
+struct AptnImageDescriptorInfo
 {
-    Sampler sampler = { InvalidHandle };
-    ImageView imageView = { InvalidHandle };
-    ImageAccess::Type access = ImageAccess::Undefined;
+    AptnSampler sampler = { AptnInvalidHandle };
+    AptnImageView imageView = { AptnInvalidHandle };
+    AptnImageAccess::Type access = AptnImageAccess::Undefined;
 };
 
-struct UpdateDescriptorSetDesc
+struct AptnUpdateDescriptorSetDesc
 {
-    DescriptorSet descriptorSet = { InvalidHandle };
+    AptnDescriptorSet descriptorSet = { AptnInvalidHandle };
     u32 setBinding = 0;
-    Descriptor::Type descriptorType = Descriptor::Max;
-    ImageDescriptorInfo* imageDescriptor = nullptr;
-    BufferDescriptorInfo* bufferDescriptor = nullptr;
+    AptnDescriptor::Type descriptorType = AptnDescriptor::Max;
+    AptnImageDescriptorInfo* imageDescriptor = nullptr;
+    AptnBufferDescriptorInfo* bufferDescriptor = nullptr;
 };
 
-APPARITION_API void UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetDesc>& descriptorSetUpdates);
+namespace Apparition
+{
+NODISCARD APPARITION_API AptnDescriptorSetLayout CreateDescriptorSetLayout(AptnDevice device, const AptnDescriptorSetLayoutCreationParams& params);
+APPARITION_API void DestroyDescriptorSetLayout(AptnDescriptorSetLayout descriptorSetLayout);
 
+NODISCARD APPARITION_API AptnDescriptorPool CreateDescriptorPool(AptnDevice device, const AptnDescriptorPoolCreationParams& params);
+APPARITION_API void DestroyDescriptorPool(AptnDescriptorPool descriptorPool);
+
+NODISCARD APPARITION_API AptnDescriptorSet AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams);
+APPARITION_API void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams);
+APPARITION_API void FreeDescriptorSet(AptnDescriptorSet descriptorSet);
+APPARITION_API void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets);
+
+NODISCARD APPARITION_API AptnSampler CreateSampler(AptnDevice device, const AptnSamplerCreationParams& params);
+APPARITION_API void DestroySampler(AptnSampler sampler);
+
+APPARITION_API void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates);
 }

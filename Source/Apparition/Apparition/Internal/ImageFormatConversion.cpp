@@ -21,36 +21,36 @@ static VkFormat vkFormats[] = {
     VK_FORMAT_D32_SFLOAT,           // D_32f
     VK_FORMAT_UNDEFINED             // Invalid
 };
-static_assert(ArraySize(vkFormats) == Apparition::ImageFormat::Count);
+static_assert(ArraySize(vkFormats) == AptnImageFormat::Count);
 
-static Map<VkFormat, Apparition::ImageFormat::Type> VkFormatToImageFormat;
+static Map<VkFormat, AptnImageFormat::Type> VkFormatToImageFormat;
 
 void InitializeFormatMapping()
 {
-    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8_UNORM, Apparition::ImageFormat::RGB_8norm);
-    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8_UINT, Apparition::ImageFormat::RGB_8u);
-    VkFormatToImageFormat.Add(VK_FORMAT_R16G16B16_SFLOAT, Apparition::ImageFormat::RGB_16f);
-    VkFormatToImageFormat.Add(VK_FORMAT_B8G8R8_UNORM, Apparition::ImageFormat::BGR_8norm);
-    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8A8_UNORM, Apparition::ImageFormat::RGBA_8norm);
-    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8A8_UINT, Apparition::ImageFormat::RGBA_8u);
-    VkFormatToImageFormat.Add(VK_FORMAT_R16G16B16A16_SFLOAT, Apparition::ImageFormat::RGBA_16f);
-    VkFormatToImageFormat.Add(VK_FORMAT_B8G8R8A8_UNORM, Apparition::ImageFormat::BGRA_8norm);
-    VkFormatToImageFormat.Add(VK_FORMAT_R8_UNORM, Apparition::ImageFormat::Gray_8norm);
-    VkFormatToImageFormat.Add(VK_FORMAT_BC1_RGBA_UNORM_BLOCK, Apparition::ImageFormat::BC1);
-    VkFormatToImageFormat.Add(VK_FORMAT_BC3_UNORM_BLOCK, Apparition::ImageFormat::BC3);
-    VkFormatToImageFormat.Add(VK_FORMAT_BC7_UNORM_BLOCK, Apparition::ImageFormat::BC7);
-    VkFormatToImageFormat.Add(VK_FORMAT_D32_SFLOAT_S8_UINT, Apparition::ImageFormat::DS_32f_8u);
-    VkFormatToImageFormat.Add(VK_FORMAT_D24_UNORM_S8_UINT, Apparition::ImageFormat::DS_24f_8u);
-    VkFormatToImageFormat.Add(VK_FORMAT_D32_SFLOAT, Apparition::ImageFormat::D_32f);
-    VkFormatToImageFormat.Add(VK_FORMAT_UNDEFINED, Apparition::ImageFormat::Invalid);
+    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8_UNORM, AptnImageFormat::RGB_8norm);
+    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8_UINT, AptnImageFormat::RGB_8u);
+    VkFormatToImageFormat.Add(VK_FORMAT_R16G16B16_SFLOAT, AptnImageFormat::RGB_16f);
+    VkFormatToImageFormat.Add(VK_FORMAT_B8G8R8_UNORM, AptnImageFormat::BGR_8norm);
+    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8A8_UNORM, AptnImageFormat::RGBA_8norm);
+    VkFormatToImageFormat.Add(VK_FORMAT_R8G8B8A8_UINT, AptnImageFormat::RGBA_8u);
+    VkFormatToImageFormat.Add(VK_FORMAT_R16G16B16A16_SFLOAT, AptnImageFormat::RGBA_16f);
+    VkFormatToImageFormat.Add(VK_FORMAT_B8G8R8A8_UNORM, AptnImageFormat::BGRA_8norm);
+    VkFormatToImageFormat.Add(VK_FORMAT_R8_UNORM, AptnImageFormat::Gray_8norm);
+    VkFormatToImageFormat.Add(VK_FORMAT_BC1_RGBA_UNORM_BLOCK, AptnImageFormat::BC1);
+    VkFormatToImageFormat.Add(VK_FORMAT_BC3_UNORM_BLOCK, AptnImageFormat::BC3);
+    VkFormatToImageFormat.Add(VK_FORMAT_BC7_UNORM_BLOCK, AptnImageFormat::BC7);
+    VkFormatToImageFormat.Add(VK_FORMAT_D32_SFLOAT_S8_UINT, AptnImageFormat::DS_32f_8u);
+    VkFormatToImageFormat.Add(VK_FORMAT_D24_UNORM_S8_UINT, AptnImageFormat::DS_24f_8u);
+    VkFormatToImageFormat.Add(VK_FORMAT_D32_SFLOAT, AptnImageFormat::D_32f);
+    VkFormatToImageFormat.Add(VK_FORMAT_UNDEFINED, AptnImageFormat::Invalid);
 }
 
-Apparition::ImageFormat::Type VkFormatToApparition(VkFormat format)
+AptnImageFormat::Type VkFormatToApparition(VkFormat format)
 {
     return VkFormatToImageFormat[format];
 }
 
-VkFormat ApparitionFormatToVk(Apparition::ImageFormat::Type imageFormat)
+VkFormat ApparitionFormatToVk(AptnImageFormat::Type imageFormat)
 {
     return vkFormats[imageFormat];
 }

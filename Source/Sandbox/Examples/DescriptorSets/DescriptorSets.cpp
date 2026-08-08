@@ -24,33 +24,33 @@ struct Cube
         Matrix4 model;
     } matrices;
     vks::Texture2D texture;
-    StaticArray<Apparition::Buffer, maxConcurrentFrames> uniformBuffers{};
-    StaticArray<Apparition::DescriptorSet, maxConcurrentFrames> descriptorSets{};
+    StaticArray<AptnBuffer, maxConcurrentFrames> uniformBuffers{};
+    StaticArray<AptnDescriptorSet, maxConcurrentFrames> descriptorSets{};
     Quat rotation;
 };
 StaticArray<Cube, 2> cubes;
 
 vkglTF::Model model;
 
-Apparition::Device device;
-Apparition::Queue graphicsQueue;
-Apparition::Pipeline pipeline;
-Apparition::DescriptorSetLayout descriptorSetLayout;
-Apparition::DescriptorPool descriptorPool;
-Apparition::CommandPool commandPool;
+AptnDevice device;
+AptnQueue graphicsQueue;
+AptnPipeline pipeline;
+AptnDescriptorSetLayout descriptorSetLayout;
+AptnDescriptorPool descriptorPool;
+AptnCommandPool commandPool;
 
-StaticArray<Apparition::CommandBuffer, maxConcurrentFrames> drawCommandBuffers;
-Apparition::Image depthStencilImage;
-Apparition::ImageView depthStencilView;
+StaticArray<AptnCommandBuffer, maxConcurrentFrames> drawCommandBuffers;
+AptnImage depthStencilImage;
+AptnImageView depthStencilView;
 }
 
-void InitializeDescriptorSetsExample(Apparition::Device inDevice)
+void InitializeDescriptorSetsExample(AptnDevice inDevice)
 {
     // Store device internally
     device = inDevice;
     graphicsQueue = Apparition::AllocateGraphicsQueue(device);
 
-    Apparition::BackbufferSetupParams backbufferSetupParams{
+    AptnBackbufferSetupParams backbufferSetupParams{
         .wndHandle = window->windowHandle,
         .wndWidth = window->width,
         .wndHeight = window->height
@@ -62,16 +62,16 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
     Path tex0Path = Path(SandboxTexturePath()) / "crate01_color_height_rgba.ktx";
     Path tex1Path = Path(SandboxTexturePath()) / "crate02_color_height_rgba.ktx";
     model.loadFromFile(cubeModelPath.GetString(), device, graphicsQueue, glTFLoadingFlags);
-    cubes[0].texture.loadFromFile(tex0Path.GetString(), Apparition::ImageFormat::RGBA_8norm, device, graphicsQueue);
-    cubes[1].texture.loadFromFile(tex1Path.GetString(), Apparition::ImageFormat::RGBA_8norm, device, graphicsQueue);
+    cubes[0].texture.loadFromFile(tex0Path.GetString(), AptnImageFormat::RGBA_8norm, device, graphicsQueue);
+    cubes[1].texture.loadFromFile(tex1Path.GetString(), AptnImageFormat::RGBA_8norm, device, graphicsQueue);
 
     for (auto& cube : cubes)
     {
         for (auto& buffer : cube.uniformBuffers)
         {
-            Apparition::BufferCreationParams params
+            AptnBufferCreationParams params
             {
-                .usage = Apparition::BufferUsageFlagBits::UniformBuffer,
+                .usage = AptnBufferUsageFlagBits::UniformBuffer,
                 .size = sizeof(Cube::Matrices),
                 .supportsMappedMemory = true
             };
@@ -81,40 +81,40 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
     }
 
     // DescriptorSetLayout
-    Apparition::DescriptorSetLayoutCreationParams layoutParams
+    AptnDescriptorSetLayoutCreationParams layoutParams
     {
         .bindings
         {
-            Apparition::DescriptorSetLayoutDesc
+            AptnDescriptorSetLayoutDesc
             {
                 .binding = 0,
-                .descriptorType = Apparition::Descriptor::UniformBuffer,
+                .descriptorType = AptnDescriptor::UniformBuffer,
                 .descriptorCount = 1,
-                .shaderStageFlags = Apparition::ShaderStageFlagBits::Vertex
+                .shaderStageFlags = AptnShaderStageFlagBits::Vertex
             },
-            Apparition::DescriptorSetLayoutDesc
+            AptnDescriptorSetLayoutDesc
             {
                 .binding = 1,
-                .descriptorType = Apparition::Descriptor::CombinedImageSampler,
+                .descriptorType = AptnDescriptor::CombinedImageSampler,
                 .descriptorCount = 1,
-                .shaderStageFlags = Apparition::ShaderStageFlagBits::Fragment
+                .shaderStageFlags = AptnShaderStageFlagBits::Fragment
             }
         }
     };
     descriptorSetLayout = Apparition::CreateDescriptorSetLayout(device, layoutParams);
 
-    Apparition::DescriptorPoolCreationParams poolParams
+    AptnDescriptorPoolCreationParams poolParams
     {
         .poolSizes
         {
-            Apparition::DescriptorPoolSize
+            AptnDescriptorPoolSize
             {
-                .poolType = Apparition::Descriptor::UniformBuffer,
+                .poolType = AptnDescriptor::UniformBuffer,
                 .size = cubes.Size() * maxConcurrentFrames
             },
-            Apparition::DescriptorPoolSize
+            AptnDescriptorPoolSize
             {
-                .poolType = Apparition::Descriptor::CombinedImageSampler,
+                .poolType = AptnDescriptor::CombinedImageSampler,
                 .size = cubes.Size() * maxConcurrentFrames
             },
         }
@@ -126,30 +126,30 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
     {
         for (i32 i = 0; i < cube.uniformBuffers.Size(); ++i)
         {
-            Apparition::DescriptorSetAllocParams params
+            AptnDescriptorSetAllocParams params
             {
                 .layout = descriptorSetLayout
             };
             cube.descriptorSets[i] = Apparition::AllocateDescriptorSet(descriptorPool, params);
 
-            Apparition::BufferDescriptorInfo bufferDescriptor
+            AptnBufferDescriptorInfo bufferDescriptor
             {
                 .buffer = cube.uniformBuffers[i],
                 .offset = 0,
                 .range = sizeof(Cube::Matrices)
             };
 
-            DynamicArray<Apparition::UpdateDescriptorSetDesc> updateDescriptors
+            DynamicArray<AptnUpdateDescriptorSetDesc> updateDescriptors
             {
                 {
                     .setBinding = 0,
-                    .descriptorType = Apparition::Descriptor::UniformBuffer,
+                    .descriptorType = AptnDescriptor::UniformBuffer,
                     .descriptorSet = cube.descriptorSets[i],
                     .bufferDescriptor = &bufferDescriptor,
                 },
                 {
                     .setBinding = 1,
-                    .descriptorType = Apparition::Descriptor::CombinedImageSampler,
+                    .descriptorType = AptnDescriptor::CombinedImageSampler,
                     .descriptorSet = cube.descriptorSets[i],
                     .imageDescriptor = &cube.texture.descriptor
                 }
@@ -160,33 +160,33 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
     }
 
     // Pipeline
-    Apparition::PipelineDescription pipelineDesc
+    AptnPipelineDescription pipelineDesc
     {
         .descriptorSets{ descriptorSetLayout }
     };
 
-    Apparition::VertexInputPipelineState vertexInput;
+    AptnVertexInputPipelineState vertexInput;
     {
-        Apparition::VertexInputPipelineStateCreationParams params
+        AptnVertexInputPipelineStateCreationParams params
         {
-            .primitiveTopology = Apparition::PrimitiveTopology::TriangleList,
+            .primitiveTopology = AptnPrimitiveTopology::TriangleList,
             .attributes = vkglTF::Vertex::inputAttributeDescriptions(0, {vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Normal, vkglTF::VertexComponent::UV, vkglTF::VertexComponent::Color}),
             .bindings = { vkglTF::Vertex::inputBindingDescription(0) }
         };
         vertexInput = Apparition::CreateVertexInputPipelineState(device, params);
     }
 
-    Apparition::PrerasterShadersPipelineState prerasterShaders;
+    AptnPrerasterShadersPipelineState prerasterShaders;
     {
         const MemoryBuffer vertShaderCode = LoadShader("DescriptorSets/cube.vert.spv");
         DynamicArray<u32> vertShader(vertShaderCode.Size() / sizeof(u32));
         Memcpy(vertShader.GetData(), vertShaderCode.GetData(), vertShaderCode.Size());
-        Apparition::PreRasterShadersPipelineStateCreationParams params
+        AptnPreRasterShadersPipelineStateCreationParams params
         {
             .pipelineDesc = pipelineDesc,
-            .fillMode = Apparition::FillMode::Full,
-            .cullingMode = Apparition::CullMode::Back,
-            .frontFace = Apparition::FrontFace::CounterClockwise,
+            .fillMode = AptnFillMode::Full,
+            .cullingMode = AptnCullMode::Back,
+            .frontFace = AptnFrontFace::CounterClockwise,
             .lineWidth = 1.f,
             .vertexShader =
             {
@@ -198,12 +198,12 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
         prerasterShaders = Apparition::CreatePrerasterShadersPipelineState(device, params);
     }
 
-    Apparition::FragmentShaderPipelineState fragmentShader;
+    AptnFragmentShaderPipelineState fragmentShader;
     {
         MemoryBuffer fragShaderCode = LoadShader("DescriptorSets/cube.frag.spv");
         DynamicArray<u32> fragShader(fragShaderCode.Size() / sizeof(u32));
         Memcpy(fragShader.GetData(), fragShaderCode.GetData(), fragShaderCode.Size());
-        const Apparition::FragmentShaderPipelineStateCreationParams params
+        const AptnFragmentShaderPipelineStateCreationParams params
         {
             .pipelineDesc = pipelineDesc,
             .fragmentShader =
@@ -213,41 +213,41 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
             },
             .depthTestEnabled = true,
             .depthWriteEnabled = true,
-            .depthCompareOp = Apparition::CompareOperation::LessThanOrEqual
+            .depthCompareOp = AptnCompareOperation::LessThanOrEqual
         };
 
         fragmentShader = Apparition::CreateFragmentShaderPipelineState(device, params);
     }
 
-    Apparition::FragmentOutputPipelineState fragmentOutput;
+    AptnFragmentOutputPipelineState fragmentOutput;
     {
-        Apparition::FragmentOutputPipelineStateCreationParams params
+        AptnFragmentOutputPipelineStateCreationParams params
         {
             .attachments
             {
-                Apparition::ColorBlendAttachment
+                AptnColorBlendAttachment
                 {
-                    .srcColorFactor = Apparition::BlendFactor::Zero,
-                    .dstColorFactor = Apparition::BlendFactor::Zero,
-                    .colorBlendOperation = Apparition::BlendOperation::None,
-                    .srcAlphaFactor = Apparition::BlendFactor::Zero,
-                    .dstAlphaFactor = Apparition::BlendFactor::Zero,
-                    .alphaBlendOperation = Apparition::BlendOperation::None,
-                    .colorMask = Apparition::ColorComponentFlagBits::RGBA
+                    .srcColorFactor = AptnBlendFactor::Zero,
+                    .dstColorFactor = AptnBlendFactor::Zero,
+                    .colorBlendOperation = AptnBlendOperation::None,
+                    .srcAlphaFactor = AptnBlendFactor::Zero,
+                    .dstAlphaFactor = AptnBlendFactor::Zero,
+                    .alphaBlendOperation = AptnBlendOperation::None,
+                    .colorMask = AptnColorComponentFlagBits::RGBA
                 }
             },
             .colorAttachmentFormats
             {
                 Apparition::GetBackbufferFormat(device),
             },
-            .depthAttachmentFormat = Apparition::ImageFormat::DS_32f_8u,
-            .stencilAttachmentFormat = Apparition::ImageFormat::DS_32f_8u
+            .depthAttachmentFormat = AptnImageFormat::DS_32f_8u,
+            .stencilAttachmentFormat = AptnImageFormat::DS_32f_8u
         };
 
         fragmentOutput = Apparition::CreateFragmentOutputPipelineState(device, params);
 
         {
-            Apparition::PipelineCreationParams params
+            AptnPipelineCreationParams params
             {
                 .pipelineDesc = pipelineDesc,
                 .vertexInput = vertexInput,
@@ -262,21 +262,21 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
 
     // Depth
     {
-        Apparition::ImageCreationParams imageParams
+        AptnImageCreationParams imageParams
         {
-            .format = Apparition::ImageFormat::DS_32f_8u,
+            .format = AptnImageFormat::DS_32f_8u,
             .mipLevels = 1,
             .width = window->width,
             .height = window->height,
-            .usageFlags = Apparition::ImageUsageFlagBits::DepthStencilAttachment
+            .usageFlags = AptnImageUsageFlagBits::DepthStencilAttachment
         };
         depthStencilImage = Apparition::CreateImage(device, imageParams);
 
-        Apparition::ImageViewCreationParams viewParams
+        AptnImageViewCreationParams viewParams
         {
-            .aspect = Apparition::ImageAspect::DepthStencil,
+            .aspect = AptnImageAspect::DepthStencil,
             .baseMipLevel = 0,
-            .format = Apparition::ImageFormat::DS_32f_8u,
+            .format = AptnImageFormat::DS_32f_8u,
             .mipCount = 1
         };
         depthStencilView = Apparition::CreateImageView(depthStencilImage, viewParams);
@@ -284,7 +284,7 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
 
     // Draw Command Buffers
     {
-        Apparition::CommandPoolCreationParams createParams{
+        AptnCommandPoolCreationParams createParams{
             .queueIndex = Apparition::GetQueueIndex(graphicsQueue),
             .canResetCommandBuffers = true
         };
@@ -292,7 +292,7 @@ void InitializeDescriptorSetsExample(Apparition::Device inDevice)
     }
 
     {
-        Apparition::CommandBufferAllocParams allocParams{
+        AptnCommandBufferAllocParams allocParams{
             .isSecondary = false
         };
         drawCommandBuffers[0] = Apparition::AllocateCommandBuffer(commandPool, allocParams);
@@ -304,9 +304,9 @@ static u32 currentBuffer = 0;
 
 void TickDescriptorSetsExample(/*Apparition::Device device*/)
 {
-    Apparition::BackbufferStatus preparationStatus = Apparition::AcquireBackbufferImage(device);
-    Assert(preparationStatus != Apparition::BackbufferStatus::Unavailable);
-    Apparition::ImageView backbufferView = Apparition::GetBackBufferImageView(device);
+    AptnBackbufferStatus preparationStatus = Apparition::AcquireBackbufferImage(device);
+    Assert(preparationStatus != AptnBackbufferStatus::Unavailable);
+    AptnImageView backbufferView = Apparition::GetBackBufferImageView(device);
 
     // Update uniform buffers
     cubes[0].matrices.model = Matrix4(TRANS, -2.f, 0.f, 0.f);
@@ -331,14 +331,14 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
         Apparition::UnmapBuffer(cube.uniformBuffers[currentBuffer]);
     }
 
-    Apparition::CommandBuffer commandBuffer = drawCommandBuffers[currentBuffer];
+    AptnCommandBuffer commandBuffer = drawCommandBuffers[currentBuffer];
     Apparition::BeginCommandBuffer(commandBuffer);
 
     {
-        Apparition::ImageMemoryBarrierDesc barrierDesc = {
+        AptnImageMemoryBarrierDesc barrierDesc = {
             .image = Apparition::GetAcquiredBackbufferImage(device),
-            .access = Apparition::ImageAccess::ColorWrite,
-            .aspect = Apparition::ImageAspect::Color,
+            .access = AptnImageAccess::ColorWrite,
+            .aspect = AptnImageAspect::Color,
             .mipLevelCount = 1
         };
 
@@ -346,25 +346,25 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
 
         barrierDesc = {
             .image = depthStencilImage,
-            .access = Apparition::ImageAccess::DepthStencilWrite,
-            .aspect = Apparition::ImageAspect::DepthStencil,
+            .access = AptnImageAccess::DepthStencilWrite,
+            .aspect = AptnImageAspect::DepthStencil,
             .mipLevelCount = 1
         };
 
         Apparition::ImageMemoryBarrier(commandBuffer, barrierDesc);
     }
 
-    Apparition::RenderAttachment colorAttachment
+    AptnRenderAttachment colorAttachment
     {
         .imageView = backbufferView,
-        .loadStoreOps = Apparition::AttachmentOperations::Clear_Store,
+        .loadStoreOps = AptnAttachmentOperations::Clear_Store,
         .clearValue = {{0.025f, 0.025f, 0.025f, 1.0f}}
     };
 
-    Apparition::RenderAttachment depthAttachment
+    AptnRenderAttachment depthAttachment
     {
         .imageView = depthStencilView,
-        .loadStoreOps = Apparition::AttachmentOperations::Clear_Store,
+        .loadStoreOps = AptnAttachmentOperations::Clear_Store,
         .clearValue = {.depthStencil{1.f, 0}}
     };
 
@@ -372,7 +372,7 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
     const u32 backbufferHeight = Apparition::GetBackbufferHeight(device);
 
 
-    Apparition::RenderSetupParams renderSetup = {};
+    AptnRenderSetupParams renderSetup = {};
     renderSetup.colorAttachments.Add(colorAttachment);
     renderSetup.depthAttachment = depthAttachment;
     renderSetup.renderWidth = backbufferWidth;
@@ -381,13 +381,13 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
 
     Apparition::BindGraphicsPipeline(commandBuffer, pipeline);
 
-    Apparition::ViewportDesc viewportDesc = {
+    AptnViewportDesc viewportDesc = {
         .x = 0.f,
         .y = 0.f,
         .width = static_cast<float>(backbufferWidth),
         .height = static_cast<float>(backbufferHeight)
     };
-    Apparition::ScissorDesc scissorDesc = {
+    AptnScissorDesc scissorDesc = {
         .offsetX = 0,
         .offsetY = 0,
         .extentX = backbufferWidth,
@@ -399,9 +399,9 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
 
     for (auto cube : cubes)
     {
-        Apparition::BindDescriptorSetsDesc bindDesc
+        AptnBindDescriptorSetsDesc bindDesc
         {
-            .bindPoint = Apparition::BindPoint::Graphics,
+            .bindPoint = AptnBindPoint::Graphics,
             .pipelineDesc =
             {
                 .descriptorSets{ descriptorSetLayout }
@@ -416,10 +416,10 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
     Apparition::EndRendering(commandBuffer);
 
     {
-        Apparition::ImageMemoryBarrierDesc barrierDesc = {
+        AptnImageMemoryBarrierDesc barrierDesc = {
             .image = Apparition::GetAcquiredBackbufferImage(device),
-            .access = Apparition::ImageAccess::Present,
-            .aspect = Apparition::ImageAspect::Color,
+            .access = AptnImageAccess::Present,
+            .aspect = AptnImageAspect::Color,
             .mipLevelCount = 1
         };
 

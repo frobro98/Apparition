@@ -7,47 +7,38 @@
 
 namespace Apparition
 {
-
-CommandPool CreateCommandPool(Device deviceHandle, const CommandPoolCreationParams& params)
+AptnCommandPool CreateCommandPool(AptnDevice deviceHandle, const AptnCommandPoolCreationParams& params)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	return deviceManager.CreateCommandPool(deviceHandle, params);
 }
 
-void DestroyCommandPool(CommandPool commandPoolHandle)
+void DestroyCommandPool(AptnCommandPool commandPoolHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	deviceManager.DestroyCommandPool(commandPoolHandle);
 }
 
-
-CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params)
+AptnCommandBuffer AllocateCommandBuffer(AptnCommandPool commandPoolHandle, const AptnCommandBufferAllocParams& params)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	return deviceManager.AllocateCommandBuffer(commandPoolHandle, params);
 }
 
-void FreeCommandBuffer(CommandBuffer commandBufferHandle)
+void FreeCommandBuffer(AptnCommandBuffer commandBufferHandle)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	deviceManager.FreeCommandBuffer(commandBufferHandle);
 }
 
-void ResetCommandBuffer(CommandBuffer commandBuffer)
+void ResetCommandBuffer(AptnCommandBuffer commandBuffer)
 {
 	Assert(apparition.deviceManager);
 	DeviceManager& deviceManager = *apparition.deviceManager;
 	deviceManager.ResetCommandBuffer(commandBuffer);
-}
-
-VkCommandBuffer GetVulkanHandle(CommandBuffer commandBufferHandle)
-{
-	Assert(apparition.deviceManager);
-	DeviceManager& deviceManager = *apparition.deviceManager;
-	return deviceManager.GetCommandBufferHandle(commandBufferHandle);
 }
 }

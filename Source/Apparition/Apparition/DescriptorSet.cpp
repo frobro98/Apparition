@@ -5,84 +5,77 @@
 
 namespace Apparition
 {
-DescriptorSetLayout CreateDescriptorSetLayout(Device device, const DescriptorSetLayoutCreationParams& params)
+AptnDescriptorSetLayout CreateDescriptorSetLayout(AptnDevice device, const AptnDescriptorSetLayoutCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateDescriptorSetLayout(device, params);
 }
 
-void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout)
+void DestroyDescriptorSetLayout(AptnDescriptorSetLayout descriptorSetLayout)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyDescriptorSetLayout(descriptorSetLayout);
 }
 
-DescriptorPool CreateDescriptorPool(Device device, const DescriptorPoolCreationParams& params)
+AptnDescriptorPool CreateDescriptorPool(AptnDevice device, const AptnDescriptorPoolCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateDescriptorPool(device, params);
 }
 
-void DestroyDescriptorPool(DescriptorPool descriptorPool)
+void DestroyDescriptorPool(AptnDescriptorPool descriptorPool)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroyDescriptorPool(descriptorPool);
 }
 
-DescriptorSet AllocateDescriptorSet(DescriptorPool descriptorPool, const DescriptorSetAllocParams& allocParams)
+AptnDescriptorSet AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.AllocateDescriptorSet(descriptorPool, allocParams);
 }
 
-void AllocateDescriptorSets(DescriptorPool descriptorPool, const DynamicArray<DescriptorSetAllocParams>& allocParams)
+void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.AllocateDescriptorSets(descriptorPool, allocParams);
 }
 
-void FreeDescriptorSet(DescriptorSet descriptorSet)
+void FreeDescriptorSet(AptnDescriptorSet descriptorSet)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.FreeDescriptorSet(descriptorSet);
 }
 
-void FreeDescriptorSets(const DynamicArray<DescriptorSet> descriptorSets)
+void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.FreeDescriptorSets(descriptorSets);
 }
 
-Sampler CreateSampler(Device device, const SamplerCreationParams& params)
+AptnSampler CreateSampler(AptnDevice device, const AptnSamplerCreationParams& params)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.CreateSampler(device, params);
 }
 
-void DestroySampler(Sampler sampler)
+void DestroySampler(AptnSampler sampler)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.DestroySampler(sampler);
 }
 
-VkSampler GetVulkanHandle(Sampler samplerHandle)
-{
-    Assert(false);
-    UNUSED(samplerHandle);
-    return nullptr;
-}
-
-void UpdateDescriptorSets(const DynamicArray<UpdateDescriptorSetDesc>& descriptorSetUpdates)
+void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

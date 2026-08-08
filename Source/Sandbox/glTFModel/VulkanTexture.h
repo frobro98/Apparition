@@ -33,16 +33,16 @@ namespace vks
 class Texture
 {
   public:
-	Apparition::Device                 device;
-	Apparition::Image                  image;
-	Apparition::ImageAccess::Type      imageAccess;
-	Apparition::ImageView              view;
+	AptnDevice                 device;
+	AptnImage                  image;
+	AptnImageAccess::Type      imageAccess;
+	AptnImageView              view;
 	uint32_t                           width, height;
 	uint32_t                           mipLevels;
 	uint32_t                           layerCount;
-	Apparition::ImageDescriptorInfo	   descriptor;
-	Apparition::Sampler                sampler;
-	Apparition::ImageFormat::Type      format;
+	AptnImageDescriptorInfo	   descriptor;
+	AptnSampler                sampler;
+	AptnImageFormat::Type      format;
 
 	void      updateDescriptor();
 	void      destroy();
@@ -54,22 +54,22 @@ class Texture2D : public Texture
   public:
 	void loadFromFile(
 	    std::string                    filename,
-	    Apparition::ImageFormat::Type  format,
-		Apparition::Device             device,
-	    Apparition::Queue              copyQueue,
-		Apparition::ImageUsageFlags    imageUsageFlags = Apparition::ImageUsageFlagBits::Sampled,
-		Apparition::ImageAccess::Type  imageAccess = Apparition::ImageAccess::ColorRead);
+	    AptnImageFormat::Type  format,
+		AptnDevice             device,
+	    AptnQueue              copyQueue,
+		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlagBits::Sampled,
+		AptnImageAccess::Type  imageAccess = AptnImageAccess::ColorRead);
 	void fromBuffer(
 	    void *                          buffer,
 	    VkDeviceSize                    bufferSize,
-	    Apparition::ImageFormat::Type   format,
+	    AptnImageFormat::Type   format,
 	    uint32_t                        texWidth,
 	    uint32_t                        texHeight,
-		Apparition::Device              device,
-	    Apparition::Queue               copyQueue,
-	    Apparition::SamplerFilter::Type filter = Apparition::SamplerFilter::Linear,
-		Apparition::ImageUsageFlags     imageUsageFlags = Apparition::ImageUsageFlagBits::Sampled,
-		Apparition::ImageAccess::Type   imageAccess = Apparition::ImageAccess::ColorRead);
+		AptnDevice              device,
+	    AptnQueue               copyQueue,
+	    AptnSamplerFilter::Type filter = AptnSamplerFilter::Linear,
+		AptnImageUsageFlags     imageUsageFlags = AptnImageUsageFlagBits::Sampled,
+		AptnImageAccess::Type   imageAccess = AptnImageAccess::ColorRead);
 };
 
 class Texture2DArray : public Texture
@@ -78,11 +78,11 @@ class Texture2DArray : public Texture
 	/*
 	void loadFromFile(
 	    std::string                    filename,
-		Apparition::ImageFormat::Type  format,
-		Apparition::Device             device,
-		Apparition::Queue              copyQueue,
-		Apparition::ImageUsageFlags    imageUsageFlags = Apparition::ImageUsageFlagBits::Sampled,
-		Apparition::ImageAccess::Type  imageAccess = Apparition::ImageAccess::ColorRead);
+		AptnImageFormat::Type  format,
+		AptnDevice             device,
+		AptnQueue              copyQueue,
+		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlagBits::Sampled,
+		AptnImageAccess::Type  imageAccess = AptnImageAccess::ColorRead);
 	//*/
 };
 
@@ -92,11 +92,11 @@ class TextureCubeMap : public Texture
 	/*
 	void loadFromFile(
 	    std::string                    filename,
-		Apparition::ImageFormat::Type  format,
-		Apparition::Device             device,
-		Apparition::Queue              copyQueue,
-		Apparition::ImageUsageFlags    imageUsageFlags = Apparition::ImageUsageFlagBits::Sampled,
-		Apparition::ImageAccess::Type  imageAccess = Apparition::ImageAccess::ColorRead);
+		AptnImageFormat::Type  format,
+		AptnDevice             device,
+		AptnQueue              copyQueue,
+		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlagBits::Sampled,
+		AptnImageAccess::Type  imageAccess = AptnImageAccess::ColorRead);
 	//*/
 };
 }        // namespace vks

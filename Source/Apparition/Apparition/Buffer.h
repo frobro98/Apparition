@@ -7,9 +7,7 @@
 struct VkBuffer_T;
 typedef struct VkBuffer_T* VkBuffer;
 
-namespace Apparition
-{
-HANDLE_TYPE(Buffer)
+HANDLE_TYPE(AptnBuffer)
 
 // Currently supports simple memory handling internally.
 // 
@@ -19,20 +17,19 @@ HANDLE_TYPE(Buffer)
 //
 // NOTE: Buffers do not **currently** support concurrent sharing modes. Each buffer 
 // is exclusive. Will address this if and when this becomes a problem
-struct BufferCreationParams
+struct AptnBufferCreationParams
 {
-    BufferUsageFlags usage;
+    AptnBufferUsageFlags usage;
     size_t size = 0;
     bool supportsMappedMemory = false;
 };
 
-NODISCARD APPARITION_API Buffer CreateBuffer(Device device, const BufferCreationParams& params);
-APPARITION_API void DestroyBuffer(Buffer buffer);
+namespace Apparition
+{
+NODISCARD APPARITION_API AptnBuffer CreateBuffer(AptnDevice device, const AptnBufferCreationParams& params);
+APPARITION_API void DestroyBuffer(AptnBuffer buffer);
 
 // Buffer Map/Unmap
-NODISCARD APPARITION_API void* MapBuffer(Buffer buffer);
-APPARITION_API void UnmapBuffer(Buffer buffer);
-
-// TEMPORARILY HERE
-APPARITION_API VkBuffer GetVulkanHandle(Buffer bufferHandle);
+NODISCARD APPARITION_API void* MapBuffer(AptnBuffer buffer);
+APPARITION_API void UnmapBuffer(AptnBuffer buffer);
 }

@@ -8,132 +8,133 @@
 #include "Apparition/PipelineStateDefinitions.h"
 #include "Apparition/ApparitionAPI.hpp"
 
-namespace Apparition
-{
 
-struct ShaderData
+struct AptnShaderData
 {
     DynamicArray<u32> code;
     const char* entryName = nullptr;
 };
 
-struct PipelineDescription
+struct AptnPipelineDescription
 {
-    DynamicArray<DescriptorSetLayout> descriptorSets;
+    DynamicArray<AptnDescriptorSetLayout> descriptorSets;
 };
 
-HANDLE_TYPE(VertexInputPipelineState);
-HANDLE_TYPE(PrerasterShadersPipelineState);
-HANDLE_TYPE(FragmentShaderPipelineState);
-HANDLE_TYPE(FragmentOutputPipelineState);
-HANDLE_TYPE(Pipeline);
+HANDLE_TYPE(AptnVertexInputPipelineState);
+HANDLE_TYPE(AptnPrerasterShadersPipelineState);
+HANDLE_TYPE(AptnFragmentShaderPipelineState);
+HANDLE_TYPE(AptnFragmentOutputPipelineState);
+HANDLE_TYPE(AptnPipeline);
 
-struct VertexAttributeDescription
+struct AptnVertexAttributeDescription
 {
     u32 location = 0;
     u32 binding = 0;
-    VertexInputFormat::Type format;
+    AptnVertexInputFormat::Type format;
     u32 offset = 0;
 };
 
-struct VertexBindingDescription
+struct AptnVertexBindingDescription
 {
     u32 binding = 0;
     u32 stride = 0;
-    VertexInputRate::Type inputRate;
+    AptnVertexInputRate::Type inputRate;
 };
 
-struct VertexInputPipelineStateCreationParams
+struct AptnVertexInputPipelineStateCreationParams
 {
     // Input Assembly
-    PrimitiveTopology::Type primitiveTopology;
+    AptnPrimitiveTopology::Type primitiveTopology;
 
     // Vertex attributes
-    DynamicArray<VertexAttributeDescription> attributes;
+    DynamicArray<AptnVertexAttributeDescription> attributes;
 
     // Vertex bindings
-    DynamicArray<VertexBindingDescription> bindings;
+    DynamicArray<AptnVertexBindingDescription> bindings;
 };
 
-NODISCARD APPARITION_API VertexInputPipelineState CreateVertexInputPipelineState(Device device, const VertexInputPipelineStateCreationParams& params);
-APPARITION_API void DestroyVertexInputPipelineState(VertexInputPipelineState state);
 
-struct PreRasterShadersPipelineStateCreationParams
+struct AptnPreRasterShadersPipelineStateCreationParams
 {
-    PipelineDescription pipelineDesc;
+    AptnPipelineDescription pipelineDesc;
 
     // Rasterization State
-    FillMode::Type fillMode = FillMode::Full;
-    CullMode::Type cullingMode = CullMode::Back;
-    FrontFace::Type frontFace = FrontFace::CounterClockwise;
+    AptnFillMode::Type fillMode = AptnFillMode::Full;
+    AptnCullMode::Type cullingMode = AptnCullMode::Back;
+    AptnFrontFace::Type frontFace = AptnFrontFace::CounterClockwise;
     f32 lineWidth = 1.f;
 
     // Vertex shader
-    ShaderData vertexShader;
+    AptnShaderData vertexShader;
 };
 
-NODISCARD APPARITION_API PrerasterShadersPipelineState CreatePrerasterShadersPipelineState(Device device, const PreRasterShadersPipelineStateCreationParams& params);
-APPARITION_API void DestroyPrerasterShadersPipelineState(PrerasterShadersPipelineState state);
 
-struct FragmentShaderPipelineStateCreationParams
+struct AptnFragmentShaderPipelineStateCreationParams
 {
-    PipelineDescription pipelineDesc;
+    AptnPipelineDescription pipelineDesc;
 
     // Fragment shader
-    ShaderData fragmentShader;
+    AptnShaderData fragmentShader;
 
     // Depth stencil state
     bool depthTestEnabled = false;
     bool depthWriteEnabled = false;
-    CompareOperation::Type depthCompareOp = CompareOperation::LessThanOrEqual;
+    AptnCompareOperation::Type depthCompareOp = AptnCompareOperation::LessThanOrEqual;
     // TODO - support stencil
     
     // Multisample state
     // TODO - Support Multisampling
 };
 
-NODISCARD APPARITION_API FragmentShaderPipelineState CreateFragmentShaderPipelineState(Device device, const FragmentShaderPipelineStateCreationParams& params);
-APPARITION_API void DestroyFragmentShaderPipelineState(FragmentShaderPipelineState state);
 
-struct ColorBlendAttachment
+struct AptnColorBlendAttachment
 {
-    BlendFactor::Type srcColorFactor = BlendFactor::One;
-    BlendFactor::Type dstColorFactor = BlendFactor::Zero;
-    BlendOperation::Type colorBlendOperation = BlendOperation::Add;
-    BlendFactor::Type srcAlphaFactor = BlendFactor::One;
-    BlendFactor::Type dstAlphaFactor = BlendFactor::Zero;
-    BlendOperation::Type alphaBlendOperation = BlendOperation::Add;
-    ColorComponentFlags colorMask = ColorComponentFlagBits::RGBA;
+    AptnBlendFactor::Type srcColorFactor = AptnBlendFactor::One;
+    AptnBlendFactor::Type dstColorFactor = AptnBlendFactor::Zero;
+    AptnBlendOperation::Type colorBlendOperation = AptnBlendOperation::Add;
+    AptnBlendFactor::Type srcAlphaFactor = AptnBlendFactor::One;
+    AptnBlendFactor::Type dstAlphaFactor = AptnBlendFactor::Zero;
+    AptnBlendOperation::Type alphaBlendOperation = AptnBlendOperation::Add;
+    AptnColorComponentFlags colorMask = AptnColorComponentFlagBits::RGBA;
 };
 
-struct FragmentOutputPipelineStateCreationParams
+struct AptnFragmentOutputPipelineStateCreationParams
 {
     // Blend states
-    DynamicArray<ColorBlendAttachment> attachments;
+    DynamicArray<AptnColorBlendAttachment> attachments;
 
     // Multisample State
     //MultisampleState multisampleState;
 
     // Output
-    DynamicArray<ImageFormat::Type> colorAttachmentFormats;
-    ImageFormat::Type depthAttachmentFormat = ImageFormat::Invalid;
-    ImageFormat::Type stencilAttachmentFormat = ImageFormat::Invalid;
+    DynamicArray<AptnImageFormat::Type> colorAttachmentFormats;
+    AptnImageFormat::Type depthAttachmentFormat = AptnImageFormat::Invalid;
+    AptnImageFormat::Type stencilAttachmentFormat = AptnImageFormat::Invalid;
 };
 
-NODISCARD APPARITION_API FragmentOutputPipelineState CreateFragmentOutputPipelineState(Device device, const FragmentOutputPipelineStateCreationParams& params);
-APPARITION_API void DestroyFragmentOutputPipelineState(FragmentOutputPipelineState state);
 
-struct PipelineCreationParams
+struct AptnPipelineCreationParams
 {
-    PipelineDescription pipelineDesc;
+    AptnPipelineDescription pipelineDesc;
 
-    VertexInputPipelineState vertexInput;
-    PrerasterShadersPipelineState prerasterShaders;
-    FragmentShaderPipelineState fragmentShader;
-    FragmentOutputPipelineState fragmentOutput;
+    AptnVertexInputPipelineState vertexInput;
+    AptnPrerasterShadersPipelineState prerasterShaders;
+    AptnFragmentShaderPipelineState fragmentShader;
+    AptnFragmentOutputPipelineState fragmentOutput;
 };
 
-NODISCARD APPARITION_API Pipeline CreatePipeline(Device device, const PipelineCreationParams& params);
-APPARITION_API void DestroyPipeline(Pipeline pipeline);
+namespace Apparition
+{
+NODISCARD APPARITION_API AptnVertexInputPipelineState CreateVertexInputPipelineState(AptnDevice device, const AptnVertexInputPipelineStateCreationParams& params);
+APPARITION_API void DestroyVertexInputPipelineState(AptnVertexInputPipelineState state);
+NODISCARD APPARITION_API AptnPrerasterShadersPipelineState CreatePrerasterShadersPipelineState(AptnDevice device, const AptnPreRasterShadersPipelineStateCreationParams& params);
+APPARITION_API void DestroyPrerasterShadersPipelineState(AptnPrerasterShadersPipelineState state);
+NODISCARD APPARITION_API AptnFragmentShaderPipelineState CreateFragmentShaderPipelineState(AptnDevice device, const AptnFragmentShaderPipelineStateCreationParams& params);
+APPARITION_API void DestroyFragmentShaderPipelineState(AptnFragmentShaderPipelineState state);
+NODISCARD APPARITION_API AptnFragmentOutputPipelineState CreateFragmentOutputPipelineState(AptnDevice device, const AptnFragmentOutputPipelineStateCreationParams& params);
+APPARITION_API void DestroyFragmentOutputPipelineState(AptnFragmentOutputPipelineState state);
+
+NODISCARD APPARITION_API AptnPipeline CreatePipeline(AptnDevice device, const AptnPipelineCreationParams& params);
+APPARITION_API void DestroyPipeline(AptnPipeline pipeline);
 
 }

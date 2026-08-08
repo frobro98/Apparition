@@ -8,10 +8,8 @@
 #include "VulkanInfos.h"
 
 
-void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition::BackbufferSetupParams& params)
+void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetupParams& params)
 {
-    using namespace Apparition;
-
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
     if (deviceInternal.backbuffer.swapchainHandle != VK_NULL_HANDLE)
@@ -182,7 +180,7 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 		// Swapchain doesn't have mips
 		imgInternal.access.Resize(1);
 		// The current access pattern of the image is not known, undefined is ok
-		imgInternal.access[0] = Apparition::ImageAccess::Undefined;
+		imgInternal.access[0] = AptnImageAccess::Undefined;
 		imgInternal.format = backbuffer.format;
 		backbuffer.images.Add(imageHandleIndex);
 
@@ -236,10 +234,8 @@ void DeviceManager::SetupBackbuffer(Apparition::Device device, const Apparition:
 	// TODO - Log that backbuffer data has been created
 }
 
-void DeviceManager::TeardownBackbuffer(Apparition::Device device)
+void DeviceManager::TeardownBackbuffer(AptnDevice device)
 {
-	using namespace Apparition;
-
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
@@ -260,7 +256,7 @@ void DeviceManager::TeardownBackbuffer(Apparition::Device device)
 	vkDestroySurfaceKHR(instance, backbuffer.surfaceHandle, nullptr);
 }
 
-BackbufferStatus DeviceManager::AcquireNextBackbufferImage(Device device)
+AptnBackbufferStatus DeviceManager::AcquireNextBackbufferImage(AptnDevice device)
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
@@ -272,24 +268,24 @@ BackbufferStatus DeviceManager::AcquireNextBackbufferImage(Device device)
 
 	// Set image index so that we can use it later on in the render
 
-	BackbufferStatus status;
+	AptnBackbufferStatus status;
 	if (result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR)
 	{
-		status = BackbufferStatus::Ready;
+		status = AptnBackbufferStatus::Ready;
 	}
 	else if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		status = BackbufferStatus::Recreate;
+		status = AptnBackbufferStatus::Recreate;
 	}
 	else
 	{
-		status = BackbufferStatus::Unavailable;
+		status = AptnBackbufferStatus::Unavailable;
 	}
 
 	return status;
 }
 
-ImageView DeviceManager::GetBackbufferImageView(Device device)
+AptnImageView DeviceManager::GetBackbufferImageView(AptnDevice device)
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
@@ -298,10 +294,10 @@ ImageView DeviceManager::GetBackbufferImageView(Device device)
 	u64 viewHandle = ((u64)device.handle << DEVICE_INDEX_SHIFT)
 		| ((u64)BackBufferHandleDecorator << POOL_INDEX_SHIFT)
 		| (backbuffer.views[viewIndex] & RESOURCE_INDEX_MASK);
-	return ImageView{viewHandle};
+	return AptnImageView{viewHandle};
 }
 
-Image DeviceManager::GetAcquiredBackbufferImage(Device device)
+AptnImage DeviceManager::GetAcquiredBackbufferImage(AptnDevice device)
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
@@ -310,7 +306,7 @@ Image DeviceManager::GetAcquiredBackbufferImage(Device device)
 	u64 imgHandle = ((u64)device.handle << DEVICE_INDEX_SHIFT)
 		| ((u64)BackBufferHandleDecorator << POOL_INDEX_SHIFT)
 		| (backbuffer.images[imgIndex] & RESOURCE_INDEX_MASK);
-	return Image{ imgHandle };
+	return AptnImage{ imgHandle };
 }
 
 

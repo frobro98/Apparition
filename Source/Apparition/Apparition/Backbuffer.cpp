@@ -9,28 +9,28 @@
 
 namespace Apparition
 {
-void SetupBackbuffer(Device device, const BackbufferSetupParams& params)
+void SetupBackbuffer(AptnDevice device, const AptnBackbufferSetupParams& params)
 {
     Assert(apparition.deviceManager);
 
     return apparition.deviceManager->SetupBackbuffer(device, params);
 }
 
-void TeardownBackbuffer(Device device)
+void TeardownBackbuffer(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     deviceManager.TeardownBackbuffer(device);
 }
 
-BackbufferStatus AcquireBackbufferImage(Device device)
+AptnBackbufferStatus AcquireBackbufferImage(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.AcquireNextBackbufferImage(device);
 }
 
-void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue)
+void SubmitBackbufferCommandBuffer(AptnCommandBuffer commandBuffer, AptnQueue queue)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
@@ -68,7 +68,7 @@ void SubmitBackbufferCommandBuffer(CommandBuffer commandBuffer, Queue queue)
     CHECK_VK(result);
 }
 
-void PresentBackbuffer(Queue presentQueue)
+void PresentBackbuffer(AptnQueue presentQueue)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
@@ -111,28 +111,28 @@ void PresentBackbuffer(Queue presentQueue)
     CHECK_VK(result);
 }
 
-ImageView GetBackBufferImageView(Device device)
+AptnImageView GetBackBufferImageView(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.GetBackbufferImageView(device);
 }
 
-Image GetAcquiredBackbufferImage(Device device)
+AptnImage GetAcquiredBackbufferImage(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     return deviceManager.GetAcquiredBackbufferImage(device);
 }
 
-u32 GetBackbufferWidth(Device device)
+u32 GetBackbufferWidth(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
     const DeviceInternal& deviceInternals = deviceManager.DeviceInternalFrom(device);
     return deviceInternals.backbuffer.extents.width;
 }
-u32 GetBackbufferHeight(Device device)
+u32 GetBackbufferHeight(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
@@ -140,7 +140,7 @@ u32 GetBackbufferHeight(Device device)
     return deviceInternals.backbuffer.extents.height;
 }
 
-ImageFormat::Type GetBackbufferFormat(Device device)
+AptnImageFormat::Type GetBackbufferFormat(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

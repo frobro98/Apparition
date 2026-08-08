@@ -9,35 +9,34 @@
 struct VkImageView_T;
 typedef struct VkImageView_T* VkImageView;
 
-namespace Apparition
-{
 
-HANDLE_TYPE(Image);
-HANDLE_TYPE(ImageView);
+HANDLE_TYPE(AptnImage);
+HANDLE_TYPE(AptnImageView);
 
 // Only supports 2D images currently
-struct ImageCreationParams
+struct AptnImageCreationParams
 {
     u32 width = 0;
     u32 height = 0;
-    ImageFormat::Type format = ImageFormat::Invalid;
+    AptnImageFormat::Type format = AptnImageFormat::Invalid;
     u32 mipLevels = 0;
-    ImageUsageFlags usageFlags = 0;
+    AptnImageUsageFlags usageFlags = 0;
 
 };
 
-
-APPARITION_API Image CreateImage(Device device, const ImageCreationParams& params);
-APPARITION_API void DestroyImage(Image image);
-
-struct ImageViewCreationParams
+struct AptnImageViewCreationParams
 {
-    ImageFormat::Type format = ImageFormat::Invalid;
-    ImageAspect::Type aspect = ImageAspect::Color;
+    AptnImageFormat::Type format = AptnImageFormat::Invalid;
+    AptnImageAspect::Type aspect = AptnImageAspect::Color;
     u32 mipCount = 1;
     u32 baseMipLevel = 0;
 };
 
-APPARITION_API ImageView CreateImageView(Image image, const ImageViewCreationParams& params);
-APPARITION_API void DestroyImageView(ImageView imageView);
+namespace Apparition
+{
+APPARITION_API AptnImage CreateImage(AptnDevice device, const AptnImageCreationParams& params);
+APPARITION_API void DestroyImage(AptnImage image);
+
+APPARITION_API AptnImageView CreateImageView(AptnImage image, const AptnImageViewCreationParams& params);
+APPARITION_API void DestroyImageView(AptnImageView imageView);
 }

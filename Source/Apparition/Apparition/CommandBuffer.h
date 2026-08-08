@@ -8,39 +8,28 @@
 struct VkCommandBuffer_T;
 typedef struct VkCommandBuffer_T* VkCommandBuffer;
 
-namespace Apparition
-{
-struct CommandPool
-{
-    u64 handle;
-};
-HANDLE_TYPE_OPERATORS(CommandPool);
+HANDLE_TYPE(AptnCommandPool);
 
-struct CommandPoolCreationParams
+struct AptnCommandPoolCreationParams
 {
     u32 queueIndex = 0;
     bool canResetCommandBuffers = false;
 };
 
-NODISCARD APPARITION_API CommandPool CreateCommandPool(Device deviceHandle, const CommandPoolCreationParams& params);
-APPARITION_API void DestroyCommandPool(CommandPool commandPoolHandle);
+HANDLE_TYPE(AptnCommandBuffer);
 
-struct CommandBuffer
-{
-    u64 handle;
-};
-HANDLE_TYPE_OPERATORS(CommandBuffer);
-
-struct CommandBufferAllocParams
+struct AptnCommandBufferAllocParams
 {
     // Sets if the command buffer is a primary buffer or if another command buffer will handle submission
     bool isSecondary = false;
 };
 
-NODISCARD APPARITION_API CommandBuffer AllocateCommandBuffer(CommandPool commandPoolHandle, const CommandBufferAllocParams& params = CommandBufferAllocParams());
-APPARITION_API void FreeCommandBuffer(CommandBuffer commandBufferHandle);
-APPARITION_API void ResetCommandBuffer(CommandBuffer commandBuffer);
+namespace Apparition
+{
+NODISCARD APPARITION_API AptnCommandPool CreateCommandPool(AptnDevice deviceHandle, const AptnCommandPoolCreationParams& params);
+APPARITION_API void DestroyCommandPool(AptnCommandPool commandPoolHandle);
 
-// TEMPORARILY HERE
-APPARITION_API VkCommandBuffer GetVulkanHandle(CommandBuffer commandBufferHandle);
+NODISCARD APPARITION_API AptnCommandBuffer AllocateCommandBuffer(AptnCommandPool commandPoolHandle, const AptnCommandBufferAllocParams& params = AptnCommandBufferAllocParams());
+APPARITION_API void FreeCommandBuffer(AptnCommandBuffer commandBufferHandle);
+APPARITION_API void ResetCommandBuffer(AptnCommandBuffer commandBuffer);
 }
