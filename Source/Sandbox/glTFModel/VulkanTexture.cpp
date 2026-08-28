@@ -103,7 +103,6 @@ namespace vks
 		// Setup buffer copy regions for each mip level
 		DynamicArray<AptnBufferToImageCopyOutline> bufferCopyRegions;
 		bufferCopyRegions.Reserve(mipLevels);
-		//std::vector<VkBufferImageCopy> bufferCopyRegions;
 
 		for (uint32_t i = 0; i < mipLevels; i++) {
 			ktx_size_t offset;
@@ -186,22 +185,6 @@ namespace vks
 			.minLod = 0,
 			.maxLod = (f32)mipLevels
 		};
-		//VkSamplerCreateInfo samplerCreateInfo{
-		//	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-		//	.magFilter = VK_FILTER_LINEAR,
-		//	.minFilter = VK_FILTER_LINEAR,
-		//	.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-		//	.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		//	.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		//	.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		//	.mipLodBias = 0.0f,
-		//	.anisotropyEnable = device->enabledFeatures.samplerAnisotropy,
-		//	.maxAnisotropy = device->enabledFeatures.samplerAnisotropy ? device->properties.limits.maxSamplerAnisotropy : 1.0f,
-		//	.compareOp = VK_COMPARE_OP_NEVER,
-		//	.minLod = 0.0f,
-		//	.maxLod = (float)mipLevels,
-		//	.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE
-		//};
 		sampler = Apparition::CreateSampler(device, samplerParams);
 
 		// Create image view
@@ -279,8 +262,6 @@ namespace vks
 			.usageFlags = imageUsageFlags | AptnImageUsageFlags::TransferDst
 		};
 		image = Apparition::CreateImage(device, imageParams);
-
-		//VkImageSubresourceRange subresourceRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = mipLevels, .layerCount = 1 };
 
 		// Use a separate command buffer for texture loading
 		AptnCommandPoolCreationParams poolParams

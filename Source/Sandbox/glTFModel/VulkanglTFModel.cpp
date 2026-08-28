@@ -102,11 +102,6 @@ void vkglTF::Texture::updateDescriptor()
 	descriptor.sampler = sampler;
 	descriptor.imageView = view;
 	descriptor.access = access;
-	/*
-	descriptor.sampler = sampler;
-	descriptor.imageView = view;
-	descriptor.imageLayout = imageLayout;
-	//*/
 }
 
 void vkglTF::Texture::destroy()
@@ -117,10 +112,6 @@ void vkglTF::Texture::destroy()
 		Apparition::DestroyImageView(view);
 		Apparition::DestroyImage(image);
 		Apparition::DestroySampler(sampler);
-		//vkDestroyImageView(device->logicalDevice, view, nullptr);
-		//vkDestroyImage(device->logicalDevice, image, nullptr);
-		//vkFreeMemory(device->logicalDevice, deviceMemory, nullptr);
-		//vkDestroySampler(device->logicalDevice, sampler, nullptr);
 	}
 }
 
@@ -142,7 +133,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 	}
 
 	AptnImageFormat format;
-	//VkFormat format;
 
 	if (!isKtx) {
 		// Texture was loaded using STB_Image
@@ -183,8 +173,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_SRC_BIT);
 		assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT);*/
 
-		//VkBuffer stagingBuffer;
-		//VkDeviceMemory stagingMemory;
 		AptnBufferCreationParams buffParams
 		{
 			.usage = AptnBufferUsageFlags::TransferSrc,
@@ -192,22 +180,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			.supportsMappedMemory = true
 		};
 		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, buffParams);
-
-		//VkBufferCreateInfo bufferCreateInfo{
-		//	.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-		//	.size = bufferSize,
-		//	.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-		//};
-		//VK_CHECK_RESULT(vkCreateBuffer(device->logicalDevice, &bufferCreateInfo, nullptr, &stagingBuffer));
-		//VkMemoryRequirements memReqs{};
-		//vkGetBufferMemoryRequirements(device->logicalDevice, stagingBuffer, &memReqs);
-		//VkMemoryAllocateInfo memAllocInfo{
-		//	.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-		//	.allocationSize = memReqs.size,
-		//	.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-		//};
-		//VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &stagingMemory));
-		//VK_CHECK_RESULT(vkBindBufferMemory(device->logicalDevice, stagingBuffer, stagingMemory, 0));
 
 		void* data = Apparition::MapBuffer(stagingBuffer);
 		memcpy(data, buffer, bufferSize);
@@ -225,33 +197,12 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		};
 		image = Apparition::CreateImage(device, imgParams);
 
-		//VkImageCreateInfo imageCreateInfo{
-		//	.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-		//	.imageType = VK_IMAGE_TYPE_2D,
-		//	//.format = format,
-		//	.extent = { .width = width, .height = height, .depth = 1 },
-		//	.mipLevels = mipLevels,
-		//	.arrayLayers = 1,
-		//	.samples = VK_SAMPLE_COUNT_1_BIT,
-		//	.tiling = VK_IMAGE_TILING_OPTIMAL,
-		//	.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		//	.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-		//	.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		//};
-		//VK_CHECK_RESULT(vkCreateImage(device->logicalDevice, &imageCreateInfo, nullptr, &image));
-		//vkGetImageMemoryRequirements(device->logicalDevice, image, &memReqs);
-		//memAllocInfo.allocationSize = memReqs.size;
-		//memAllocInfo.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		//VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &deviceMemory));
-		//VK_CHECK_RESULT(vkBindImageMemory(device->logicalDevice, image, deviceMemory, 0));
-
 		// TODO - Could make this a function call instead?
 		Assert(IsValid(commandPool));
 		AptnCommandBufferAllocParams cmdBuffParams;
 		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 		Apparition::BeginCommandBuffer(copyCmd);
 
-		//VkCommandBuffer copyCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 		{
 			AptnImageMemoryBarrierDesc barrierDesc
 			{
@@ -261,19 +212,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 		}
-		//VkImageSubresourceRange subresourceRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .levelCount = 1, .layerCount = 1 };
-		//{
-		//	VkImageMemoryBarrier imageMemoryBarrier{
-		//		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-		//		.srcAccessMask = 0,
-		//		.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-		//		.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		//		.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		//		.image = image,
-		//		.subresourceRange = subresourceRange,
-		//	};
-		//	vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-		//}
+
 		AptnBufferToImageCopyDesc copyDesc
 		{
 			.srcBuffer = stagingBuffer,
@@ -287,20 +226,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			}
 		};
 		Apparition::CopyBufferToImage(copyCmd, copyDesc);
-		/*VkBufferImageCopy bufferCopyRegion{
-			.imageSubresource = {
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.mipLevel = 0,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			},
-			.imageExtent = {
-				.width = width,
-				.height = height,
-				.depth = 1
-			}
-		};
-		vkCmdCopyBufferToImage(copyCmd, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);*/
+
 		{
 			AptnImageMemoryBarrierDesc barrierDesc
 			{
@@ -310,34 +236,16 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 		}
-		/*
-		{
-			VkImageMemoryBarrier imageMemoryBarrier{
-				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-				.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-				.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-				.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-				.image = image,
-				.subresourceRange = subresourceRange,
-			};
-			vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-		}
-		//*/
 		Apparition::EndCommandBuffer(copyCmd);
 		Apparition::SubmitCommandBuffer(copyQueue, copyCmd);
 		Apparition::WaitForIdle(copyQueue);
 		Apparition::FreeCommandBuffer(copyCmd);
-		//device->flushCommandBuffer(copyCmd, copyQueue, true);
 
 		Apparition::DestroyBuffer(stagingBuffer);
-		//vkDestroyBuffer(device->logicalDevice, stagingBuffer, nullptr);
-		//vkFreeMemory(device->logicalDevice, stagingMemory, nullptr);
 
 		// Generate the mip chain (glTF uses jpg and png, so we need to create this manually)
 		AptnCommandBuffer blitCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 		Apparition::BeginCommandBuffer(blitCmd);
-		//VkCommandBuffer blitCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 		for (uint32_t i = 1; i < mipLevels; i++) {
 			AptnBlitImageDesc blitDesc{};
 			// Src blit desc
@@ -353,30 +261,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			blitDesc.dstOffsetX[1] = (i32)(width >> i);
 			blitDesc.dstOffsetY[1] = (i32)(height >> i);
 
-			/*
-			VkImageBlit imageBlit{};
-			imageBlit.srcSubresource = {
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.mipLevel = i - 1,
-				.layerCount = 1,
-			};
-			imageBlit.srcOffsets[1] = {
-				.x = int32_t(width >> (i - 1)),
-				.y = int32_t(height >> (i - 1)),
-				.z = 1
-			};
-			imageBlit.dstSubresource = {
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.mipLevel = i,
-				.layerCount = 1,
-			};
-			imageBlit.dstOffsets[1] = {
-				.x = int32_t(width >> i),
-				.y = int32_t(height >> i),
-				.z = 1
-			};
-			//*/
-
 			{
 				AptnImageMemoryBarrierDesc barrierDesc
 				{
@@ -388,23 +272,8 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 				};
 				Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 			}
-			/*
-			VkImageSubresourceRange mipSubRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = i, .levelCount = 1, .layerCount = 1 };
-			{
-				VkImageMemoryBarrier imageMemoryBarrier{
-					.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-					.srcAccessMask = 0,
-					.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-					.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-					.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-					.image = image,
-					.subresourceRange = mipSubRange
-				};
-				vkCmdPipelineBarrier(blitCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-			}
-			//*/
+
 			Apparition::BlitImage(blitCmd, blitDesc);
-			//vkCmdBlitImage(blitCmd, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlit, VK_FILTER_LINEAR);
 			{
 				AptnImageMemoryBarrierDesc barrierDesc
 				{
@@ -416,20 +285,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 				};
 				Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 			}
-			/*
-			{
-				VkImageMemoryBarrier imageMemoryBarrier{
-					.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-					.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-					.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-					.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-					.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-					.image = image,
-					.subresourceRange = mipSubRange
-				};
-				vkCmdPipelineBarrier(blitCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-			}
-			//*/
 		}
 
 		AptnImageMemoryBarrierDesc barrierDesc
@@ -442,22 +297,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		};
 		Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 
-		/*
-		subresourceRange.levelCount = mipLevels;
-		imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		{
-			VkImageMemoryBarrier imageMemoryBarrier{
-				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-				.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-				.dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-				.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-				.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-				.image = image,
-				.subresourceRange = subresourceRange
-			};
-			vkCmdPipelineBarrier(blitCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-		}
-		//*/
         if (deleteBuffer) {
             delete[] buffer;
         }
@@ -466,8 +305,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		Apparition::SubmitCommandBuffer(copyQueue, blitCmd);
 		Apparition::WaitForIdle(copyQueue);
 		Apparition::FreeCommandBuffer(blitCmd);
-
-		//device->flushCommandBuffer(blitCmd, copyQueue, true);
 	}
 	else {
 		// Texture is stored in an external ktx file
@@ -516,7 +353,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		AptnCommandBufferAllocParams cmdBuffParams;
 		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 		Apparition::BeginCommandBuffer(copyCmd);
-		//VkCommandBuffer copyCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
 		AptnBufferCreationParams bufferParams
 		{
@@ -526,33 +362,9 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		};
 		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
 
-		/*
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingMemory;
-
-		VkBufferCreateInfo bufferCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-			.size = ktxTextureSize,
-			.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			.sharingMode = VK_SHARING_MODE_EXCLUSIVE
-		};
-		VK_CHECK_RESULT(vkCreateBuffer(device->logicalDevice, &bufferCreateInfo, nullptr, &stagingBuffer));
-
-		VkMemoryRequirements memReqs;
-		vkGetBufferMemoryRequirements(device->logicalDevice, stagingBuffer, &memReqs);
-		VkMemoryAllocateInfo memAllocInfo{
-			.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			.allocationSize = memReqs.size,
-			.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-		};
-		VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &stagingMemory));
-		VK_CHECK_RESULT(vkBindBufferMemory(device->logicalDevice, stagingBuffer, stagingMemory, 0));
-		//*/
-
 		void* data = Apparition::MapBuffer(stagingBuffer);
 		memcpy(data, ktxTextureData, ktxTextureSize);
 		Apparition::UnmapBuffer(stagingBuffer);
-		//vkUnmapMemory(device->logicalDevice, stagingMemory);
 
 
 		DynamicArray<AptnBufferToImageCopyOutline> bufferCopyOutlines;
@@ -568,48 +380,8 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 				.imgWidth = std::max(1u, ktxTexture->baseWidth >> i),
 				.imgHeight = std::max(1u, ktxTexture->baseHeight >> i)
 			};
-			/*
-			VkBufferImageCopy bufferCopyRegion{
-				.bufferOffset = offset,
-				.imageSubresource = {
-					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-					.mipLevel = i,
-					.baseArrayLayer = 0,
-					.layerCount = 1
-				},
-				.imageExtent = {
-					.width = std::max(1u, ktxTexture->baseWidth >> i),
-					.height = std::max(1u, ktxTexture->baseHeight >> i),
-					.depth = 1
-				}
-			};
-			//*/
 			bufferCopyOutlines.Add(outline);
 		}
-		/*
-		std::vector<VkBufferImageCopy> bufferCopyRegions;
-		for (uint32_t i = 0; i < mipLevels; i++)
-		{
-			ktx_size_t offset;
-			KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, i, 0, 0, &offset);
-			assert(result == KTX_SUCCESS);
-			VkBufferImageCopy bufferCopyRegion{
-				.bufferOffset = offset,
-				.imageSubresource = {
-					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-					.mipLevel = i,
-					.baseArrayLayer = 0,
-					.layerCount = 1
-				},
-				.imageExtent = {
-					.width = std::max(1u, ktxTexture->baseWidth >> i),
-					.height = std::max(1u, ktxTexture->baseHeight >> i),
-					.depth = 1
-				}
-			};
-			bufferCopyRegions.push_back(bufferCopyRegion);
-		}
-		//*/
 
 		AptnImageCreationParams imgParams
 		{
@@ -620,29 +392,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			.usageFlags = AptnImageUsageFlags::TransferDst | AptnImageUsageFlags::Sampled
 		};
 		AptnImage image = Apparition::CreateImage(device, imgParams);
-		/*
-		// Create optimal tiled target image
-		VkImageCreateInfo imageCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-			.imageType = VK_IMAGE_TYPE_2D,
-			.format = format,
-			.extent = { .width = width, .height = height, .depth = 1 },
-			.mipLevels = mipLevels,
-			.arrayLayers = 1,
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.tiling = VK_IMAGE_TILING_OPTIMAL,
-			.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		};
-		VK_CHECK_RESULT(vkCreateImage(device->logicalDevice, &imageCreateInfo, nullptr, &image));
-
-		vkGetImageMemoryRequirements(device->logicalDevice, image, &memReqs);
-		memAllocInfo.allocationSize = memReqs.size;
-		memAllocInfo.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &deviceMemory));
-		VK_CHECK_RESULT(vkBindImageMemory(device->logicalDevice, image, deviceMemory, 0));
-		//*/
 
 		{
 			AptnImageMemoryBarrierDesc barrierDesc
@@ -656,8 +405,6 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 		}
 
-		//VkImageSubresourceRange subresourceRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = mipLevels, .layerCount = 1 };
-		//vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
 		AptnBufferRegionsToImageCopyDesc copyDesc
 		{
 			.srcBuffer = stagingBuffer,
@@ -665,7 +412,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			.outlines = bufferCopyOutlines
 		};
 		Apparition::CopyBufferRegionsToImage(copyCmd, copyDesc);
-		//vkCmdCopyBufferToImage(copyCmd, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
+
 		{
 			AptnImageMemoryBarrierDesc barrierDesc
 			{
@@ -677,20 +424,15 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 		}
-		//vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
 
 		Apparition::EndCommandBuffer(copyCmd);
 		Apparition::SubmitCommandBuffer(copyQueue, copyCmd);
 		Apparition::WaitForIdle(copyQueue);
 		Apparition::FreeCommandBuffer(copyCmd);
-		//device->flushCommandBuffer(copyCmd, copyQueue);
 
 		access = AptnImageAccess::ColorRead;
-		//this->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		Apparition::DestroyBuffer(stagingBuffer);
-		//vkDestroyBuffer(device->logicalDevice, stagingBuffer, nullptr);
-		//vkFreeMemory(device->logicalDevice, stagingMemory, nullptr);
 
 		ktxTexture_Destroy(ktxTexture);
 	}
@@ -704,24 +446,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		.maxAnisotropy = 8.f,
 		.maxLod = static_cast<f32>(mipLevels),
 	};
-	/*
-	VkSamplerCreateInfo samplerInfo{
-		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-		.magFilter = VK_FILTER_LINEAR,
-		.minFilter = VK_FILTER_LINEAR,
-		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-		.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
-		.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
-		.addressModeW = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
-		.anisotropyEnable = VK_TRUE,
-		.maxAnisotropy = 8.0f,
-		.compareOp = VK_COMPARE_OP_NEVER,
-		.maxLod = (float)mipLevels,
-		.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
-	};
-	//*/
 	sampler = Apparition::CreateSampler(device, samplerParams);
-	//VK_CHECK_RESULT(vkCreateSampler(device->logicalDevice, &samplerInfo, nullptr, &sampler));
 
 	AptnImageViewCreationParams viewParams
 	{
@@ -729,48 +454,26 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		.aspect = AptnImageAspectFlags::Color,
 		.mipCount = mipLevels
 	};
-	/*
-	VkImageViewCreateInfo viewInfo{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-		.image = image,
-		.viewType = VK_IMAGE_VIEW_TYPE_2D,
-		.format = format,
-		.subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .levelCount = mipLevels, .layerCount = 1 }
-	};
-	//*/
 	view = Apparition::CreateImageView(image, viewParams);
-	//VK_CHECK_RESULT(vkCreateImageView(device->logicalDevice, &viewInfo, nullptr, &view));
 
 	descriptor.sampler = sampler;
 	descriptor.imageView = view;
 	descriptor.access = access;
-	//descriptor.imageLayout = imageLayout;
 }
 
 /*
 	glTF material
 */
-void vkglTF::Material::createDescriptorSet(/*VkDescriptorPool descriptorPool*/AptnDescriptorPool descriptorPool, /*VkDescriptorSetLayout descriptorSetLayout*/AptnDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags)
+void vkglTF::Material::createDescriptorSet(AptnDescriptorPool descriptorPool, AptnDescriptorSetLayout descriptorSetLayout, uint32_t descriptorBindingFlags)
 {
 	AptnDescriptorSetAllocParams dsParams
 	{
 		.layout = descriptorSetLayout
 	};
-	/*
-	VkDescriptorSetAllocateInfo descriptorSetAllocInfo{
-		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-		.descriptorPool = descriptorPool,
-		.descriptorSetCount = 1,
-		.pSetLayouts = &descriptorSetLayout,
-	};
-	//*/
 	descriptorSet = Apparition::AllocateDescriptorSet(descriptorPool, dsParams);
-	//VK_CHECK_RESULT(vkAllocateDescriptorSets(device->logicalDevice, &descriptorSetAllocInfo, &descriptorSet));
 
 	DynamicArray<AptnImageDescriptorInfo> imageDescriptors;
 	DynamicArray<AptnUpdateDescriptorSetDesc> updateDescriptors;
-	//std::vector<VkDescriptorImageInfo> imageDescriptors{};
-	//std::vector<VkWriteDescriptorSet> writeDescriptorSets{};
 	if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) {
 		imageDescriptors.Add(baseColorTexture->descriptor);
 		AptnUpdateDescriptorSetDesc updateDesc
@@ -780,18 +483,6 @@ void vkglTF::Material::createDescriptorSet(/*VkDescriptorPool descriptorPool*/Ap
 			.imageDescriptor = &baseColorTexture->descriptor
 		};
 		updateDescriptors.Add(updateDesc);
-		/*
-		imageDescriptors.push_back(baseColorTexture->descriptor);
-		VkWriteDescriptorSet writeDescriptorSet{
-			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-			.dstSet = descriptorSet,
-			.dstBinding = static_cast<uint32_t>(writeDescriptorSets.size()),
-			.descriptorCount = 1,
-			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.pImageInfo = &baseColorTexture->descriptor
-		};
-		writeDescriptorSets.push_back(writeDescriptorSet);
-		//*/
 	}
 	if (normalTexture && descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap) {
 		imageDescriptors.Add(baseColorTexture->descriptor);
@@ -803,21 +494,8 @@ void vkglTF::Material::createDescriptorSet(/*VkDescriptorPool descriptorPool*/Ap
 			.imageDescriptor = &baseColorTexture->descriptor
 		};
 		updateDescriptors.Add(updateDesc);
-		/*
-		imageDescriptors.push_back(normalTexture->descriptor);
-		VkWriteDescriptorSet writeDescriptorSet{
-			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-			.dstSet = descriptorSet,
-			.dstBinding = static_cast<uint32_t>(writeDescriptorSets.size()),
-			.descriptorCount = 1,
-			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.pImageInfo = &normalTexture->descriptor
-		};
-		writeDescriptorSets.push_back(writeDescriptorSet);
-		//*/
 	}
 	Apparition::UpdateDescriptorSets(updateDescriptors);
-	//vkUpdateDescriptorSets(device->logicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 }
 
 
@@ -835,7 +513,7 @@ void vkglTF::Primitive::setDimensions(glm::vec3 min, glm::vec3 max) {
 /*
 	glTF mesh
 */
-vkglTF::Mesh::Mesh(/*vks::VulkanDevice* device*/AptnDevice device, glm::mat4 matrix) {
+vkglTF::Mesh::Mesh(AptnDevice device, glm::mat4 matrix) {
 	this->device = device;
 	this->uniformBlock.matrix = matrix;
 
@@ -851,16 +529,7 @@ vkglTF::Mesh::Mesh(/*vks::VulkanDevice* device*/AptnDevice device, glm::mat4 mat
 	void* data = Apparition::MapBuffer(uniformBuffer.buffer);
 	memcpy(data, &uniformBlock, bufferSize);
 	Apparition::UnmapBuffer(uniformBuffer.buffer);
-	/*
-	VK_CHECK_RESULT(device->createBuffer(
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		sizeof(uniformBlock),
-		&uniformBuffer.buffer,
-		&uniformBuffer.memory,
-		&uniformBlock));
-	VK_CHECK_RESULT(vkMapMemory(device->logicalDevice, uniformBuffer.memory, 0, sizeof(uniformBlock), 0, &uniformBuffer.mapped));
-	//*/
+
 	uniformBuffer.mapped = Apparition::MapBuffer(uniformBuffer.buffer);
 	uniformBuffer.descriptor = AptnBufferDescriptorInfo{ uniformBuffer.buffer, 0, sizeof(uniformBlock) };
 };
@@ -868,8 +537,6 @@ vkglTF::Mesh::Mesh(/*vks::VulkanDevice* device*/AptnDevice device, glm::mat4 mat
 vkglTF::Mesh::~Mesh() {
 	Apparition::UnmapBuffer(uniformBuffer.buffer);
 	Apparition::DestroyBuffer(uniformBuffer.buffer);
-	//vkDestroyBuffer(device->logicalDevice, uniformBuffer.buffer, nullptr);
-	//vkFreeMemory(device->logicalDevice, uniformBuffer.memory, nullptr);
     for(auto primitive : primitives)
     {
         delete primitive;
@@ -932,49 +599,34 @@ vkglTF::Node::~Node() {
 */
 
 AptnVertexBindingDescription vkglTF::Vertex::vertexInputBindingDescription;
-//VkVertexInputBindingDescription vkglTF::Vertex::vertexInputBindingDescription;
 DynamicArray<AptnVertexAttributeDescription> vkglTF::Vertex::vertexInputAttributeDescriptions;
-//std::vector<VkVertexInputAttributeDescription> vkglTF::Vertex::vertexInputAttributeDescriptions;
-//VkPipelineVertexInputStateCreateInfo vkglTF::Vertex::pipelineVertexInputStateCreateInfo;
 
 AptnVertexBindingDescription vkglTF::Vertex::inputBindingDescription(uint32_t binding) {
-//VkVertexInputBindingDescription vkglTF::Vertex::inputBindingDescription(uint32_t binding) {
 	return AptnVertexBindingDescription({ binding, sizeof(Vertex), AptnVertexInputRate::Vertex });
-	//return VkVertexInputBindingDescription({ binding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX });
 }
 
 AptnVertexAttributeDescription vkglTF::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
-//VkVertexInputAttributeDescription vkglTF::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
 	switch (component) {
 		case VertexComponent::Position: 
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_3, offsetof(Vertex, pos) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos) });
 		case VertexComponent::Normal:
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_3, offsetof(Vertex, normal) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
 		case VertexComponent::UV:
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_2, offsetof(Vertex, uv) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
 		case VertexComponent::Color:
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, color) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, color) });
 		case VertexComponent::Tangent:
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, tangent) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, tangent)} );
 		case VertexComponent::Joint0:
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, joint0) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, joint0) });
 		case VertexComponent::Weight0:
 			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, weight0) });
-			//return VkVertexInputAttributeDescription({ location, binding, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(Vertex, weight0) });
 		default:
 			return AptnVertexAttributeDescription({});
-			//return VkVertexInputAttributeDescription({});
 	}
 }
 
 DynamicArray<AptnVertexAttributeDescription> vkglTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
-//std::vector<VkVertexInputAttributeDescription> vkglTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
 	DynamicArray<AptnVertexAttributeDescription> result;
 	uint32_t location = 0;
 	for (VertexComponent component : components) {
@@ -983,18 +635,6 @@ DynamicArray<AptnVertexAttributeDescription> vkglTF::Vertex::inputAttributeDescr
 	}
 	return result;
 }
-
-/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
-//VkPipelineVertexInputStateCreateInfo* vkglTF::Vertex::getPipelineVertexInputState(const std::vector<VertexComponent> components) {
-//	vertexInputBindingDescription = Vertex::inputBindingDescription(0);
-//	Vertex::vertexInputAttributeDescriptions = Vertex::inputAttributeDescriptions(0, components);
-//	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-//	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
-//	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = &Vertex::vertexInputBindingDescription;
-//	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(Vertex::vertexInputAttributeDescriptions.size());
-//	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = Vertex::vertexInputAttributeDescriptions.data();
-//	return &pipelineVertexInputStateCreateInfo;
-//}
 
 vkglTF::Texture* vkglTF::Model::getTexture(uint32_t index)
 {
@@ -1023,43 +663,12 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		.size = bufferSize,
 		.supportsMappedMemory = true
 	};
-
-	/*
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingMemory;
-	VkBufferCreateInfo bufferCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-		.size = bufferSize,
-		.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-	};
-	//*/
 	AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
-	
-	/*
-	VK_CHECK_RESULT(vkCreateBuffer(device->logicalDevice, &bufferCreateInfo, nullptr, &stagingBuffer));
-
-	VkMemoryRequirements memReqs;
-	vkGetBufferMemoryRequirements(device->logicalDevice, stagingBuffer, &memReqs);
-	VkMemoryAllocateInfo memAllocInfo{
-		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-		.allocationSize = memReqs.size,
-		.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-	};
-	VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &stagingMemory));
-	VK_CHECK_RESULT(vkBindBufferMemory(device->logicalDevice, stagingBuffer, stagingMemory, 0));
-	//*/
 
 	// Copy texture data into staging buffer
 	void* data = Apparition::MapBuffer(stagingBuffer);
 	memcpy(data, buffer, bufferSize);
 	Apparition::UnmapBuffer(stagingBuffer);
-
-	/*
-	uint8_t* data{ nullptr };
-	VK_CHECK_RESULT(vkMapMemory(device->logicalDevice, stagingMemory, 0, memReqs.size, 0, (void**)&data));
-	memcpy(data, buffer, bufferSize);
-	vkUnmapMemory(device->logicalDevice, stagingMemory);
-	//*/
 
 	// Create optimal tiled target image
 	AptnImageCreationParams imageParams
@@ -1070,31 +679,7 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		.mipLevels = 1,
 		.usageFlags = AptnImageUsageFlags::Sampled | AptnImageUsageFlags::TransferDst
 	};
-	/*
-	VkImageCreateInfo imageCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-		.imageType = VK_IMAGE_TYPE_2D,
-		.format = VK_FORMAT_R8G8B8A8_UNORM,
-		.extent = { .width = emptyTexture.width, .height = emptyTexture.height, .depth = 1 },
-		.mipLevels = 1,
-		.arrayLayers = 1,
-		.samples = VK_SAMPLE_COUNT_1_BIT,
-		.tiling = VK_IMAGE_TILING_OPTIMAL,
-		.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-	};
-	//*/
 	emptyTexture.image = Apparition::CreateImage(device, imageParams);
-	/*
-	VK_CHECK_RESULT(vkCreateImage(device->logicalDevice, &imageCreateInfo, nullptr, &emptyTexture.image));
-
-	vkGetImageMemoryRequirements(device->logicalDevice, emptyTexture.image, &memReqs);
-	memAllocInfo.allocationSize = memReqs.size;
-	memAllocInfo.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &emptyTexture.deviceMemory));
-	VK_CHECK_RESULT(vkBindImageMemory(device->logicalDevice, emptyTexture.image, emptyTexture.deviceMemory, 0));
-	//*/
 
 	AptnCommandPoolCreationParams params
 	{
@@ -1118,15 +703,6 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 	}
 
-	/*
-	VkBufferImageCopy bufferCopyRegion{
-		.imageSubresource = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .layerCount = 1 },
-		.imageExtent = {.width = emptyTexture.width, .height = emptyTexture.height, .depth = 1 }
-	};
-	VkImageSubresourceRange subresourceRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = 1, .layerCount = 1 };
-	VkCommandBuffer copyCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-	vks::tools::setImageLayout(copyCmd, emptyTexture.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-	//*/
 	AptnBufferToImageCopyDesc copyDesc
 	{
 		.srcBuffer = stagingBuffer,
@@ -1140,7 +716,6 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		}
 	};
 	Apparition::CopyBufferToImage(copyCmd, copyDesc);
-	//vkCmdCopyBufferToImage(copyCmd, stagingBuffer, emptyTexture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
 	{
 		AptnImageMemoryBarrierDesc barrierDesc
 		{
@@ -1152,21 +727,15 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		};
 		Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 	}
-	//vks::tools::setImageLayout(copyCmd, emptyTexture.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
 
 	Apparition::EndCommandBuffer(copyCmd);
 	Apparition::SubmitCommandBuffer(transferQueue, copyCmd);
 	Apparition::WaitForIdle(transferQueue);
 	Apparition::FreeCommandBuffer(copyCmd);
-	//Apparition::DestroyCommandPool(commandPool);
-	//device->flushCommandBuffer(copyCmd, transferQueue);
 	emptyTexture.access = AptnImageAccess::ColorRead;
-	//emptyTexture.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	// Clean up staging resources
 	Apparition::DestroyBuffer(stagingBuffer);
-	//vkDestroyBuffer(device->logicalDevice, stagingBuffer, nullptr);
-	//vkFreeMemory(device->logicalDevice, stagingMemory, nullptr);
 
 	AptnSamplerCreationParams samplerParams
 	{
@@ -1176,40 +745,15 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		.mipMode = AptnSamplerMipmapMode::Linear,
 		.maxAnisotropy = 1
 	};
-	/*
-	VkSamplerCreateInfo samplerCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-		.magFilter = VK_FILTER_LINEAR,
-		.minFilter = VK_FILTER_LINEAR,
-		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-		.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.maxAnisotropy = 1.0f,
-		.compareOp = VK_COMPARE_OP_NEVER,
-	};
-	//*/
 	emptyTexture.sampler = Apparition::CreateSampler(device, samplerParams);
-	//VK_CHECK_RESULT(vkCreateSampler(device->logicalDevice, &samplerCreateInfo, nullptr, &emptyTexture.sampler));
 
 	AptnImageViewCreationParams viewParams
 	{
 		.format = AptnImageFormat::RGBA_8norm
 	};
-	/*
-	VkImageViewCreateInfo viewCreateInfo{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-		.image = emptyTexture.image,
-		.viewType = VK_IMAGE_VIEW_TYPE_2D,
-		.format = VK_FORMAT_R8G8B8A8_UNORM,
-		.subresourceRange = { .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = 1, .baseArrayLayer = 0, .layerCount = 1 },
-	};
-	//*/
 	emptyTexture.view = Apparition::CreateImageView(emptyTexture.image, viewParams);
-	//VK_CHECK_RESULT(vkCreateImageView(device->logicalDevice, &viewCreateInfo, nullptr, &emptyTexture.view));
 
 	emptyTexture.access = AptnImageAccess::ColorRead;
-	//emptyTexture.descriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	emptyTexture.descriptor.imageView = emptyTexture.view;
 	emptyTexture.descriptor.sampler = emptyTexture.sampler;
 
@@ -1233,12 +777,7 @@ void vkglTF::Model::releaseResources()
 	{
 		Apparition::DestroyBuffer(vertices.buffer);
 		Apparition::DestroyBuffer(indices.buffer);
-		/*
-		vkDestroyBuffer(device->logicalDevice, vertices.buffer, nullptr);
-		vkFreeMemory(device->logicalDevice, vertices.memory, nullptr);
-		vkDestroyBuffer(device->logicalDevice, indices.buffer, nullptr);
-		vkFreeMemory(device->logicalDevice, indices.memory, nullptr);
-		//*/
+
 		for (auto& texture : textures) {
 			texture.destroy();
 		}
@@ -1250,16 +789,11 @@ void vkglTF::Model::releaseResources()
 		}
 		if (IsValid(descriptorSetLayoutUbo)) {
 			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutUbo);
-			//vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayoutUbo, nullptr);
-			//descriptorSetLayoutUbo{ Apparition::InvalidHandle };
 		}
 		if (IsValid(descriptorSetLayoutImage)) {
 			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutImage);
-			//vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayoutImage, nullptr);
-			//descriptorSetLayoutImage{ Apparition::InvalidHandle };
 		}
 		Apparition::DestroyDescriptorPool(descriptorPool);
-		//vkDestroyDescriptorPool(device->logicalDevice, descriptorPool, nullptr);
 		emptyTexture.destroy();
 
 		resourcesReleased = true;
@@ -1501,7 +1035,7 @@ void vkglTF::Model::loadSkins(tinygltf::Model &gltfModel)
 	}
 }
 
-void vkglTF::Model::loadImages(tinygltf::Model &gltfModel, /*vks::VulkanDevice* device*/AptnDevice device, /*VkQueue transferQueue*/AptnQueue transferQueue)
+void vkglTF::Model::loadImages(tinygltf::Model &gltfModel, AptnDevice device, AptnQueue transferQueue)
 {
 	for (tinygltf::Image &image : gltfModel.images) {
 		vkglTF::Texture texture;
@@ -1677,7 +1211,7 @@ void vkglTF::Model::loadAnimations(tinygltf::Model &gltfModel)
 	}
 }
 
-void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* device*/AptnDevice device, /*VkQueue transferQueue*/AptnQueue transferQueue, uint32_t fileLoadingFlags, float scale)
+void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQueue transferQueue, uint32_t fileLoadingFlags, float scale)
 {
 	tinygltf::Model gltfModel;
 	tinygltf::TinyGLTF gltfContext;
@@ -1797,12 +1331,6 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 		.size = vertexBufferSize,
 		.supportsMappedMemory = true
 	};
-	/*
-	struct StagingBuffer {
-		VkBuffer buffer;
-		VkDeviceMemory memory;
-	} vertexStaging{}, indexStaging{};
-	//*/
 
 	// Create staging buffers
 	// Vertex data
@@ -1812,15 +1340,6 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 		Memcpy(data, vertexBuffer.data(), vertexBufferSize);
 		Apparition::UnmapBuffer(vertexStaging);
 	}
-	/*
-	VK_CHECK_RESULT(device->createBuffer(
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		vertexBufferSize,
-		&vertexStaging.buffer,
-		&vertexStaging.memory,
-		vertexBuffer.data()));
-	//*/
 
 	// Index data
 	bufferParams.size = indexBufferSize;
@@ -1830,41 +1349,19 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 		Memcpy(data, indexBuffer.data(), indexBufferSize);
 		Apparition::UnmapBuffer(indexStaging);
 	}
-	/*
-	VK_CHECK_RESULT(device->createBuffer(
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		indexBufferSize,
-		&indexStaging.buffer,
-		&indexStaging.memory,
-		indexBuffer.data()));
-	//*/
+
 	// Create device local buffers
 	// Vertex buffer
 	bufferParams.supportsMappedMemory = false;
 	bufferParams.size = vertexBufferSize;
 	bufferParams.usage = AptnBufferUsageFlags::VertexBuffer | AptnBufferUsageFlags::TransferDst; // | optional ray tracing flags
 	vertices.buffer = Apparition::CreateBuffer(device, bufferParams);
-	/*
-	VK_CHECK_RESULT(device->createBuffer(
-	    VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | memoryPropertyFlags,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		vertexBufferSize,
-		&vertices.buffer,
-		&vertices.memory));
-	//*/
+
 	// Index buffer
 	bufferParams.size = indexBufferSize;
 	bufferParams.usage = AptnBufferUsageFlags::IndexBuffer | AptnBufferUsageFlags::TransferDst; // | optional ray tracing flags
 	indices.buffer = Apparition::CreateBuffer(device, bufferParams);
-	/*
-	VK_CHECK_RESULT(device->createBuffer(
-	    VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | memoryPropertyFlags,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		indexBufferSize,
-		&indices.buffer,
-		&indices.memory));
-	//*/
+
 	// Copy from staging buffers
 	AptnCommandPoolCreationParams params
 	{
@@ -1875,45 +1372,28 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 	Apparition::BeginCommandBuffer(copyCmd);
 
-	//VkCommandBuffer copyCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-
 	AptnBufferCopyDesc copyDesc
 	{
 		.size = vertexBufferSize,
 		.srcBuffer = vertexStaging,
 		.dstBuffer = vertices.buffer
 	};
-	//VkBufferCopy copyRegion = {};
 
 	Apparition::CopyBuffer(copyCmd, copyDesc);
-	/*
-	copyRegion.size = vertexBufferSize;
-	vkCmdCopyBuffer(copyCmd, vertexStaging.buffer, vertices.buffer, 1, &copyRegion);
-	//*/
 
 	copyDesc.size = indexBufferSize;
 	copyDesc.srcBuffer = indexStaging;
 	copyDesc.dstBuffer = indices.buffer;
 	Apparition::CopyBuffer(copyCmd, copyDesc);
-	/*
-	copyRegion.size = indexBufferSize;
-	vkCmdCopyBuffer(copyCmd, indexStaging.buffer, indices.buffer, 1, &copyRegion);
-	//*/
 
 	Apparition::EndCommandBuffer(copyCmd);
 	Apparition::SubmitCommandBuffer(transferQueue, copyCmd);
 	Apparition::WaitForIdle(transferQueue);
 	Apparition::FreeCommandBuffer(copyCmd);
 	Apparition::DestroyCommandPool(commandPool);
-	//device->flushCommandBuffer(copyCmd, transferQueue, true);
 
 	Apparition::DestroyBuffer(vertexStaging);
 	Apparition::DestroyBuffer(indexStaging);
-
-	//vkDestroyBuffer(device->logicalDevice, vertexStaging.buffer, nullptr);
-	//vkFreeMemory(device->logicalDevice, vertexStaging.memory, nullptr);
-	//vkDestroyBuffer(device->logicalDevice, indexStaging.buffer, nullptr);
-	//vkFreeMemory(device->logicalDevice, indexStaging.memory, nullptr);
 
 	getSceneDimensions();
 
@@ -1964,27 +1444,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 		}
 	}
 
-	/*
-	std::vector<VkDescriptorPoolSize> poolSizes = {
-		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, uboCount },
-	};
-	if (imageCount > 0) {
-		if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) {
-			poolSizes.push_back({ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, imageCount });
-		}
-		if (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap) {
-			poolSizes.push_back({ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, imageCount });
-		}
-	}
-	VkDescriptorPoolCreateInfo descriptorPoolCI{
-		.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-		.maxSets = uboCount + imageCount,
-		.poolSizeCount = static_cast<uint32_t>(poolSizes.size()),
-		.pPoolSizes = poolSizes.data()
-	};
-	//*/
 	descriptorPool = Apparition::CreateDescriptorPool(device, poolParams);
-	//VK_CHECK_RESULT(vkCreateDescriptorPool(device->logicalDevice, &descriptorPoolCI, nullptr, &descriptorPool));
 
 	// Descriptors for per-node uniform buffers
 	{
@@ -2004,11 +1464,6 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 				}
 			};
 			descriptorSetLayoutUbo = Apparition::CreateDescriptorSetLayout(device, params);
-			/*
-			VkDescriptorSetLayoutBinding setLayoutBinding{ .binding = 0, .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = 1, .stageFlags = VK_SHADER_STAGE_VERTEX_BIT };		
-			VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{ .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, .bindingCount = 1, .pBindings = &setLayoutBinding };
-			VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device->logicalDevice, &descriptorLayoutCI, nullptr, &descriptorSetLayoutUbo));
-			//*/
 		}
 		for (auto node : nodes) {
 			prepareNodeDescriptor(node, descriptorSetLayoutUbo);
@@ -2044,21 +1499,6 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 			}
 
 			descriptorSetLayoutImage = Apparition::CreateDescriptorSetLayout(device, params);
-			/*
-			std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
-			if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) {
-				setLayoutBindings.push_back({ .binding = static_cast<uint32_t>(setLayoutBindings.size()), .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, .descriptorCount = 1, .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT });
-			}
-			if (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap) {
-				setLayoutBindings.push_back({ .binding = static_cast<uint32_t>(setLayoutBindings.size()), .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, .descriptorCount = 1, .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT });
-			}
-			VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{
-				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-				.bindingCount = static_cast<uint32_t>(setLayoutBindings.size()),
-				.pBindings = setLayoutBindings.data(),
-			};
-			VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device->logicalDevice, &descriptorLayoutCI, nullptr, &descriptorSetLayoutImage));
-			//*/
 		}
 		for (auto& material : materials) {
 			if (material.baseColorTexture != nullptr) {
@@ -2068,7 +1508,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	}
 }
 
-void vkglTF::Model::bindBuffers(/*VkCommandBuffer commandBuffer*/AptnCommandBuffer commandBuffer)
+void vkglTF::Model::bindBuffers(AptnCommandBuffer commandBuffer)
 {
 	AptnBindVertexBufferDesc vertBind
 	{
@@ -2080,15 +1520,10 @@ void vkglTF::Model::bindBuffers(/*VkCommandBuffer commandBuffer*/AptnCommandBuff
 	};
 	Apparition::BindVertexBuffers(commandBuffer, vertBind);
 	Apparition::BindIndexBuffer(commandBuffer, idxBind);
-	/*
-	const VkDeviceSize offsets[1] = {0};
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
-	vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
-	//*/
 	buffersBound = true;
 }
 
-void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/AptnCommandBuffer commandBuffer, uint32_t renderFlags, /*VkPipelineLayout pipelineLayout*/const AptnPipelineDescription& pipelineDesc, uint32_t bindImageSet)
+void vkglTF::Model::drawNode(Node *node, AptnCommandBuffer commandBuffer, uint32_t renderFlags, const AptnPipelineDescription& pipelineDesc, uint32_t bindImageSet)
 {
 	if (node->mesh) {
 		for (Primitive* primitive : node->mesh->primitives) {
@@ -2113,10 +1548,8 @@ void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/AptnCo
 						.descriptorSets = { material.descriptorSet }
 					};
 					Apparition::BindDescriptorSets(commandBuffer, descriptorSetsDesc);
-					//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet, 1, &material.descriptorSet, 0, nullptr);
 				}
 				Apparition::DrawIndexed(commandBuffer, primitive->indexCount, primitive->firstIndex);
-				//vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, primitive->firstIndex, 0, 0);
 			}
 		}
 	}
@@ -2125,7 +1558,7 @@ void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/AptnCo
 	}
 }
 
-void vkglTF::Model::draw(/*VkCommandBuffer commandBuffer*/AptnCommandBuffer commandBuffer, uint32_t renderFlags, /*VkPipelineLayout pipelineLayout*/const AptnPipelineDescription& pipelineDesc, uint32_t bindImageSet)
+void vkglTF::Model::draw(AptnCommandBuffer commandBuffer, uint32_t renderFlags, const AptnPipelineDescription& pipelineDesc, uint32_t bindImageSet)
 {
 	if (!buffersBound) {
 		AptnBindVertexBufferDesc vertBind
@@ -2138,11 +1571,6 @@ void vkglTF::Model::draw(/*VkCommandBuffer commandBuffer*/AptnCommandBuffer comm
 		};
 		Apparition::BindVertexBuffers(commandBuffer, vertBind);
 		Apparition::BindIndexBuffer(commandBuffer, idxBind);
-		/*
-		const VkDeviceSize offsets[1] = {0};
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertices.buffer, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, indices.buffer, 0, VK_INDEX_TYPE_UINT32);
-		//*/
 	}
 	for (auto& node : nodes) {
 		drawNode(node, commandBuffer, renderFlags, pipelineDesc, bindImageSet);
@@ -2275,22 +1703,14 @@ vkglTF::Node* vkglTF::Model::nodeFromName(const std::string name) {
 	return nullptr;
 }
 
-void vkglTF::Model::prepareNodeDescriptor(vkglTF::Node* node, /*VkDescriptorSetLayout descriptorSetLayout*/AptnDescriptorSetLayout descriptorSetLayout) {
+void vkglTF::Model::prepareNodeDescriptor(vkglTF::Node* node, AptnDescriptorSetLayout descriptorSetLayout) {
 	if (node->mesh) {
 		AptnDescriptorSetAllocParams dsAllocParams
 		{
 			.layout = descriptorSetLayout
 		};
-		/*
-		VkDescriptorSetAllocateInfo descriptorSetAllocInfo{
-			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-			.descriptorPool = descriptorPool,
-			.descriptorSetCount = 1,
-			.pSetLayouts = &descriptorSetLayout
-		};
-		//*/
 		node->mesh->uniformBuffer.descriptorSet = Apparition::AllocateDescriptorSet(descriptorPool, dsAllocParams);
-		//VK_CHECK_RESULT(vkAllocateDescriptorSets(device->logicalDevice, &descriptorSetAllocInfo, &node->mesh->uniformBuffer.descriptorSet));
+
 		AptnUpdateDescriptorSetDesc updateDesc
 		{
 			.descriptorSet = node->mesh->uniformBuffer.descriptorSet,
@@ -2298,18 +1718,7 @@ void vkglTF::Model::prepareNodeDescriptor(vkglTF::Node* node, /*VkDescriptorSetL
 			.descriptorType = AptnDescriptor::UniformBuffer,
 			.bufferDescriptor = &node->mesh->uniformBuffer.descriptor
 		};
-		/*
-		VkWriteDescriptorSet writeDescriptorSet{
-			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-			.dstSet = node->mesh->uniformBuffer.descriptorSet,
-			.dstBinding = 0,
-			.descriptorCount = 1,
-			.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-			.pBufferInfo = &node->mesh->uniformBuffer.descriptor
-		};
-		//*/
 		Apparition::UpdateDescriptorSets({ updateDesc });
-		//vkUpdateDescriptorSets(device->logicalDevice, 1, &writeDescriptorSet, 0, nullptr);
 	}
 	for (auto& child : node->children) {
 		prepareNodeDescriptor(child, descriptorSetLayout);

@@ -29,12 +29,6 @@
     <Filter Include="Source\Examples\DescriptorSets\Shaders">
       <UniqueIdentifier>{02b2eefd-97ed-4c6c-9b22-bddfbc953241}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Examples\DescriptorIndexing">
-      <UniqueIdentifier>{ab4b2008-f454-4c26-8860-872587b941cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Examples\DescriptorIndexing\Shaders">
-      <UniqueIdentifier>{2d7934ae-24d7-45de-8c82-34fe943a4c5c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Examples\DescriptorHeap">
       <UniqueIdentifier>{ea714653-ec6f-47f3-a1dc-190e18f76c28}</UniqueIdentifier>
     </Filter>
@@ -82,9 +76,6 @@
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.cpp">
       <Filter>Source\glTFModel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorIndexing\DescriptorIndexing.cpp">
-      <Filter>Source\Examples\DescriptorIndexing</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.cpp">
       <Filter>Source\Examples\DescriptorHeap</Filter>
     </ClCompile>
@@ -108,9 +99,6 @@
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.h">
       <Filter>Source\glTFModel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorIndexing\DescriptorIndexing.h">
-      <Filter>Source\Examples\DescriptorIndexing</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.h">
       <Filter>Source\Examples\DescriptorHeap</Filter>
     </ClInclude>
@@ -127,12 +115,6 @@
     </None>
     <None Include="..\..\Assets\Shaders\DescriptorSets\cube.vert">
       <Filter>Source\Examples\DescriptorSets\Shaders</Filter>
-    </None>
-    <None Include="..\..\Assets\Shaders\DescriptorIndexing\descriptorindexing.frag">
-      <Filter>Source\Examples\DescriptorIndexing\Shaders</Filter>
-    </None>
-    <None Include="..\..\Assets\Shaders\DescriptorIndexing\descriptorindexing.vert">
-      <Filter>Source\Examples\DescriptorIndexing\Shaders</Filter>
     </None>
     <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.frag">
       <Filter>Source\Examples\DescriptorHeap\Shaders</Filter>
