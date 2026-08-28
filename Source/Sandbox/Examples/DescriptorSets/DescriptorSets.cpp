@@ -90,14 +90,14 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
                 .binding = 0,
                 .descriptorType = AptnDescriptor::UniformBuffer,
                 .descriptorCount = 1,
-                .shaderStageFlags = AptnShaderStageFlagBits::Vertex
+                .shaderStageFlags = AptnShaderStageFlags::Vertex
             },
             AptnDescriptorSetLayoutDesc
             {
                 .binding = 1,
                 .descriptorType = AptnDescriptor::CombinedImageSampler,
                 .descriptorCount = 1,
-                .shaderStageFlags = AptnShaderStageFlagBits::Fragment
+                .shaderStageFlags = AptnShaderStageFlags::Fragment
             }
         }
     };

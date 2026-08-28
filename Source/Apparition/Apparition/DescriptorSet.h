@@ -12,25 +12,20 @@
 struct VkSampler_T;
 typedef struct VkSampler_T* VkSampler;
 
-namespace AptnShaderStageFlagBits
-{
-enum Type
+HANDLE_TYPE(AptnDescriptorSetLayout);
+HANDLE_TYPE(AptnDescriptorPool);
+HANDLE_TYPE(AptnDescriptorSet);
+
+enum class AptnShaderStageFlags
 {
     Vertex = 1 << 0,
     Fragment = 1 << 1,
 
     Max = 0x7FFFFFFF
 };
-}
-using AptnShaderStageFlags = u32;
+ENUM_CLASS_OPERATORS(AptnShaderStageFlags);
 
-HANDLE_TYPE(AptnDescriptorSetLayout);
-HANDLE_TYPE(AptnDescriptorPool);
-HANDLE_TYPE(AptnDescriptorSet);
-
-namespace AptnDescriptorFlagBits
-{
-enum Type
+enum class AptnDescriptorFlags
 {
     UpdateAfter = 1 << 0,
     UpdateUnusedWhilePending = 1 << 1,
@@ -39,16 +34,15 @@ enum Type
 
     Max = 0x7FFFFFFF
 };
-}
-using AptnDescriptorFlags = u32;
+ENUM_CLASS_OPERATORS(AptnDescriptorFlags);
 
 struct AptnDescriptorSetLayoutDesc
 {
     u32 binding = 0;
     AptnDescriptor descriptorType = AptnDescriptor::None;
     u32 descriptorCount = 0;
-    AptnShaderStageFlags shaderStageFlags = 0;
-    AptnDescriptorFlags flags = 0;
+    AptnShaderStageFlags shaderStageFlags = AptnShaderStageFlags::Max;
+    AptnDescriptorFlags flags = AptnDescriptorFlags::Max;
 };
 struct AptnDescriptorSetLayoutCreationParams
 {

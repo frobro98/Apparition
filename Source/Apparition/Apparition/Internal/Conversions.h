@@ -338,12 +338,12 @@ constexpr VkDescriptorType ApparitionDescriptorTypeToVk(AptnDescriptor descripto
 constexpr VkShaderStageFlags ApparitionShaderFlagsToVk(AptnShaderStageFlags shaderFlags)
 {
 	VkShaderStageFlags flags = 0;
-	if (shaderFlags & AptnShaderStageFlagBits::Vertex)
+	if (HasAnyEnumFlags(shaderFlags, AptnShaderStageFlags::Vertex))
 	{
 		flags |= VK_SHADER_STAGE_VERTEX_BIT;
 	}
 
-	if (shaderFlags & AptnShaderStageFlagBits::Fragment)
+	if (HasAnyEnumFlags(shaderFlags, AptnShaderStageFlags::Fragment))
 	{
 		flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
 	}

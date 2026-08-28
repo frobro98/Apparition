@@ -1999,7 +1999,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 						.binding = 0,
 						.descriptorType = AptnDescriptor::UniformBuffer,
 						.descriptorCount = 1,
-						.shaderStageFlags = AptnShaderStageFlagBits::Vertex
+						.shaderStageFlags = AptnShaderStageFlags::Vertex
 					}
 				}
 			};
@@ -2028,7 +2028,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 						.binding = params.bindings.Size(),
 						.descriptorType = AptnDescriptor::CombinedImageSampler,
 						.descriptorCount = 1,
-						.shaderStageFlags = AptnShaderStageFlagBits::Fragment
+						.shaderStageFlags = AptnShaderStageFlags::Fragment
 					});
 			}
 			if (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap)
@@ -2039,7 +2039,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 						.binding = params.bindings.Size(),
 						.descriptorType = AptnDescriptor::CombinedImageSampler,
 						.descriptorCount = 1,
-						.shaderStageFlags = AptnShaderStageFlagBits::Fragment
+						.shaderStageFlags = AptnShaderStageFlags::Fragment
 					});
 			}
 

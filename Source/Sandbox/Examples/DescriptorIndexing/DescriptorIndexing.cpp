@@ -252,14 +252,14 @@ void setupDescriptors()
 			{
 				.binding = 0,
 				.descriptorType = AptnDescriptor::UniformBuffer,
-				.shaderStageFlags = AptnShaderStageFlagBits::Vertex
+				.shaderStageFlags = AptnShaderStageFlags::Vertex
 			},
 			AptnDescriptorSetLayoutDesc
 			{
 				.binding = 1,
 				.descriptorType = AptnDescriptor::CombinedImageSampler,
 				.descriptorCount = textures.Size(),
-				.shaderStageFlags = AptnShaderStageFlagBits::Fragment
+				.shaderStageFlags = AptnShaderStageFlags::Fragment
 			}
 		}
 	};
