@@ -4,34 +4,13 @@
 #include "Containers/StaticArray.hpp"
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Buffer.h"
+#include "Apparition/DescriptorHeap.h"
 #include "Apparition/Device.h"
 #include "Apparition/Image.h"
 #include "Apparition/ApparitionAPI.hpp"
 
 struct VkSampler_T;
 typedef struct VkSampler_T* VkSampler;
-
-namespace AptnDescriptor
-{
-enum Type
-{
-    Sampler,
-    CombinedImageSampler,
-    SampledImage,
-    StorageImage,
-    UniformTexelBuffer,
-    StorageTexelBuffer,
-    UniformBuffer,
-    StorageBuffer,
-    UniformBufferDynamic,
-    StorageBufferDynamic,
-    InputAttachment,
-
-    Count,
-    Max = 0x7FFFFFFF
-};
-}
-static_assert(AptnDescriptor::Count == AptnDescriptor::InputAttachment + 1);
 
 namespace AptnShaderStageFlagBits
 {
@@ -63,11 +42,10 @@ enum Type
 }
 using AptnDescriptorFlags = u32;
 
-// TODO - Specify specific flags, related to descriptor_indexing
 struct AptnDescriptorSetLayoutDesc
 {
     u32 binding = 0;
-    AptnDescriptor::Type descriptorType = AptnDescriptor::Type::Max;
+    AptnDescriptor descriptorType = AptnDescriptor::None;
     u32 descriptorCount = 0;
     AptnShaderStageFlags shaderStageFlags = 0;
     AptnDescriptorFlags flags = 0;
@@ -79,7 +57,7 @@ struct AptnDescriptorSetLayoutCreationParams
 
 struct AptnDescriptorPoolSize
 {
-    AptnDescriptor::Type poolType = AptnDescriptor::Max;
+    AptnDescriptor poolType = AptnDescriptor::None;
     u32 size = 0;
 };
 
@@ -95,40 +73,12 @@ struct AptnDescriptorSetAllocParams
 
 HANDLE_TYPE(AptnSampler);
 
-namespace AptnSamplerAddressMode
-{
-enum Type
-{
-    Repeat,
-    Clamp,
-    Mirror
-};
-}
-
-namespace AptnSamplerFilter
-{
-enum Type
-{
-    Nearest,
-    Linear
-};
-}
-
-namespace AptnSamplerMipmapMode
-{
-enum Type
-{
-    Nearest,
-    Linear
-};
-}
-
 struct AptnSamplerCreationParams
 {
-    AptnSamplerFilter::Type filter = AptnSamplerFilter::Linear;
-    AptnSamplerAddressMode::Type addressModeU = AptnSamplerAddressMode::Clamp;
-    AptnSamplerAddressMode::Type addressModeV = AptnSamplerAddressMode::Clamp;
-    AptnSamplerMipmapMode::Type mipMode = AptnSamplerMipmapMode::Linear;
+    AptnSamplerFilter filter = AptnSamplerFilter::Linear;
+    AptnSamplerAddressMode addressModeU = AptnSamplerAddressMode::Clamp;
+    AptnSamplerAddressMode addressModeV = AptnSamplerAddressMode::Clamp;
+    AptnSamplerMipmapMode mipMode = AptnSamplerMipmapMode::Linear;
     f32 maxAnisotropy = 0;
     f32 minLod = 0;
     f32 maxLod = 1;
@@ -147,14 +97,14 @@ struct AptnImageDescriptorInfo
 {
     AptnSampler sampler = { AptnInvalidHandle };
     AptnImageView imageView = { AptnInvalidHandle };
-    AptnImageAccess::Type access = AptnImageAccess::Undefined;
+    AptnImageAccess access = AptnImageAccess::Undefined;
 };
 
 struct AptnUpdateDescriptorSetDesc
 {
     AptnDescriptorSet descriptorSet = { AptnInvalidHandle };
     u32 setBinding = 0;
-    AptnDescriptor::Type descriptorType = AptnDescriptor::Max;
+    AptnDescriptor descriptorType = AptnDescriptor::None;
     AptnImageDescriptorInfo* imageDescriptor = nullptr;
     AptnBufferDescriptorInfo* bufferDescriptor = nullptr;
 };

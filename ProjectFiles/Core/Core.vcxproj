@@ -216,6 +216,7 @@
     <ClInclude Include="..\..\Source\Core\Utilities\Array.hpp" />
     <ClInclude Include="..\..\Source\Core\Utilities\BitUtilities.hpp" />
     <ClInclude Include="..\..\Source\Core\Utilities\CompileTimeCounter.hpp" />
+    <ClInclude Include="..\..\Source\Core\Utilities\EnumUtils.h" />
     <ClInclude Include="..\..\Source\Core\Utilities\HashFuncs.hpp" />
     <ClInclude Include="..\..\Source\Core\Utilities\HashBasicTypes.h" />
     <ClInclude Include="..\..\Source\Core\Utilities\MacroHelpers.hpp" />

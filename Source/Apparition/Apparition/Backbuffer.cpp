@@ -140,7 +140,7 @@ u32 GetBackbufferHeight(AptnDevice device)
     return deviceInternals.backbuffer.extents.height;
 }
 
-AptnImageFormat::Type GetBackbufferFormat(AptnDevice device)
+AptnImageFormat GetBackbufferFormat(AptnDevice device)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

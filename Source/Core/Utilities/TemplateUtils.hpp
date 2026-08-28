@@ -94,3 +94,5 @@ struct always_false
 template <typename... Args>
 inline constexpr bool always_false_v = always_false<Args...>::value;
 
+template <typename Enum>
+concept is_enum = std::is_enum_v<Enum>;

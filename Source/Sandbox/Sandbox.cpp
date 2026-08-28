@@ -43,11 +43,11 @@ WALL_WRN_POP
 
 // Sandbox
 #include "Window/Window.h"
-#include "Examples/ExampleCore.h"
 
 // Examples
 #include "Examples/Base/Base.h"
 #include "Examples/DescriptorSets/DescriptorSets.h"
+#include "Examples/DescriptorHeaps/DescriptorHeaps.h"
 
 DEFINE_LOG_CHANNEL(VkValidation);
 
@@ -229,18 +229,21 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 
 	//InitializeBaseExample(deviceHandle);
-	InitializeDescriptorSetsExample(deviceHandle);
+	//InitializeDescriptorSetsExample(deviceHandle);
+	InitializeDescriptorHeapsExample(deviceHandle);
 
 	while (windowOpen)
 	{
 		ProcessWindowInput();
 
 		//TickBaseExample();
-		TickDescriptorSetsExample();
+		//TickDescriptorSetsExample();
+		TickDescriptorHeapsExample();
 	}
 
 	//DestroyBaseExample();
-	DestroyDescriptorSetsExample();
+	//DestroyDescriptorSetsExample();
+	DestroyDescriptorHeapsExample();
 
 	Apparition::TeardownBackbuffer(deviceHandle);
 	Apparition::DestroyDevice(deviceHandle);

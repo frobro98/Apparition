@@ -695,6 +695,9 @@
     <ClInclude Include="..\..\Source\Core\BasicTypes\Delegate.h">
       <Filter>Source\BasicTypes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Utilities\EnumUtils.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Core\Utilities\ThirdParty\LICENSE">

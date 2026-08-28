@@ -205,13 +205,14 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Buffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBuffer.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\DescriptorHeap.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\DescriptorSet.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Image.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Backbuffer.cpp" />
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_DescriptorSet.cpp" />
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Descriptors.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Pipeline.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Resources.cpp" />
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\HandlePool.cpp" />

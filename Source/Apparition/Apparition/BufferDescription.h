@@ -1,11 +1,9 @@
 #pragma once
 
 #include "BasicTypes/Intrinsics.hpp"
+#include "Utilities/EnumUtils.h"
 
-
-namespace AptnBufferUsageFlagBits
-{
-enum Type
+enum class AptnBufferUsageFlags
 {
     TransferSrc = 1 << 0,
     TransferDst = 1 << 1,
@@ -17,7 +15,5 @@ enum Type
 
     MAX = 0x7FFFFFFF
 };
-} // BufferUsageFlags
-using AptnBufferUsageFlags = u32;
-
+ENUM_CLASS_OPERATORS(AptnBufferUsageFlags);
 

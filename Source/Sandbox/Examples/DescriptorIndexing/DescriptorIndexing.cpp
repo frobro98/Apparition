@@ -147,7 +147,7 @@ void generateCubes()
 	{
 		.size = vertices.SizeInBytes(),
 		.supportsMappedMemory = true,
-		.usage = AptnBufferUsageFlagBits::TransferSrc
+		.usage = AptnBufferUsageFlags::TransferSrc
 	};
 	AptnBuffer vertStaging = Apparition::CreateBuffer(device, bufferParams);
 	{
@@ -166,12 +166,12 @@ void generateCubes()
 
 	bufferParams.size = vertices.SizeInBytes();
 	bufferParams.supportsMappedMemory = false;
-	bufferParams.usage = AptnBufferUsageFlagBits::TransferDst | AptnBufferUsageFlagBits::VertexBuffer;
+	bufferParams.usage = AptnBufferUsageFlags::TransferDst | AptnBufferUsageFlags::VertexBuffer;
 	vertexBuffer = Apparition::CreateBuffer(device, bufferParams);
 
 	bufferParams.size = indices.SizeInBytes();
 	bufferParams.supportsMappedMemory = false;
-	bufferParams.usage = AptnBufferUsageFlagBits::TransferDst | AptnBufferUsageFlagBits::IndexBuffer;
+	bufferParams.usage = AptnBufferUsageFlags::TransferDst | AptnBufferUsageFlags::IndexBuffer;
 	indexBuffer = Apparition::CreateBuffer(device, bufferParams);
 
 	Assert(IsValid(commandPool));
@@ -218,7 +218,7 @@ void prepareUniformBuffers()
 		{
 			.size = sizeof(UniformData),
 			.supportsMappedMemory = true,
-			.usage = AptnBufferUsageFlagBits::UniformBuffer
+			.usage = AptnBufferUsageFlags::UniformBuffer
 		};
 		uniformBuffer = Apparition::CreateBuffer(device, params);
 	}
@@ -293,13 +293,13 @@ void InitializeDescriptorIndexingExample(AptnDevice inDevice)
 			.mipLevels = 1,
 			.width = window->width,
 			.height = window->height,
-			.usageFlags = AptnImageUsageFlagBits::DepthStencilAttachment
+			.usageFlags = AptnImageUsageFlags::DepthStencilAttachment
 		};
 		depthStencilImage = Apparition::CreateImage(device, imageParams);
 
 		AptnImageViewCreationParams viewParams
 		{
-			.aspect = AptnImageAspect::DepthStencil,
+			.aspect = AptnImageAspectFlags::DepthStencil,
 			.baseMipLevel = 0,
 			.format = AptnImageFormat::DS_32f_8u,
 			.mipCount = 1

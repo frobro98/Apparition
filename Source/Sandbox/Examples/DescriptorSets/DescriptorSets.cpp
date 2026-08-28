@@ -71,7 +71,7 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
         {
             AptnBufferCreationParams params
             {
-                .usage = AptnBufferUsageFlagBits::UniformBuffer,
+                .usage = AptnBufferUsageFlags::UniformBuffer,
                 .size = sizeof(Cube::Matrices),
                 .supportsMappedMemory = true
             };
@@ -233,7 +233,7 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
                     .srcAlphaFactor = AptnBlendFactor::Zero,
                     .dstAlphaFactor = AptnBlendFactor::Zero,
                     .alphaBlendOperation = AptnBlendOperation::None,
-                    .colorMask = AptnColorComponentFlagBits::RGBA
+                    .colorMask = AptnColorComponentFlags::RGBA
                 }
             },
             .colorAttachmentFormats
@@ -268,13 +268,13 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
             .mipLevels = 1,
             .width = window->width,
             .height = window->height,
-            .usageFlags = AptnImageUsageFlagBits::DepthStencilAttachment
+            .usageFlags = AptnImageUsageFlags::DepthStencilAttachment
         };
         depthStencilImage = Apparition::CreateImage(device, imageParams);
 
         AptnImageViewCreationParams viewParams
         {
-            .aspect = AptnImageAspect::DepthStencil,
+            .aspect = AptnImageAspectFlags::DepthStencil,
             .baseMipLevel = 0,
             .format = AptnImageFormat::DS_32f_8u,
             .mipCount = 1
@@ -338,7 +338,7 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
         AptnImageMemoryBarrierDesc barrierDesc = {
             .image = Apparition::GetAcquiredBackbufferImage(device),
             .access = AptnImageAccess::ColorWrite,
-            .aspect = AptnImageAspect::Color,
+            .aspect = AptnImageAspectFlags::Color,
             .mipLevelCount = 1
         };
 
@@ -347,7 +347,7 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
         barrierDesc = {
             .image = depthStencilImage,
             .access = AptnImageAccess::DepthStencilWrite,
-            .aspect = AptnImageAspect::DepthStencil,
+            .aspect = AptnImageAspectFlags::DepthStencil,
             .mipLevelCount = 1
         };
 
@@ -381,6 +381,17 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
 
     Apparition::BindGraphicsPipeline(commandBuffer, pipeline);
 
+    // TODO - Push this functionality into the API
+    // This is the official way to translate "normal" drawing into Vulkan viewport space.
+    // There used to be a projection matrix change that allowed the -y direction to be up
+    // which is what Vulkan expects. This viewport change prevents this issue and also 
+    // allows the usual winding order, which the projection change would reverse
+    //AptnViewportDesc viewportDesc = {
+    //    .x = 0.f,
+    //    .y = static_cast<float>(backbufferHeight),
+    //    .width = static_cast<float>(backbufferWidth),
+    //    .height = -static_cast<float>(backbufferHeight)
+    //};
     AptnViewportDesc viewportDesc = {
         .x = 0.f,
         .y = 0.f,
@@ -419,7 +430,7 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
         AptnImageMemoryBarrierDesc barrierDesc = {
             .image = Apparition::GetAcquiredBackbufferImage(device),
             .access = AptnImageAccess::Present,
-            .aspect = AptnImageAspect::Color,
+            .aspect = AptnImageAspectFlags::Color,
             .mipLevelCount = 1
         };
 

@@ -46,4 +46,10 @@ void UnmapBuffer(AptnBuffer buffer)
 
 	vmaUnmapMemory(deviceInternal.allocator, bufferInternal.allocation);
 }
+
+AptnBufferAddress GetBufferDeviceAddress(AptnBuffer buffer)
+{
+	BufferInternal& bufferInternal = GetBufferInternal(buffer);
+	return bufferInternal.bufferDeviceAddress;
+}
 }

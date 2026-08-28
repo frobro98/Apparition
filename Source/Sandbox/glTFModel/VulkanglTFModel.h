@@ -69,7 +69,7 @@ namespace vkglTF
 		//VkImage image;
 		AptnImage image;
 		AptnImageView view;
-		AptnImageAccess::Type access;
+		AptnImageAccess access;
 		//VkImageLayout imageLayout;
 		//VkDeviceMemory deviceMemory;
 		//VkImageView view;

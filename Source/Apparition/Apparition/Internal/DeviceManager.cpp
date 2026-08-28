@@ -5,7 +5,26 @@
 #include "HandleDefinitions.h"
 #include "ImageFormatConversion.h"
 #include "Utilities/Array.hpp"
+#include "VulkanDefinitions.h"
 #include "VulkanInfos.h"
+
+PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_ = nullptr;
+PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_ = nullptr;
+PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_ = nullptr;
+PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_ = nullptr;
+PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_ = nullptr;
+PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_ = nullptr;
+PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT_ = nullptr;
+PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_ = nullptr;
+PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
+PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
+
+// Required for VK_EXT_descriptor_heap
+PFN_vkWriteResourceDescriptorsEXT vkWriteResourceDescriptorsEXT_ = nullptr;
+PFN_vkCmdBindResourceHeapEXT vkCmdBindResourceHeapEXT_ = nullptr;
+PFN_vkCmdBindSamplerHeapEXT vkCmdBindSamplerHeapEXT_ = nullptr;
+PFN_vkWriteSamplerDescriptorsEXT vkWriteSamplerDescriptorsEXT_ = nullptr;
+PFN_vkCmdPushDataEXT vkCmdPushDataEXT_ = nullptr;
 
 constexpr const tchar* validationLayers[] = {
 	"VK_LAYER_KHRONOS_validation",
@@ -38,6 +57,15 @@ static void SetupDebugUtilsFunctions(VkInstance instance)
 	vkCmdBeginDebugUtilsLabelEXT_ = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT");
 	vkCmdEndDebugUtilsLabelEXT_ = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT");
 	vkCmdInsertDebugUtilsLabelEXT_ = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT");
+}
+
+static void SetupDescriptorHeapFunctions(VkDevice device)
+{
+	vkWriteResourceDescriptorsEXT_ = reinterpret_cast<PFN_vkWriteResourceDescriptorsEXT>(vkGetDeviceProcAddr(device, "vkWriteResourceDescriptorsEXT"));
+	vkWriteSamplerDescriptorsEXT_ = reinterpret_cast<PFN_vkWriteSamplerDescriptorsEXT>(vkGetDeviceProcAddr(device, "vkWriteSamplerDescriptorsEXT"));
+	vkCmdBindResourceHeapEXT_ = reinterpret_cast<PFN_vkCmdBindResourceHeapEXT>(vkGetDeviceProcAddr(device, "vkCmdBindResourceHeapEXT"));
+	vkCmdBindSamplerHeapEXT_ = reinterpret_cast<PFN_vkCmdBindSamplerHeapEXT>(vkGetDeviceProcAddr(device, "vkCmdBindSamplerHeapEXT"));
+	vkCmdPushDataEXT_ = reinterpret_cast<PFN_vkCmdPushDataEXT>(vkGetDeviceProcAddr(device, "vkCmdPushDataEXT"));
 }
 
 //static void SetupDynamicRenderingFunctions(VkDevice device)
@@ -316,9 +344,12 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 		VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME, // Eliminates the need for render pass begin/end
 		VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME,  // Required for graphics pipeline library ext
 		VK_EXT_GRAPHICS_PIPELINE_LIBRARY_EXTENSION_NAME, // Allows for segmented pipelines that can be reused
+		VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
 		VK_KHR_MAINTENANCE_4_EXTENSION_NAME,
 		VK_KHR_MAINTENANCE_5_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_HEAP_EXTENSION_NAME,
+		VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
+		VK_KHR_SHADER_UNTYPED_POINTERS_EXTENSION_NAME,
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME, // swapchain support
 		//VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME, // TODO - Reenable and adhere to this functionality
 		VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME, // Special semaphores that can replace VkSemaphore and VkFence
@@ -362,43 +393,64 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 		.computeFamilyIndex = computeFamilyIndex
 	};
 
-	// Initialize descriptor indexing features
-	VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES
+	// Initialize Vulkan 1.2 features
+	VkPhysicalDeviceVulkan12Features vulkan12Features =
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+		// Descriptor Indexing
+		.descriptorIndexing = VK_TRUE,
+		.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+		.descriptorBindingVariableDescriptorCount = VK_TRUE,
+		.runtimeDescriptorArray = VK_TRUE,
+		// Buffer Device Address
+		.bufferDeviceAddress = VK_TRUE,
 	};
 
-	// Initialize dynamic rendering extension
-	VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeature = {
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR,
-		.pNext = &descriptorIndexingFeatures,
-		.dynamicRendering = VK_TRUE
+	// Initialize Vulkan 1.3 features
+	VkPhysicalDeviceVulkan13Features vulkan13Features =
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+		.pNext = &vulkan12Features,
+		.synchronization2 = VK_TRUE,
+		.dynamicRendering = VK_TRUE,
+		.maintenance4 = VK_TRUE
 	};
 
-	// Initialize synchronization2 features
-	VkPhysicalDeviceSynchronization2Features synchronization2Feature = {
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES,
-		.pNext = &dynamicRenderingFeature,
-		.synchronization2 = VK_TRUE
+	// Initialize Maintenance 5
+	VkPhysicalDeviceMaintenance5Features maintenance5Features
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES,
+		.pNext = &vulkan13Features,
+		.maintenance5 = VK_TRUE
 	};
 
-	// Initialize buffer device address features
-	VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures = {
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-		.pNext = &synchronization2Feature,
-		.bufferDeviceAddress = VK_TRUE
+	// Initialize unified image layout features
+	VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR unifiedImageLayoutsFeatures =
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFIED_IMAGE_LAYOUTS_FEATURES_KHR,
+		.pNext = &maintenance5Features,
+		.unifiedImageLayouts = VK_TRUE
 	};
 
 	// Initialize descriptor heap features
 	VkPhysicalDeviceDescriptorHeapFeaturesEXT descriptorHeapFeatures = {
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_FEATURES_EXT,
-		.pNext = &bufferDeviceAddressFeatures,
+		.pNext = &unifiedImageLayoutsFeatures,
 		.descriptorHeap = VK_TRUE
+	};
+
+	// Initialize shader untyped pointers features
+	VkPhysicalDeviceShaderUntypedPointersFeaturesKHR shaderUntypedPointersFeature =
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR,
+		.pNext = &descriptorHeapFeatures,
+		.shaderUntypedPointers = VK_TRUE
 	};
 
 	// Initialize graphics pipeline library features
 	VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT graphicsPipelineLibraryFeatures = {
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_FEATURES_EXT,
-		.pNext = &descriptorHeapFeatures,
+		.pNext = &shaderUntypedPointersFeature,
 		.graphicsPipelineLibrary = VK_TRUE
 	};
 
@@ -406,13 +458,6 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	supportedGpuFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 	supportedGpuFeatures.pNext = &graphicsPipelineLibraryFeatures;
 	vkGetPhysicalDeviceFeatures2(internalDevice.physicalDevice, &supportedGpuFeatures);
-
-	Assert(descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing);
-	Assert(descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind);
-	Assert(descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing);
-	Assert(descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind);
-	Assert(descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing);
-	Assert(descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind);
 
 	//VkPhysicalDeviceFeatures enabledDeviceFeatures;
 	/*
@@ -451,24 +496,31 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 		.handle = handleValue
 	};
 	InitializeDeviceHandlePools(internalDevice);
+	SetupDescriptorHeapFunctions(internalDevice.device);
 
 	const VmaAllocatorCreateInfo allocatorCreateInfo{
 		//.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
+		.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT 
+				| VMA_ALLOCATOR_CREATE_KHR_MAINTENANCE4_BIT 
+				| VMA_ALLOCATOR_CREATE_KHR_MAINTENANCE5_BIT,
 		.physicalDevice = internalDevice.physicalDevice,
 		.device = internalDevice.device,
 		.instance = instance,
-		.vulkanApiVersion = VK_API_VERSION_1_3
+		.vulkanApiVersion = VK_API_VERSION_1_3,
 	};
 	result = vmaCreateAllocator(&allocatorCreateInfo, &internalDevice.allocator);
 	CHECK_VK(result);
 
-	VkPhysicalDeviceProperties gpuProperties;
-	vkGetPhysicalDeviceProperties(internalDevice.physicalDevice, &gpuProperties);
-	//const VkPhysicalDeviceLimits limits = gpuProperties.limits;
+	internalDevice.descriptorHeapProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_PROPERTIES_EXT;
+	VkPhysicalDeviceProperties2 deviceProperties2
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+		.pNext = &internalDevice.descriptorHeapProperties
+	};
+	vkGetPhysicalDeviceProperties2(internalDevice.physicalDevice, &deviceProperties2);
+	internalDevice.physicalDeviceLimits = deviceProperties2.properties.limits;
 
 	deviceInternals.Add(internalDevice);
-	// Sets up extention functionality
-	//SetupDynamicRenderingFunctions(internalDevice.device);
 
 	return NewDeviceHandle;
 }
@@ -586,6 +638,23 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 		deviceInternal.samplerResourceHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.samplerResources.Resize(initialPoolSize);
+	}
+
+	// Descriptor Heap
+	{
+		HandlePool& samplerHeapHandlePool = deviceInternal.samplerHeapHandlePool;
+		Assert(samplerHeapHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.samplerHeapHandlePool = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.samplerHeapResources.Resize(initialPoolSize);
+	}
+
+	{
+		HandlePool& resourceHeapHandlePool = deviceInternal.resourceHeapHandlePool;
+		Assert(resourceHeapHandlePool.freeHandleIndices.IsEmpty());
+		deviceInternal.resourceHeapHandlePool = CreateHandlePool(initialPoolSize);
+
+		deviceInternal.resourceHeapResources.Resize(initialPoolSize);
 	}
 
 	// Descriptor Set Internals

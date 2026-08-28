@@ -31,7 +31,7 @@ struct Backbuffer
 	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
 	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
 	VkExtent2D extents = {};
-	AptnImageFormat::Type format = AptnImageFormat::Invalid;
+	AptnImageFormat format = AptnImageFormat::Invalid;
 	VkSemaphore acquireImageSemaphores[numSwapchainImages];
 	VkSemaphore submitRenderSemaphores[numSwapchainImages];
 	VkSemaphore isImageAvailableSem = VK_NULL_HANDLE;
@@ -67,6 +67,7 @@ struct BufferInternal
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
 	VmaAllocation allocation = VK_NULL_HANDLE;
+	VkDeviceAddress bufferDeviceAddress = 0;
 	bool isMappable = false;
 };
 
@@ -77,8 +78,8 @@ struct ImageInternal
 
 	// Image formatting and access
 	// Access per mip level of the image. Defaults all to Undefined until access occurs
-	DynamicArray<AptnImageAccess::Type> access;
-	AptnImageFormat::Type format;
+	DynamicArray<AptnImageAccess > access;
+	AptnImageFormat format;
 };
 
 struct ImageViewInternal
@@ -125,6 +126,39 @@ struct PipelineInternal
 	u32 fragmentOutputIndex = 0;
 };
 
+struct SamplerHeapInternal
+{
+	VkBuffer heapBuffer = VK_NULL_HANDLE;
+	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
+	VkDeviceSize heapSize = 0;
+	void* pHeapStart = nullptr;
+	void* pHeapEnd = nullptr;
+	void* pSamplerCurrent = nullptr;
+	VkDeviceAddress heapDeviceAddress = 0;
+	VkDeviceSize samplerDescriptorSize = 0;
+	VkDeviceSize heapReservedRange = 0;
+	DynamicArray<AptnSamplerDescriptor> pendingSamplerDescriptors;
+};
+
+struct ResourceHeapInternal
+{
+	VkBuffer heapBuffer = VK_NULL_HANDLE;
+	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
+	VkDeviceSize heapSize = 0;
+	void* heapData = nullptr;
+	void* pHeapEnd = nullptr;
+	void* pBDACurrent = nullptr;
+	void* pImgCurrent = nullptr;
+	VkDeviceAddress heapDeviceAddress = 0;
+	VkDeviceSize bufferDescriptorSize = 0;
+	VkDeviceSize bufferDescriptorBlockSize = 0;
+	VkDeviceSize imageDescriptorSize = 0;
+	VkDeviceSize imageDescriptorBlockSize = 0;
+	VkDeviceSize heapReservedRange = 0;
+	DynamicArray<AptnImageDescriptor> pendingImageDescriptors;
+	DynamicArray<AptnBufferAddressDescriptor> pendingBufferDescriptors;
+};
+
 struct DescriptorSetLayoutInternal
 {
 	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
@@ -143,6 +177,8 @@ struct DescriptorSetInternal
 struct DeviceInternal
 {
 	Backbuffer backbuffer{};
+	VkPhysicalDeviceLimits physicalDeviceLimits;
+	VkPhysicalDeviceDescriptorHeapPropertiesEXT descriptorHeapProperties;
 	VkDevice device = VK_NULL_HANDLE;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VmaAllocator allocator = VK_NULL_HANDLE;
@@ -159,6 +195,8 @@ struct DeviceInternal
 	HandlePool fragmentShaderResourceHandlePool;
 	HandlePool fragmentOutputResourceHandlePool;
 	HandlePool pipelineResourceHandlePool;
+	HandlePool samplerHeapHandlePool;
+	HandlePool resourceHeapHandlePool;
 	HandlePool descriptorSetLayoutHandlePools;
 	HandlePool descriptorPoolHandlePools;
 	HandlePool descriptorSetHandlePools;
@@ -175,6 +213,8 @@ struct DeviceInternal
 	DynamicArray<FragmentShaderPipelineStateInternal> fragmentShaderResources;
 	DynamicArray<FragmentOutputPipelineStateInternal> fragmentOutputResources;
 	DynamicArray<PipelineInternal> pipelineResources;
+	DynamicArray<SamplerHeapInternal> samplerHeapResources;
+	DynamicArray<ResourceHeapInternal> resourceHeapResources;
 	DynamicArray<DescriptorSetLayoutInternal> descriptorSetLayoutResources;
 	DynamicArray<DescriptorPoolInternal> descriptorPoolResources;
 	DynamicArray<DescriptorSetInternal> descriptorSetResources;
@@ -199,6 +239,9 @@ REGISTER_HANDLE_TYPE(PrerasterShadersPipelineState, prerasterShadersResources);
 REGISTER_HANDLE_TYPE(FragmentShaderPipelineState, fragmentShaderResources);
 REGISTER_HANDLE_TYPE(FragmentOutputPipelineState, fragmentOutputResources);
 REGISTER_HANDLE_TYPE(Pipeline, pipelineResources);
+// DescriptorHeap
+REGISTER_HANDLE_TYPE(SamplerHeap, samplerHeapResources);
+REGISTER_HANDLE_TYPE(ResourceHeap, resourceHeapResources);
 // DescriptorSet Handles
 REGISTER_HANDLE_TYPE(DescriptorSetLayout, descriptorSetLayoutResources);
 REGISTER_HANDLE_TYPE(DescriptorPool, descriptorPoolResources);

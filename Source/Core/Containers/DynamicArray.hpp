@@ -52,7 +52,7 @@ public:
 	// Creates an empty element in the array. Element isn't initialized in any way
 	u32 AddEmpty(u32 emptyElements = 1);
 	u32 AddDefault(u32 emptyElements = 1);
-	u32 AddRange(const pointerType range, u32 rangeSize);
+	u32 AddRange(const Type* range, u32 rangeSize);
 
 	template<class... Args>
 	u32 Emplace(Args&&... args);
@@ -131,13 +131,13 @@ public:
 	inline Type& operator[](u32 index)
 	{
 		Assert(index < arraySize);
-		return GetData()[index];
+		return data[index];
 	}
 
 	inline const Type& operator[](u32 index) const
 	{
 		Assert(index < arraySize);
-		return GetData()[index];
+		return data[index];
 	}
 
 	inline valueType& First() const
@@ -501,7 +501,7 @@ inline u32 DynamicArray<Type>::AddDefault(u32 emptyElements)
 }
 
 template<class Type>
-inline u32 DynamicArray<Type>::AddRange(const pointerType range, u32 rangeSize)
+inline u32 DynamicArray<Type>::AddRange(const Type* range, u32 rangeSize)
 {
 	Assert(range);
 	Assert(rangeSize > 0);

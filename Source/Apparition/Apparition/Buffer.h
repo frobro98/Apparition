@@ -7,8 +7,6 @@
 struct VkBuffer_T;
 typedef struct VkBuffer_T* VkBuffer;
 
-HANDLE_TYPE(AptnBuffer)
-
 // Currently supports simple memory handling internally.
 // 
 // Unless there's a greater need for control over specifics when allocating, 
@@ -24,6 +22,10 @@ struct AptnBufferCreationParams
     bool supportsMappedMemory = false;
 };
 
+HANDLE_TYPE(AptnBuffer)
+// TODO - Think about if this needs to be a handle or just a value
+using AptnBufferAddress = u64;
+
 namespace Apparition
 {
 NODISCARD APPARITION_API AptnBuffer CreateBuffer(AptnDevice device, const AptnBufferCreationParams& params);
@@ -32,4 +34,7 @@ APPARITION_API void DestroyBuffer(AptnBuffer buffer);
 // Buffer Map/Unmap
 NODISCARD APPARITION_API void* MapBuffer(AptnBuffer buffer);
 APPARITION_API void UnmapBuffer(AptnBuffer buffer);
+
+// Buffer Device Address Access
+NODISCARD APPARITION_API AptnBufferAddress GetBufferDeviceAddress(AptnBuffer /*buffer*/);
 }

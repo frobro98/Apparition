@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorIndexing\DescriptorIndexing.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
@@ -177,6 +178,10 @@
   <ItemGroup>
     <None Include="..\..\Assets\Shaders\Base\base.frag" />
     <None Include="..\..\Assets\Shaders\Base\base.vert" />
+    <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.frag" />
+    <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.vert" />
+    <None Include="..\..\Assets\Shaders\DescriptorIndexing\descriptorindexing.frag" />
+    <None Include="..\..\Assets\Shaders\DescriptorIndexing\descriptorindexing.vert" />
     <None Include="..\..\Assets\Shaders\DescriptorSets\cube.frag" />
     <None Include="..\..\Assets\Shaders\DescriptorSets\cube.vert" />
   </ItemGroup>

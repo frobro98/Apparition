@@ -11,39 +11,48 @@
 
 #define CHECK_VK(expression) Assert(expression == VK_SUCCESS)
 
-static PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_ = nullptr;
+extern PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_;
 #define vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT_
 
-static PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_ = nullptr;
+extern PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_;
 #define vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT_
 
-static PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_ = nullptr;
+extern PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_;
 #define vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_
 
-static PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_ = nullptr;
+extern PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_;
 #define vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT_
 
-static PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_ = nullptr;
+extern PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_;
 #define vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT_
 
-static PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_ = nullptr;
+extern PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_;
 #define vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
 
-static PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT_ = nullptr;
+extern PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT_;
 #define vkQueueInsertDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT_
 
-static PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_ = nullptr;
+extern PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_;
 #define vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT_
 
-static PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_ = nullptr;
+extern PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_;
 #define vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT_
 
-static PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_ = nullptr;
+extern PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_;
 #define vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT_
 
-// Required due to not using 1.3 where VK_KHR_dynamic_rendering is part of core
-//static PFN_vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_ = nullptr;
-//#define vkCmdBeginRenderingKHR vkCmdBeginRenderingKHR_
-//
-//static PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR_ = nullptr;
-//#define vkCmdEndRenderingKHR vkCmdEndRenderingKHR_
+// Required for VK_EXT_descriptor_heap
+extern PFN_vkWriteResourceDescriptorsEXT vkWriteResourceDescriptorsEXT_;
+#define vkWriteResourceDescriptorsEXT vkWriteResourceDescriptorsEXT_
+
+extern PFN_vkCmdBindResourceHeapEXT vkCmdBindResourceHeapEXT_;
+#define vkCmdBindResourceHeapEXT vkCmdBindResourceHeapEXT_
+
+extern PFN_vkCmdBindSamplerHeapEXT vkCmdBindSamplerHeapEXT_;
+#define vkCmdBindSamplerHeapEXT vkCmdBindSamplerHeapEXT_
+
+extern PFN_vkWriteSamplerDescriptorsEXT vkWriteSamplerDescriptorsEXT_;
+#define vkWriteSamplerDescriptorsEXT vkWriteSamplerDescriptorsEXT_
+
+extern PFN_vkCmdPushDataEXT vkCmdPushDataEXT_;
+#define vkCmdPushDataEXT vkCmdPushDataEXT_

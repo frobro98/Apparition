@@ -111,7 +111,6 @@ void EndCommandBuffer(AptnCommandBuffer commandBuffer)
 	if (IsValid(renderSetupParams.stencilAttachment.imageView))
 	{
 		const AptnRenderAttachment& renderStencilAttachment = renderSetupParams.stencilAttachment;
-		// TODO: There currently is not a dedicated 
 		stencilAttachment.clearValue.depthStencil = {
 			renderStencilAttachment.clearValue.depthStencil.depth,
 			renderStencilAttachment.clearValue.depthStencil.stencil
@@ -233,12 +232,67 @@ void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescripto
 	vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 }
 
-void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount)
+void BindSamplerHeap(AptnCommandBuffer commandBuffer, AptnSamplerHeap samplerHeap)
 {
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	vkCmdDrawIndexed(cbInternal.commandBuffer, indexCount, 1, 0, 0, 0);
+	const SamplerHeapInternal samplerHeapInternal = GetSamplerHeapInternal(samplerHeap);
+
+	VkBindHeapInfoEXT bindSamplerHeapInfo
+	{
+		.sType = VK_STRUCTURE_TYPE_BIND_HEAP_INFO_EXT,
+		.heapRange
+		{
+			.address = samplerHeapInternal.heapDeviceAddress,
+			.size = samplerHeapInternal.heapSize
+		},
+		.reservedRangeOffset = samplerHeapInternal.heapSize - samplerHeapInternal.heapReservedRange,
+		.reservedRangeSize = samplerHeapInternal.heapReservedRange
+	};
+	vkCmdBindSamplerHeapEXT(cbInternal.commandBuffer, &bindSamplerHeapInfo);
+}
+
+void BindResourceHeap(AptnCommandBuffer commandBuffer, AptnResourceHeap resourceHeap)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	const ResourceHeapInternal resourceHeapInternal = GetResourceHeapInternal(resourceHeap);
+
+	VkBindHeapInfoEXT bindSamplerHeapInfo
+	{
+		.sType = VK_STRUCTURE_TYPE_BIND_HEAP_INFO_EXT,
+		.heapRange
+		{
+			.address = resourceHeapInternal.heapDeviceAddress,
+			.size = resourceHeapInternal.heapSize
+		},
+		.reservedRangeOffset = resourceHeapInternal.heapSize - resourceHeapInternal.heapReservedRange,
+		.reservedRangeSize = resourceHeapInternal.heapReservedRange
+	};
+	vkCmdBindResourceHeapEXT(cbInternal.commandBuffer, &bindSamplerHeapInfo);
+}
+
+void PushData(AptnCommandBuffer commandBuffer, const AptnPushDataDesc& pushData)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	VkPushDataInfoEXT pushDataInfo
+	{
+		.sType = VK_STRUCTURE_TYPE_PUSH_DATA_INFO_EXT,
+		.data = {.address = pushData.dataAddress, .size = pushData.dataSize }
+	};
+	vkCmdPushDataEXT(cbInternal.commandBuffer, &pushDataInfo);
+}
+
+void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount, u32 firstIndex, u32 instanceCount, u32 firstInstance)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+
+	vkCmdDrawIndexed(cbInternal.commandBuffer, indexCount, instanceCount, firstIndex, 0, firstInstance);
 }
 
 void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyDesc)
@@ -270,7 +324,7 @@ void CopyBufferToImage(AptnCommandBuffer commandBuffer, const AptnBufferToImageC
 		.bufferOffset = copyDesc.outline.bufferOffset,
 		.imageSubresource
 		{
-			.aspectMask = ApparitionImageViewAspectToVkAspectFlags(outline.aspect),
+			.aspectMask = ApparitionImageAspectToVk(outline.aspect),
 			.mipLevel = outline.mipLevel,
 			.baseArrayLayer = 0,
 			.layerCount = 1
@@ -303,7 +357,7 @@ void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferR
 			.bufferOffset = outline.bufferOffset,
 			.imageSubresource
 			{
-				.aspectMask = ApparitionImageViewAspectToVkAspectFlags(outline.aspect),
+				.aspectMask = ApparitionImageAspectToVk(outline.aspect),
 				.mipLevel = outline.mipLevel,
 				.baseArrayLayer = 0,
 				.layerCount = 1
@@ -338,24 +392,22 @@ void ImageMemoryBarrier(AptnCommandBuffer commandBuffer, const AptnImageMemoryBa
 
 	ImageInternal& imgInternal = GetImageInternal(barrierDesc.image);
 
-	// TODO: Will need to make this part of the barrier desc. Can be a default most of the time
 	VkImageSubresourceRange subresourceRange{
-		.aspectMask = ApparitionImageViewAspectToVkAspectFlags(barrierDesc.aspect),
+		.aspectMask = ApparitionImageAspectToVk(barrierDesc.aspect),
 		.baseMipLevel = barrierDesc.baseMipLevel,
 		.levelCount = barrierDesc.mipLevelCount,
 		.layerCount = 1
 	};
 
 	Assert(imgInternal.access.IsIndexValid(barrierDesc.baseMipLevel));
-	AptnImageAccess::Type imgAccess = imgInternal.access[barrierDesc.baseMipLevel];
+	AptnImageAccess imgAccess = imgInternal.access[barrierDesc.baseMipLevel];
 
-	// TODO: There is no validation between the access and the format
 	VkImageMemoryBarrier2 imageBarrier;
 	Vk::ZeroInfoStruct(imageBarrier, VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2);
 	imageBarrier.oldLayout = ApparitionImageAccessToVkLayout(imgAccess);
 	imageBarrier.newLayout = ApparitionImageAccessToVkLayout(barrierDesc.access);
-	imageBarrier.srcAccessMask = ApparitionImageAccessToAccessMask(imgAccess);
-	imageBarrier.dstAccessMask = ApparitionImageAccessToAccessMask(barrierDesc.access);
+	imageBarrier.srcAccessMask = ApparitionImageAccessToVkAccess(imgAccess);
+	imageBarrier.dstAccessMask = ApparitionImageAccessToVkAccess(barrierDesc.access);
 	// TODO - Expose stage mask, since this kind of assumption is a little much for this kind of API
 	imageBarrier.srcStageMask = ApparitionImageAccessToPipelineStage(imgAccess);
 	imageBarrier.dstStageMask = ApparitionImageAccessToPipelineStage(barrierDesc.access);

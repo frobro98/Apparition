@@ -18,6 +18,7 @@ struct AptnShaderData
 struct AptnPipelineDescription
 {
     DynamicArray<AptnDescriptorSetLayout> descriptorSets;
+    bool useDescriptorHeaps = false;
 };
 
 HANDLE_TYPE(AptnVertexInputPipelineState);
@@ -30,7 +31,7 @@ struct AptnVertexAttributeDescription
 {
     u32 location = 0;
     u32 binding = 0;
-    AptnVertexInputFormat::Type format;
+    AptnVertexInputFormat format;
     u32 offset = 0;
 };
 
@@ -38,13 +39,15 @@ struct AptnVertexBindingDescription
 {
     u32 binding = 0;
     u32 stride = 0;
-    AptnVertexInputRate::Type inputRate;
+    AptnVertexInputRate inputRate;
 };
 
 struct AptnVertexInputPipelineStateCreationParams
 {
+    AptnPipelineDescription pipelineDesc;
+
     // Input Assembly
-    AptnPrimitiveTopology::Type primitiveTopology;
+    AptnPrimitiveTopology primitiveTopology;
 
     // Vertex attributes
     DynamicArray<AptnVertexAttributeDescription> attributes;
@@ -59,9 +62,9 @@ struct AptnPreRasterShadersPipelineStateCreationParams
     AptnPipelineDescription pipelineDesc;
 
     // Rasterization State
-    AptnFillMode::Type fillMode = AptnFillMode::Full;
-    AptnCullMode::Type cullingMode = AptnCullMode::Back;
-    AptnFrontFace::Type frontFace = AptnFrontFace::CounterClockwise;
+    AptnFillMode fillMode = AptnFillMode::Full;
+    AptnCullMode cullingMode = AptnCullMode::Back;
+    AptnFrontFace frontFace = AptnFrontFace::CounterClockwise;
     f32 lineWidth = 1.f;
 
     // Vertex shader
@@ -79,7 +82,7 @@ struct AptnFragmentShaderPipelineStateCreationParams
     // Depth stencil state
     bool depthTestEnabled = false;
     bool depthWriteEnabled = false;
-    AptnCompareOperation::Type depthCompareOp = AptnCompareOperation::LessThanOrEqual;
+    AptnCompareOperation depthCompareOp = AptnCompareOperation::LessThanOrEqual;
     // TODO - support stencil
     
     // Multisample state
@@ -89,17 +92,19 @@ struct AptnFragmentShaderPipelineStateCreationParams
 
 struct AptnColorBlendAttachment
 {
-    AptnBlendFactor::Type srcColorFactor = AptnBlendFactor::One;
-    AptnBlendFactor::Type dstColorFactor = AptnBlendFactor::Zero;
-    AptnBlendOperation::Type colorBlendOperation = AptnBlendOperation::Add;
-    AptnBlendFactor::Type srcAlphaFactor = AptnBlendFactor::One;
-    AptnBlendFactor::Type dstAlphaFactor = AptnBlendFactor::Zero;
-    AptnBlendOperation::Type alphaBlendOperation = AptnBlendOperation::Add;
-    AptnColorComponentFlags colorMask = AptnColorComponentFlagBits::RGBA;
+    AptnBlendFactor srcColorFactor = AptnBlendFactor::One;
+    AptnBlendFactor dstColorFactor = AptnBlendFactor::Zero;
+    AptnBlendOperation colorBlendOperation = AptnBlendOperation::Add;
+    AptnBlendFactor srcAlphaFactor = AptnBlendFactor::One;
+    AptnBlendFactor dstAlphaFactor = AptnBlendFactor::Zero;
+    AptnBlendOperation alphaBlendOperation = AptnBlendOperation::Add;
+    AptnColorComponentFlags colorMask = AptnColorComponentFlags::RGBA;
 };
 
 struct AptnFragmentOutputPipelineStateCreationParams
 {
+    AptnPipelineDescription pipelineDesc;
+
     // Blend states
     DynamicArray<AptnColorBlendAttachment> attachments;
 
@@ -107,9 +112,9 @@ struct AptnFragmentOutputPipelineStateCreationParams
     //MultisampleState multisampleState;
 
     // Output
-    DynamicArray<AptnImageFormat::Type> colorAttachmentFormats;
-    AptnImageFormat::Type depthAttachmentFormat = AptnImageFormat::Invalid;
-    AptnImageFormat::Type stencilAttachmentFormat = AptnImageFormat::Invalid;
+    DynamicArray<AptnImageFormat> colorAttachmentFormats;
+    AptnImageFormat depthAttachmentFormat = AptnImageFormat::Invalid;
+    AptnImageFormat stencilAttachmentFormat = AptnImageFormat::Invalid;
 };
 
 

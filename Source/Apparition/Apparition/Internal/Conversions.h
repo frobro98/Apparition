@@ -7,23 +7,23 @@
 constexpr VkImageUsageFlags ApparitionImageUsageToVk(AptnImageUsageFlags imageUsageFlags)
 {
 	VkImageUsageFlags vkUsageFlags = 0;
-	if (imageUsageFlags & AptnImageUsageFlagBits::TransferSrc)
+	if (HasAnyEnumFlags(imageUsageFlags, AptnImageUsageFlags::TransferSrc))
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	}
-	if (imageUsageFlags & AptnImageUsageFlagBits::TransferDst)
+	if (HasAnyEnumFlags(imageUsageFlags, AptnImageUsageFlags::TransferDst))
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}
-	if (imageUsageFlags & AptnImageUsageFlagBits::Sampled)
+	if (HasAnyEnumFlags(imageUsageFlags, AptnImageUsageFlags::Sampled))
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_SAMPLED_BIT;
 	}
-	if (imageUsageFlags & AptnImageUsageFlagBits::ColorAttachment)
+	if (HasAnyEnumFlags(imageUsageFlags, AptnImageUsageFlags::ColorAttachment))
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
-	if (imageUsageFlags & AptnImageUsageFlagBits::DepthStencilAttachment)
+	if (HasAnyEnumFlags(imageUsageFlags, AptnImageUsageFlags::DepthStencilAttachment))
 	{
 		vkUsageFlags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
@@ -31,7 +31,42 @@ constexpr VkImageUsageFlags ApparitionImageUsageToVk(AptnImageUsageFlags imageUs
 	return vkUsageFlags;
 }
 
-constexpr VkFormat ApparitionInputFormatToVk(AptnVertexInputFormat::Type type)
+constexpr VkBufferUsageFlags ApparitionToVkBufferUsage(AptnBufferUsageFlags usageFlags)
+{
+	VkBufferUsageFlags vkUsageFlags = 0;
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::TransferSrc))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::TransferDst))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::UniformBuffer))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::StorageBuffer))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::VertexBuffer))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::IndexBuffer))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::ShaderDeviceAddress))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+	}
+
+	return vkUsageFlags;
+}
+
+constexpr VkFormat ApparitionInputFormatToVk(AptnVertexInputFormat type)
 {
 	switch (type)
 	{
@@ -51,7 +86,7 @@ constexpr VkFormat ApparitionInputFormatToVk(AptnVertexInputFormat::Type type)
 	}
 }
 
-constexpr VkVertexInputRate ApparitionInputRateToVk(AptnVertexInputRate::Type rate)
+constexpr VkVertexInputRate ApparitionInputRateToVk(AptnVertexInputRate rate)
 {
 	switch (rate)
 	{
@@ -65,7 +100,7 @@ constexpr VkVertexInputRate ApparitionInputRateToVk(AptnVertexInputRate::Type ra
 	}
 }
 
-constexpr VkPrimitiveTopology ApparitionTopologyToVk(AptnPrimitiveTopology::Type topology)
+constexpr VkPrimitiveTopology ApparitionTopologyToVk(AptnPrimitiveTopology topology)
 {
 	switch (topology)
 	{
@@ -87,7 +122,7 @@ constexpr VkPrimitiveTopology ApparitionTopologyToVk(AptnPrimitiveTopology::Type
 	}
 }
 
-constexpr VkPolygonMode ApparitionFillToVk(AptnFillMode::Type mode)
+constexpr VkPolygonMode ApparitionFillToVk(AptnFillMode mode)
 {
 	switch (mode)
 	{
@@ -103,7 +138,7 @@ constexpr VkPolygonMode ApparitionFillToVk(AptnFillMode::Type mode)
 	}
 }
 
-constexpr VkCullModeFlags ApparitionCullToVk(AptnCullMode::Type mode)
+constexpr VkCullModeFlags ApparitionCullToVk(AptnCullMode mode)
 {
 	switch (mode)
 	{
@@ -121,7 +156,7 @@ constexpr VkCullModeFlags ApparitionCullToVk(AptnCullMode::Type mode)
 	}
 }
 
-constexpr VkFrontFace ApparitionFrontFaceToVk(AptnFrontFace::Type frontFace)
+constexpr VkFrontFace ApparitionFrontFaceToVk(AptnFrontFace frontFace)
 {
 	switch (frontFace)
 	{
@@ -135,7 +170,7 @@ constexpr VkFrontFace ApparitionFrontFaceToVk(AptnFrontFace::Type frontFace)
 	}
 }
 
-constexpr VkCompareOp ApparitionCompareOpToVk(AptnCompareOperation::Type op)
+constexpr VkCompareOp ApparitionCompareOpToVk(AptnCompareOperation op)
 {
 	switch (op)
 	{
@@ -161,7 +196,7 @@ constexpr VkCompareOp ApparitionCompareOpToVk(AptnCompareOperation::Type op)
 	}
 }
 
-constexpr VkAttachmentLoadOp ApparitionLoadToVkLoad(AptnLoadOperation::Type loadOp)
+constexpr VkAttachmentLoadOp ApparitionLoadToVkLoad(AptnLoadOperation loadOp)
 {
 	switch (loadOp)
 	{
@@ -177,7 +212,7 @@ constexpr VkAttachmentLoadOp ApparitionLoadToVkLoad(AptnLoadOperation::Type load
 	}
 }
 
-constexpr VkAttachmentStoreOp ApparitionStoreToVkStore(AptnStoreOperation::Type storeOp)
+constexpr VkAttachmentStoreOp ApparitionStoreToVkStore(AptnStoreOperation storeOp)
 {
 	switch (storeOp)
 	{
@@ -194,19 +229,19 @@ constexpr VkAttachmentStoreOp ApparitionStoreToVkStore(AptnStoreOperation::Type 
 constexpr VkColorComponentFlags ApparitionColorWriteMaskToVk(AptnColorComponentFlags colorMaskFlags)
 {
 	VkColorComponentFlags vkColorMask = 0;
-	if (colorMaskFlags & AptnColorComponentFlagBits::Red)
+	if (HasAnyEnumFlags(colorMaskFlags, AptnColorComponentFlags::Red))
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_R_BIT;
 	}
-	if (colorMaskFlags & AptnColorComponentFlagBits::Green)
+	if (HasAnyEnumFlags(colorMaskFlags, AptnColorComponentFlags::Green))
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_G_BIT;
 	}
-	if (colorMaskFlags & AptnColorComponentFlagBits::Blue)
+	if (HasAnyEnumFlags(colorMaskFlags, AptnColorComponentFlags::Blue))
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_B_BIT;
 	}
-	if (colorMaskFlags & AptnColorComponentFlagBits::Alpha)
+	if (HasAnyEnumFlags(colorMaskFlags, AptnColorComponentFlags::Alpha))
 	{
 		vkColorMask |= VK_COLOR_COMPONENT_A_BIT;
 	}
@@ -214,7 +249,7 @@ constexpr VkColorComponentFlags ApparitionColorWriteMaskToVk(AptnColorComponentF
 	return vkColorMask;
 }
 
-constexpr VkBlendOp ApparitionBlendOpToVk(AptnBlendOperation::Type op)
+constexpr VkBlendOp ApparitionBlendOpToVk(AptnBlendOperation op)
 {
 	switch (op)
 	{
@@ -229,7 +264,7 @@ constexpr VkBlendOp ApparitionBlendOpToVk(AptnBlendOperation::Type op)
 	}
 }
 
-constexpr VkBlendFactor ApparitionBlendFactorToVk(AptnBlendFactor::Type factor)
+constexpr VkBlendFactor ApparitionBlendFactorToVk(AptnBlendFactor factor)
 {
 	switch (factor)
 	{
@@ -266,7 +301,7 @@ constexpr VkBlendFactor ApparitionBlendFactorToVk(AptnBlendFactor::Type factor)
 	}
 }
 
-constexpr VkDescriptorType ApparitionDescriptorTypeToVk(AptnDescriptor::Type descriptorType)
+constexpr VkDescriptorType ApparitionDescriptorTypeToVk(AptnDescriptor descriptorType)
 {
 	switch (descriptorType)
 	{
@@ -292,8 +327,7 @@ constexpr VkDescriptorType ApparitionDescriptorTypeToVk(AptnDescriptor::Type des
 		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
 	case AptnDescriptor::InputAttachment:
 		return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-	case AptnDescriptor::Count:
-	case AptnDescriptor::Max:
+	case AptnDescriptor::None:
 	default:
 		Assert(false);
 	}
@@ -317,7 +351,7 @@ constexpr VkShaderStageFlags ApparitionShaderFlagsToVk(AptnShaderStageFlags shad
 	return flags;
 }
 
-constexpr VkFilter ApparitionFilterToVk(AptnSamplerFilter::Type filter)
+constexpr VkFilter ApparitionFilterToVk(AptnSamplerFilter filter)
 {
 	switch (filter)
 	{
@@ -332,7 +366,7 @@ constexpr VkFilter ApparitionFilterToVk(AptnSamplerFilter::Type filter)
 	return VK_FILTER_MAX_ENUM;
 }
 
-constexpr VkSamplerAddressMode ApparitionAddressModeToVk(AptnSamplerAddressMode::Type addrMode)
+constexpr VkSamplerAddressMode ApparitionAddressModeToVk(AptnSamplerAddressMode addrMode)
 {
 	switch (addrMode)
 	{
@@ -349,7 +383,7 @@ constexpr VkSamplerAddressMode ApparitionAddressModeToVk(AptnSamplerAddressMode:
 	return VK_SAMPLER_ADDRESS_MODE_MAX_ENUM;
 }
 
-constexpr VkSamplerMipmapMode ApparitionMipModeToVk(AptnSamplerMipmapMode::Type mipMode)
+constexpr VkSamplerMipmapMode ApparitionMipModeToVk(AptnSamplerMipmapMode mipMode)
 {
 	switch (mipMode)
 	{

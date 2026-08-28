@@ -61,7 +61,7 @@ namespace vks
 	* @param (Optional) imageLayout Usage layout for the texture (defaults VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	*
 	*/
-	void Texture2D::loadFromFile(std::string filename, AptnImageFormat::Type format, AptnDevice device, AptnQueue copyQueue, AptnImageUsageFlags imageUsageFlags, AptnImageAccess::Type imageAccess)
+	void Texture2D::loadFromFile(std::string filename, AptnImageFormat format, AptnDevice device, AptnQueue copyQueue, AptnImageUsageFlags imageUsageFlags, AptnImageAccess imageAccess)
 	{
 		ktxTexture* ktxTexture;
 		ktxResult result = loadKTXFile(filename, &ktxTexture);
@@ -90,7 +90,7 @@ namespace vks
 		AptnBufferCreationParams bufferParams
 		{
 			.size = ktxTextureSize,
-			.usage = AptnBufferUsageFlagBits::TransferSrc,
+			.usage = AptnBufferUsageFlags::TransferSrc,
 			.supportsMappedMemory = true
 		};
 		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
@@ -112,7 +112,7 @@ namespace vks
 			AptnBufferToImageCopyOutline bufferCopyRegion
 			{
 				.bufferOffset = offset,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevel = i,
 				.imgWidth = std::max(1u, ktxTexture->baseWidth >> i),
 				.imgHeight = std::max(1u, ktxTexture->baseHeight >> i)
@@ -126,7 +126,7 @@ namespace vks
 			.height = height,
 			.format = format,
 			.mipLevels = mipLevels,
-			.usageFlags = imageUsageFlags | AptnImageUsageFlagBits::TransferDst
+			.usageFlags = imageUsageFlags | AptnImageUsageFlags::TransferDst
 		};
 		image = Apparition::CreateImage(device, imageParams);
 
@@ -137,7 +137,7 @@ namespace vks
 			{
 				.image = image,
 				.access = AptnImageAccess::TransferDst,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -159,7 +159,7 @@ namespace vks
 			{
 				.image = image,
 				.access = imageAccess,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -211,7 +211,7 @@ namespace vks
 		AptnImageViewCreationParams viewParams
 		{
 			.format = format,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.mipCount = mipLevels,
 			.baseMipLevel = 0
 		};
@@ -235,7 +235,7 @@ namespace vks
 	* @param (Optional) imageUsageFlags Usage flags for the texture's image (defaults to VK_IMAGE_USAGE_SAMPLED_BIT)
 	* @param (Optional) imageLayout Usage layout for the texture (defaults VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	*/
-	void Texture2D::fromBuffer(void* buffer, VkDeviceSize bufferSize, AptnImageFormat::Type format, uint32_t texWidth, uint32_t texHeight, AptnDevice device, AptnQueue copyQueue, AptnSamplerFilter::Type filter, AptnImageUsageFlags imageUsageFlags, AptnImageAccess::Type imageAccess)
+	void Texture2D::fromBuffer(void* buffer, VkDeviceSize bufferSize, AptnImageFormat format, uint32_t texWidth, uint32_t texHeight, AptnDevice device, AptnQueue copyQueue, AptnSamplerFilter filter, AptnImageUsageFlags imageUsageFlags, AptnImageAccess imageAccess)
 	{
 		Assert(buffer);
 
@@ -248,7 +248,7 @@ namespace vks
 		AptnBufferCreationParams bufferParams
 		{
 			.size = bufferSize,
-			.usage = AptnBufferUsageFlagBits::TransferSrc,
+			.usage = AptnBufferUsageFlags::TransferSrc,
 			.supportsMappedMemory = true
 		};
 		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
@@ -263,7 +263,7 @@ namespace vks
 			.outline
 			{
 				.bufferOffset = 0,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevel = 0,
 				.imgWidth = width,
 				.imgHeight = height
@@ -276,7 +276,7 @@ namespace vks
 			.height = height,
 			.format = format,
 			.mipLevels = mipLevels,
-			.usageFlags = imageUsageFlags | AptnImageUsageFlagBits::TransferDst
+			.usageFlags = imageUsageFlags | AptnImageUsageFlags::TransferDst
 		};
 		image = Apparition::CreateImage(device, imageParams);
 
@@ -299,7 +299,7 @@ namespace vks
 			{
 				.image = image,
 				.access = AptnImageAccess::TransferDst,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -316,7 +316,7 @@ namespace vks
 			{
 				.image = image,
 				.access = imageAccess,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevelCount = mipLevels
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, imageBarrier);
@@ -348,7 +348,7 @@ namespace vks
 		AptnImageViewCreationParams viewParams
 		{
 			.format = format,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.mipCount = 1,
 			.baseMipLevel = 0
 		};

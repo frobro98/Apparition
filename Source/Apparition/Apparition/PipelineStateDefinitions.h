@@ -5,9 +5,7 @@
 ////////////////////////
 // Vertex Input State
 ////////////////////////
-namespace AptnVertexInputFormat
-{
-enum Type
+enum class AptnVertexInputFormat
 {
 	F32_1,
 	F32_2,
@@ -17,26 +15,20 @@ enum Type
 
 	MAX = 0x7FFFFFFF
 };
-}// VertexInputFormat
 
-namespace AptnVertexInputRate
-{
-enum Type
+enum class AptnVertexInputRate
 {
 	Vertex,
 	Instance,
 
 	MAX = 0x7FFFFFFF
 };
-}// VertexInputRate
 
 ////////////////////////
 // Input Assembly State
 ////////////////////////
 
-namespace AptnPrimitiveTopology
-{
-enum Type
+enum class AptnPrimitiveTopology
 {
 	TriangleList,
 	TriangleStrip,
@@ -47,27 +39,21 @@ enum Type
 
 	MAX = 0x7FFFFFFF
 };
-}// PrimitiveTopology
 
 
 ////////////////////////
 // Rasterization State
 ////////////////////////
 
-namespace AptnFillMode
-{
-enum Type
+enum class AptnFillMode
 {
 	Full,
 	Wireframe,
 	Point,
 	MAX = 0x7FFFFFFF
 };
-}// FillMode
 
-namespace AptnCullMode
-{
-enum Type
+enum class AptnCullMode
 {
 	None,
 	Back,
@@ -76,27 +62,21 @@ enum Type
 
 	MAX = 0x7FFFFFFF
 };
-}// CullMode
 
 // TODO - rename this to something more straightforward
-namespace AptnFrontFace
-{
-enum Type
+enum class AptnFrontFace
 {
 	Clockwise,
 	CounterClockwise,
 
 	MAX = 0x7FFFFFFF
 };
-}
 
 ////////////////////////
 // Depth/Stencil State
 ////////////////////////
 
-namespace AptnCompareOperation
-{
-enum Type
+enum class AptnCompareOperation
 {
 	None,
 	Equal,
@@ -107,11 +87,8 @@ enum Type
 	GreaterThanOrEqual,
 	Always
 };
-}// CompareOperation
 
-namespace AptnStencilOperation
-{
-enum Type
+enum class AptnStencilOperation
 {
 	Keep,
 	Zero,
@@ -122,15 +99,12 @@ enum Type
 	IncrementAndWrap,
 	DecrementAndWrap
 };
-}// StencilOperation
 
 ////////////////////////
 // Multisampling State
 ////////////////////////
 
-namespace AptnSampleCountFlagBits
-{
-enum Type
+enum class AptnSampleCountFlags
 {
 	SampleCount_1 = 1 << 0,
 	SampleCount_2 = 1 << 1,
@@ -142,27 +116,21 @@ enum Type
 
 	MAX = 0x7FFFFFFF
 };
-} // SampleCountFlagBits
-using AptnSampleCountFlags = u32;
+ENUM_CLASS_OPERATORS(AptnSampleCountFlags);
 
 ////////////////////////
 // Color Blend State
 ////////////////////////
 
-namespace AptnBlendMode
-{
-enum Type
+enum class AptnBlendMode
 {
 	Opaque,
 	Transparent,
 
 	MAX = 0x7FFFFFFF
 };
-}// BlendMode
 
-namespace AptnColorComponentFlagBits
-{
-enum Type
+enum class AptnColorComponentFlags
 {
     Red = 1 << 0,
     Green = 1 << 1,
@@ -172,22 +140,16 @@ enum Type
     RGB = Red | Green | Blue,
     RGBA = Red | Green | Blue | Alpha
 };
-} // ColorComponentFlagBits
-using AptnColorComponentFlags = u32;
+ENUM_CLASS_OPERATORS(AptnColorComponentFlags);
 
-namespace AptnBlendOperation
-{
-enum Type
+enum class AptnBlendOperation
 {
     None,
     Add,
     Subtract
 };
-}// BlendOperation
 
-namespace AptnBlendFactor
-{
-enum Type
+enum class AptnBlendFactor
 {
 	Zero,
 	One,
@@ -204,4 +166,3 @@ enum Type
 	ConstAlpha,
 	OneMinusConstAlpha
 };
-}// BlendFactor

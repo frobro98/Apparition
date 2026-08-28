@@ -21,9 +21,9 @@ static VkFormat vkFormats[] = {
     VK_FORMAT_D32_SFLOAT,           // D_32f
     VK_FORMAT_UNDEFINED             // Invalid
 };
-static_assert(ArraySize(vkFormats) == AptnImageFormat::Count);
+static_assert(ArraySize(vkFormats) == (u32)AptnImageFormat::Count);
 
-static Map<VkFormat, AptnImageFormat::Type> VkFormatToImageFormat;
+static Map<VkFormat, AptnImageFormat> VkFormatToImageFormat;
 
 void InitializeFormatMapping()
 {
@@ -45,12 +45,13 @@ void InitializeFormatMapping()
     VkFormatToImageFormat.Add(VK_FORMAT_UNDEFINED, AptnImageFormat::Invalid);
 }
 
-AptnImageFormat::Type VkFormatToApparition(VkFormat format)
+AptnImageFormat VkFormatToApparition(VkFormat format)
 {
     return VkFormatToImageFormat[format];
 }
 
-VkFormat ApparitionFormatToVk(AptnImageFormat::Type imageFormat)
+VkFormat ApparitionFormatToVk(AptnImageFormat imageFormat)
 {
-    return vkFormats[imageFormat];
+    const u32 indexFormat = (u32)imageFormat;
+    return vkFormats[indexFormat];
 }

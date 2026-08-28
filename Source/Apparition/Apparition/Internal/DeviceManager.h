@@ -10,6 +10,7 @@
 #include "Apparition/Device.h"
 #include "Apparition/Pipeline.h"
 #include "Apparition/Queue.h"
+#include "Apparition/DescriptorHeap.h"
 
 #include "Apparition/Internal/VulkanDefinitions.h"
 
@@ -89,9 +90,6 @@ public:
 	AptnCommandBuffer AllocateCommandBuffer(AptnCommandPool commandPoolHandle, const AptnCommandBufferAllocParams& params);
 	void FreeCommandBuffer(AptnCommandBuffer commandBufferHandle);
 	void ResetCommandBuffer(AptnCommandBuffer commandBuffer);
-
-	// TEMP
-	VkCommandBuffer GetCommandBufferHandle(AptnCommandBuffer cbHandle);
 #pragma endregion
 
 #pragma region Resources
@@ -137,6 +135,23 @@ public:
 	void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets);
 
 	void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates);
+#pragma endregion
+
+#pragma region Descriptor Heap
+	AptnSamplerHeap CreateSamplerHeap(AptnDevice device, const AptnSamplerHeapCreationParams& params);
+	void DestroySamplerHeap(AptnSamplerHeap samplerHeap);
+
+	void WriteSamplerDescriptors(AptnSamplerHeap samplerHeap, u64 samplerDescriptorCount, const AptnSamplerDescriptor* samplerDescriptors);
+	void CommitSamplerDescriptors(AptnSamplerHeap samplerHeap);
+
+	AptnResourceHeap CreateResourceHeap(AptnDevice device, const AptnResourceHeapCreationParams& params);
+	void DestroyResourceHeap(AptnResourceHeap resourceHeap);
+
+	void WriteBufferAddressDescriptor(AptnResourceHeap resourceHeap, const AptnBufferAddressDescriptor& bufferAddrDescriptor);
+	void WriteImageResourceDescriptor(AptnResourceHeap resourceHeap, const AptnImageDescriptor& imageDescriptor);
+	void WriteBufferAddressDescriptors(AptnResourceHeap resourceHeap, const AptnBufferAddressDescriptor* bufferAddrDescriptors, u64 descriptorCount);
+	void WriteImageResourceDescriptor(AptnResourceHeap resourceHeap, const AptnImageDescriptor* imageDescriptors, u64 descriptorCount);
+	void CommitResourceDescriptors(AptnResourceHeap resourceHeap);
 #pragma endregion
 private:
 	UserValidationCallbackData userValidation;

@@ -7,27 +7,29 @@
 // Sets up quick mapping between the formats themselves instead of doing a switch
 void InitializeFormatMapping();
 
-AptnImageFormat::Type VkFormatToApparition(VkFormat format);
-VkFormat ApparitionFormatToVk(AptnImageFormat::Type imageFormat);
+AptnImageFormat VkFormatToApparition(VkFormat format);
+VkFormat ApparitionFormatToVk(AptnImageFormat imageFormat);
 
-constexpr VkImageAspectFlags ApparitionImageViewAspectToVkAspectFlags(AptnImageAspect::Type aspect)
+constexpr VkImageAspectFlags ApparitionImageAspectToVk(AptnImageAspectFlags aspectFlags)
 {
-	switch (aspect)
+	VkImageAspectFlags vkFlags = VK_IMAGE_ASPECT_NONE;
+	if (HasAnyEnumFlags(aspectFlags, AptnImageAspectFlags::Color))
 	{
-	case AptnImageAspect::Color:
-		return VK_IMAGE_ASPECT_COLOR_BIT;
-	case AptnImageAspect::Depth:
-		return VK_IMAGE_ASPECT_DEPTH_BIT;
-	case AptnImageAspect::Stencil:
-		return VK_IMAGE_ASPECT_STENCIL_BIT;
-	case AptnImageAspect::DepthStencil:
-		return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
-	default:
-		return VK_IMAGE_ASPECT_NONE;
+		vkFlags |= VK_IMAGE_ASPECT_COLOR_BIT;
 	}
+	if (HasAnyEnumFlags(aspectFlags, AptnImageAspectFlags::Depth))
+	{
+		vkFlags |= VK_IMAGE_ASPECT_DEPTH_BIT;
+	}
+	if (HasAnyEnumFlags(aspectFlags, AptnImageAspectFlags::Stencil))
+	{
+		vkFlags |= VK_IMAGE_ASPECT_STENCIL_BIT;
+	}
+
+	return vkFlags;
 }
 
-constexpr VkImageLayout ApparitionImageAccessToVkLayout(AptnImageAccess::Type imgState)
+constexpr VkImageLayout ApparitionImageAccessToVkLayout(AptnImageAccess imgState)
 {
 	switch (imgState)
 	{
@@ -50,7 +52,7 @@ constexpr VkImageLayout ApparitionImageAccessToVkLayout(AptnImageAccess::Type im
 	}
 }
 
-constexpr VkAccessFlags2 ApparitionImageAccessToAccessMask(AptnImageAccess::Type imgAccess)
+constexpr VkAccessFlags2 ApparitionImageAccessToVkAccess(AptnImageAccess imgAccess)
 {
 	switch (imgAccess)
 	{
@@ -74,7 +76,7 @@ constexpr VkAccessFlags2 ApparitionImageAccessToAccessMask(AptnImageAccess::Type
 	}
 }
 
-constexpr VkPipelineStageFlags2 ApparitionImageAccessToPipelineStage(AptnImageAccess::Type imgAccess)
+constexpr VkPipelineStageFlags2 ApparitionImageAccessToPipelineStage(AptnImageAccess imgAccess)
 {
 	switch (imgAccess)
 	{

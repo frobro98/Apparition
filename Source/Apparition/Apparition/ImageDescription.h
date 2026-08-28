@@ -1,10 +1,9 @@
 #pragma once
 
 #include "BasicTypes/Intrinsics.hpp"
+#include "Utilities/EnumUtils.h"
 
-namespace AptnImageFormat
-{
-enum Type
+enum class AptnImageFormat
 {
 	RGB_8norm,
 	RGB_8u,
@@ -27,23 +26,19 @@ enum Type
 
 	Max = 0x7FFFFFFF
 };
-} // AptnImageFormat
 
-// TODO - Make this a mask
-namespace AptnImageAspect
+enum class AptnImageAspectFlags
 {
-enum Type
-{
-	Color,
-	Depth,
-	Stencil,
-	DepthStencil
+	Color = 1 << 0,
+	Depth = 1 << 1,
+	Stencil = 1 << 2,
+	DepthStencil = Depth | Stencil,
+
+	Max = 0x7FFFFFFF
 };
-} // AptnImageAspect
+ENUM_CLASS_OPERATORS(AptnImageAspectFlags);
 
-namespace AptnImageAccess
-{
-enum Type
+enum class AptnImageAccess
 {
 	Undefined,
 	Present,
@@ -54,11 +49,8 @@ enum Type
 	DepthStencilWrite,
 	DepthStencilRead
 };
-} // AptnImageAccess
 
-namespace AptnImageUsageFlagBits
-{
-enum Type
+enum class AptnImageUsageFlags
 {
 	TransferSrc = 1 << 0,
 	TransferDst = 1 << 1,
@@ -68,5 +60,4 @@ enum Type
 
 	Max = 0x7FFFFFFF
 };
-} // AptnImageUsageFlagBits
-using AptnImageUsageFlags = u32;
+ENUM_CLASS_OPERATORS(AptnImageUsageFlags);

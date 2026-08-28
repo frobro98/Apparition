@@ -38,5 +38,5 @@ APPARITION_API AptnImage GetAcquiredBackbufferImage(AptnDevice device);
 // Query backbuffer data
 APPARITION_API u32 GetBackbufferWidth(AptnDevice device);
 APPARITION_API u32 GetBackbufferHeight(AptnDevice device);
-APPARITION_API AptnImageFormat::Type GetBackbufferFormat(AptnDevice device);
+APPARITION_API AptnImageFormat GetBackbufferFormat(AptnDevice device);
 }

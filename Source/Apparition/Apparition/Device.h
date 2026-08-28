@@ -12,8 +12,6 @@ struct VkQueueFamilyProperties;
 struct VkDevice_T;
 typedef struct VkDevice_T* VkDevice;
 
-HANDLE_TYPE(AptnDevice)
-
 enum class AptnQueueType
 {
 	Graphics,
@@ -39,6 +37,8 @@ struct AptnDeviceCreationParams
 	// Optional callback to allow for custom queue setup by user
 	DynamicArray<AptnQueueCreationParams> queueCreationParams;
 };
+
+HANDLE_TYPE(AptnDevice)
 
 // ---- Device Functionality ----
 

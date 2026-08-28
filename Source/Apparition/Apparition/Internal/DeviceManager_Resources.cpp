@@ -10,37 +10,6 @@
 #include "ImageFormatConversion.h"
 #include "VulkanInfos.h"
 
-static VkBufferUsageFlags ApparitionToVkBufferUsage(AptnBufferUsageFlags usageFlags)
-{
-    VkBufferUsageFlags vkUsageFlags = 0;
-    if (usageFlags & AptnBufferUsageFlagBits::TransferSrc)
-    {
-        vkUsageFlags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    }
-    if (usageFlags & AptnBufferUsageFlagBits::TransferDst)
-    {
-        vkUsageFlags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-    }
-    if (usageFlags & AptnBufferUsageFlagBits::UniformBuffer)
-    {
-        vkUsageFlags |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    }
-    if (usageFlags & AptnBufferUsageFlagBits::StorageBuffer)
-    {
-        vkUsageFlags |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-    }
-    if (usageFlags & AptnBufferUsageFlagBits::VertexBuffer)
-    {
-        vkUsageFlags |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    }
-    if (usageFlags & AptnBufferUsageFlagBits::IndexBuffer)
-    {
-        vkUsageFlags |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-    }
-
-    return vkUsageFlags;
-}
-
 AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreationParams& params)
 {
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
@@ -69,6 +38,16 @@ AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreati
         bufferInternal.buffer = buffer;
         bufferInternal.allocation = vmaAllocation;
         bufferInternal.isMappable = params.supportsMappedMemory;
+        if (HasAnyEnumFlags(params.usage, AptnBufferUsageFlags::ShaderDeviceAddress))
+        {
+            VkBufferDeviceAddressInfoKHR deviceAddrInfo
+            {
+                .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+                .buffer = buffer
+            };
+            bufferInternal.bufferDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.device, &deviceAddrInfo);
+        }
+
         u32 handleIndex = PopFreeHandleIndex(deviceInternal.bufferResourceHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
@@ -89,16 +68,14 @@ AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreati
 
 void DeviceManager::DestroyBuffer(AptnBuffer buffer)
 {
-    u32 deviceIndex = GetDeviceIndexFromHandle(buffer);
-    DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
-    u32 handleIndex = GetHandleIndex(buffer);
-    BufferInternal& bufferInternal = GetBufferInternalFromIndex(deviceInternal, handleIndex);
+    DeviceInternal& deviceInternal = GetDeviceInternal(buffer);
+    BufferInternal& bufferInternal = GetBufferInternal(buffer);
     vmaDestroyBuffer(deviceInternal.allocator, bufferInternal.buffer, bufferInternal.allocation);
 
     // TODO - Cleanup handle data?
     
     // Let the handle pool know this handle is freed
-    PushFreedHandleIndex(deviceInternal.bufferResourceHandlePool, handleIndex);
+    PushFreedHandleIndex(deviceInternal.bufferResourceHandlePool, GetHandleIndex(buffer));
 }
 
 AptnImage DeviceManager::CreateImage(AptnDevice device, const AptnImageCreationParams& params)
@@ -193,7 +170,7 @@ AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageVie
         },
         .subresourceRange
         {
-            .aspectMask = ApparitionImageViewAspectToVkAspectFlags(params.aspect),
+            .aspectMask = ApparitionImageAspectToVk(params.aspect),
             .baseMipLevel = params.baseMipLevel,
             .levelCount = params.mipCount,
             .layerCount = 1

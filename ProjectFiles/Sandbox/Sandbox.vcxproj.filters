@@ -85,6 +85,9 @@
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorIndexing\DescriptorIndexing.cpp">
       <Filter>Source\Examples\DescriptorIndexing</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.cpp">
+      <Filter>Source\Examples\DescriptorHeap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h">
@@ -124,6 +127,18 @@
     </None>
     <None Include="..\..\Assets\Shaders\DescriptorSets\cube.vert">
       <Filter>Source\Examples\DescriptorSets\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\DescriptorIndexing\descriptorindexing.frag">
+      <Filter>Source\Examples\DescriptorIndexing\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\DescriptorIndexing\descriptorindexing.vert">
+      <Filter>Source\Examples\DescriptorIndexing\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.frag">
+      <Filter>Source\Examples\DescriptorHeap\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.vert">
+      <Filter>Source\Examples\DescriptorHeap\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

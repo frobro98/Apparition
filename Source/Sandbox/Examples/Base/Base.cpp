@@ -32,7 +32,7 @@ static const StaticArray<u16, 6> indices = {
 	 2, 1, 0, 0, 3, 2
 };
 
-AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageFormat::Type backbufferFormat)
+AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageFormat backbufferFormat)
 {
 	// Vertex Input
 	AptnVertexInputPipelineState vertexInput;
@@ -120,7 +120,7 @@ AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageForma
 					.srcAlphaFactor = AptnBlendFactor::One,
 					.dstAlphaFactor = AptnBlendFactor::Zero,
 					.alphaBlendOperation = AptnBlendOperation::None,
-					.colorMask = AptnColorComponentFlagBits::RGBA
+					.colorMask = AptnColorComponentFlags::RGBA
 				}
 			},
 			.colorAttachmentFormats
@@ -157,7 +157,7 @@ void InitializeBaseExample(AptnDevice inDevice)
 		.wndHeight = window->height
 	};
 	Apparition::SetupBackbuffer(device, backbufferSetupParams);
-	AptnImageFormat::Type backbufferFormat = Apparition::GetBackbufferFormat(device);
+	AptnImageFormat backbufferFormat = Apparition::GetBackbufferFormat(device);
 
 	pipeline = CreateBasicGraphicsPipeline(device, backbufferFormat);
 
@@ -173,7 +173,7 @@ void InitializeBaseExample(AptnDevice inDevice)
 	// Vertex Buffer Setup
 	{
 		AptnBufferCreationParams params{
-			.usage = AptnBufferUsageFlagBits::VertexBuffer | AptnBufferUsageFlagBits::TransferDst,
+			.usage = AptnBufferUsageFlags::VertexBuffer | AptnBufferUsageFlags::TransferDst,
 			.size = sizeof(vertices[0]) * vertices.Size()
 		};
 		vertexBuffer = Apparition::CreateBuffer(device, params);
@@ -182,7 +182,7 @@ void InitializeBaseExample(AptnDevice inDevice)
 	// Index Buffer Setup
 	{
 		AptnBufferCreationParams params{
-			.usage = AptnBufferUsageFlagBits::IndexBuffer | AptnBufferUsageFlagBits::TransferDst,
+			.usage = AptnBufferUsageFlags::IndexBuffer | AptnBufferUsageFlags::TransferDst,
 			.size = sizeof(vertices[0]) * vertices.Size()
 		};
 		indexBuffer = Apparition::CreateBuffer(device, params);
@@ -193,7 +193,7 @@ void InitializeBaseExample(AptnDevice inDevice)
 		AptnBuffer vertStagingBuffer;
 		{
 			AptnBufferCreationParams params{
-				.usage = AptnBufferUsageFlagBits::TransferSrc,
+				.usage = AptnBufferUsageFlags::TransferSrc,
 				.size = sizeof(vertices[0]) * vertices.Size(),
 				.supportsMappedMemory = true
 			};
@@ -208,7 +208,7 @@ void InitializeBaseExample(AptnDevice inDevice)
 		AptnBuffer idxStagingBuffer;
 		{
 			AptnBufferCreationParams params{
-				.usage = AptnBufferUsageFlagBits::TransferSrc,
+				.usage = AptnBufferUsageFlags::TransferSrc,
 				.size = sizeof(indices[0]) * indices.Size(),
 				.supportsMappedMemory = true
 			};
@@ -283,7 +283,7 @@ void TickBaseExample(/*AptnDevice device*/)
 		AptnImageMemoryBarrierDesc barrierDesc = {
 			.image = Apparition::GetAcquiredBackbufferImage(device),
 			.access = AptnImageAccess::ColorWrite,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.mipLevelCount = 1
 		};
 
@@ -337,7 +337,7 @@ void TickBaseExample(/*AptnDevice device*/)
 	Apparition::SetViewportAndScissor(commandBuffer, viewportDesc, scissorDesc);
 
 	// Draw
-	Apparition::DrawIndexed(commandBuffer, (u32)indices.Size());
+	Apparition::DrawIndexed(commandBuffer, (u32)indices.Size(), 0);
 
 	// End rendering so we can transition backbuffer
 	Apparition::EndRendering(commandBuffer);
@@ -347,7 +347,7 @@ void TickBaseExample(/*AptnDevice device*/)
 		AptnImageMemoryBarrierDesc barrierDesc = {
 			.image = Apparition::GetAcquiredBackbufferImage(device),
 			.access = AptnImageAccess::Present,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.mipLevelCount = 1
 		};
 

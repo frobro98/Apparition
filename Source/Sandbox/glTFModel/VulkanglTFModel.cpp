@@ -51,7 +51,7 @@ bool loadImageDataFuncEmpty(tinygltf::Image* /*image*/, const int /*imageIndex*/
 	return true;
 }
 
-AptnImageFormat::Type VkFormatToApparitionFormat(VkFormat format)
+AptnImageFormat VkFormatToApparitionFormat(VkFormat format)
 {
 	switch (format)
 	{
@@ -141,7 +141,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		}
 	}
 
-	AptnImageFormat::Type format;
+	AptnImageFormat format;
 	//VkFormat format;
 
 	if (!isKtx) {
@@ -187,7 +187,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		//VkDeviceMemory stagingMemory;
 		AptnBufferCreationParams buffParams
 		{
-			.usage = AptnBufferUsageFlagBits::TransferSrc,
+			.usage = AptnBufferUsageFlags::TransferSrc,
 			.size = bufferSize,
 			.supportsMappedMemory = true
 		};
@@ -219,9 +219,9 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			.height = height,
 			.format = format,
 			.mipLevels = mipLevels,
-			.usageFlags = AptnImageUsageFlagBits::TransferSrc |
-						AptnImageUsageFlagBits::TransferDst |
-						AptnImageUsageFlagBits::Sampled
+			.usageFlags = AptnImageUsageFlags::TransferSrc |
+						AptnImageUsageFlags::TransferDst |
+						AptnImageUsageFlags::Sampled
 		};
 		image = Apparition::CreateImage(device, imgParams);
 
@@ -257,7 +257,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			{
 				.image = image,
 				.access = AptnImageAccess::TransferDst,
-				.aspect = AptnImageAspect::Color
+				.aspect = AptnImageAspectFlags::Color
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 		}
@@ -280,7 +280,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			.dstImage = image,
 			.outline = 
 			{
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevel = 0,
 				.imgWidth = width,
 				.imgHeight = height
@@ -306,7 +306,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			{
 				.image = image,
 				.access = AptnImageAccess::TransferSrc,
-				.aspect = AptnImageAspect::Color
+				.aspect = AptnImageAspectFlags::Color
 			};
 			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
 		}
@@ -342,13 +342,13 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			AptnBlitImageDesc blitDesc{};
 			// Src blit desc
 			blitDesc.srcImage = image;
-			blitDesc.srcAspect = AptnImageAspect::Color;
+			blitDesc.srcAspect = AptnImageAspectFlags::Color;
 			blitDesc.srcMipLevel = i - 1;
 			blitDesc.srcOffsetX[1] = (i32)(width >> (i - 1));
 			blitDesc.srcOffsetY[1] = (i32)(height >> (i - 1));
 			// Dst blit desc
 			blitDesc.dstImage = image;
-			blitDesc.dstAspect = AptnImageAspect::Color;
+			blitDesc.dstAspect = AptnImageAspectFlags::Color;
 			blitDesc.dstMipLevel = i;
 			blitDesc.dstOffsetX[1] = (i32)(width >> i);
 			blitDesc.dstOffsetY[1] = (i32)(height >> i);
@@ -382,7 +382,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 				{
 					.image = image,
 					.access = AptnImageAccess::TransferDst,
-					.aspect = AptnImageAspect::Color,
+					.aspect = AptnImageAspectFlags::Color,
 					.baseMipLevel = i,
 					.mipLevelCount = 1
 				};
@@ -410,7 +410,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 				{
 					.image = image,
 					.access = AptnImageAccess::TransferSrc,
-					.aspect = AptnImageAspect::Color,
+					.aspect = AptnImageAspectFlags::Color,
 					.baseMipLevel = i,
 					.mipLevelCount = 1
 				};
@@ -436,7 +436,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		{
 			.image = image,
 			.access = AptnImageAccess::ColorRead,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.baseMipLevel = 0,
 			.mipLevelCount = mipLevels
 		};
@@ -520,7 +520,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 
 		AptnBufferCreationParams bufferParams
 		{
-			.usage = AptnBufferUsageFlagBits::TransferSrc,
+			.usage = AptnBufferUsageFlags::TransferSrc,
 			.size = ktxTextureSize,
 			.supportsMappedMemory = true
 		};
@@ -563,7 +563,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			assert(result == KTX_SUCCESS);
 			AptnBufferToImageCopyOutline outline
 			{
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.mipLevel = i,
 				.imgWidth = std::max(1u, ktxTexture->baseWidth >> i),
 				.imgHeight = std::max(1u, ktxTexture->baseHeight >> i)
@@ -617,7 +617,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			.height = height,
 			.format = format,
 			.mipLevels = mipLevels,
-			.usageFlags = AptnImageUsageFlagBits::TransferDst | AptnImageUsageFlagBits::Sampled
+			.usageFlags = AptnImageUsageFlags::TransferDst | AptnImageUsageFlags::Sampled
 		};
 		AptnImage image = Apparition::CreateImage(device, imgParams);
 		/*
@@ -649,7 +649,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			{
 				.image = image,
 				.access = AptnImageAccess::TransferDst,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.baseMipLevel = 0,
 				.mipLevelCount = mipLevels
 			};
@@ -671,7 +671,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 			{
 				.image = image,
 				.access = AptnImageAccess::ColorRead,
-				.aspect = AptnImageAspect::Color,
+				.aspect = AptnImageAspectFlags::Color,
 				.baseMipLevel = 0,
 				.mipLevelCount = mipLevels
 			};
@@ -726,7 +726,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 	AptnImageViewCreationParams viewParams
 	{
 		.format = format,
-		.aspect = AptnImageAspect::Color,
+		.aspect = AptnImageAspectFlags::Color,
 		.mipCount = mipLevels
 	};
 	/*
@@ -842,7 +842,7 @@ vkglTF::Mesh::Mesh(/*vks::VulkanDevice* device*/AptnDevice device, glm::mat4 mat
 	u64 bufferSize = sizeof(uniformBlock);
 	AptnBufferCreationParams bufferParams
 	{
-		.usage = AptnBufferUsageFlagBits::UniformBuffer,
+		.usage = AptnBufferUsageFlags::UniformBuffer,
 		.size = bufferSize,
 		.supportsMappedMemory = true
 	};
@@ -1019,7 +1019,7 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 
 	AptnBufferCreationParams bufferParams
 	{
-		.usage = AptnBufferUsageFlagBits::TransferSrc,
+		.usage = AptnBufferUsageFlags::TransferSrc,
 		.size = bufferSize,
 		.supportsMappedMemory = true
 	};
@@ -1068,7 +1068,7 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		.height = emptyTexture.height,
 		.format = AptnImageFormat::RGBA_8norm,
 		.mipLevels = 1,
-		.usageFlags = AptnImageUsageFlagBits::Sampled | AptnImageUsageFlagBits::TransferDst
+		.usageFlags = AptnImageUsageFlags::Sampled | AptnImageUsageFlags::TransferDst
 	};
 	/*
 	VkImageCreateInfo imageCreateInfo{
@@ -1111,7 +1111,7 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		{
 			.image = emptyTexture.image,
 			.access = AptnImageAccess::TransferDst,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.baseMipLevel = 0,
 			.mipLevelCount = 1
 		};
@@ -1133,7 +1133,7 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		.dstImage = emptyTexture.image,
 		.outline =
 		{
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.mipLevel = 0,
 			.imgWidth = emptyTexture.width,
 			.imgHeight = emptyTexture.height
@@ -1146,7 +1146,7 @@ void vkglTF::Model::createEmptyTexture(AptnQueue transferQueue)
 		{
 			.image = emptyTexture.image,
 			.access = AptnImageAccess::ColorRead,
-			.aspect = AptnImageAspect::Color,
+			.aspect = AptnImageAspectFlags::Color,
 			.baseMipLevel = 0,
 			.mipLevelCount = 1
 		};
@@ -1229,38 +1229,41 @@ vkglTF::Model::~Model()
 
 void vkglTF::Model::releaseResources()
 {
-	Apparition::DestroyBuffer(vertices.buffer);
-	Apparition::DestroyBuffer(indices.buffer);
-	/*
-	vkDestroyBuffer(device->logicalDevice, vertices.buffer, nullptr);
-	vkFreeMemory(device->logicalDevice, vertices.memory, nullptr);
-	vkDestroyBuffer(device->logicalDevice, indices.buffer, nullptr);
-	vkFreeMemory(device->logicalDevice, indices.memory, nullptr);
-	//*/
-	for (auto& texture : textures) {
-		texture.destroy();
-	}
-	for (auto& node : nodes) {
-		delete node;
-	}
-    for (auto& skin : skins) {
-        delete skin;
-    }
-	if (IsValid(descriptorSetLayoutUbo)) {
-		Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutUbo);
-		//vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayoutUbo, nullptr);
-		//descriptorSetLayoutUbo{ Apparition::InvalidHandle };
-	}
-	if (IsValid(descriptorSetLayoutImage) ) {
-		Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutImage);
-		//vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayoutImage, nullptr);
-		//descriptorSetLayoutImage{ Apparition::InvalidHandle };
-	}
-	Apparition::DestroyDescriptorPool(descriptorPool);
-	//vkDestroyDescriptorPool(device->logicalDevice, descriptorPool, nullptr);
-	emptyTexture.destroy();
+	if (IsValid(vertices.buffer))
+	{
+		Apparition::DestroyBuffer(vertices.buffer);
+		Apparition::DestroyBuffer(indices.buffer);
+		/*
+		vkDestroyBuffer(device->logicalDevice, vertices.buffer, nullptr);
+		vkFreeMemory(device->logicalDevice, vertices.memory, nullptr);
+		vkDestroyBuffer(device->logicalDevice, indices.buffer, nullptr);
+		vkFreeMemory(device->logicalDevice, indices.memory, nullptr);
+		//*/
+		for (auto& texture : textures) {
+			texture.destroy();
+		}
+		for (auto& node : nodes) {
+			delete node;
+		}
+		for (auto& skin : skins) {
+			delete skin;
+		}
+		if (IsValid(descriptorSetLayoutUbo)) {
+			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutUbo);
+			//vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayoutUbo, nullptr);
+			//descriptorSetLayoutUbo{ Apparition::InvalidHandle };
+		}
+		if (IsValid(descriptorSetLayoutImage)) {
+			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutImage);
+			//vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayoutImage, nullptr);
+			//descriptorSetLayoutImage{ Apparition::InvalidHandle };
+		}
+		Apparition::DestroyDescriptorPool(descriptorPool);
+		//vkDestroyDescriptorPool(device->logicalDevice, descriptorPool, nullptr);
+		emptyTexture.destroy();
 
-	resourcesReleased = true;
+		resourcesReleased = true;
+	}
 }
 
 void vkglTF::Model::loadNode(vkglTF::Node *parent, const tinygltf::Node &node, uint32_t nodeIndex, const tinygltf::Model &model, std::vector<uint32_t>& indexBuffer, std::vector<Vertex>& vertexBuffer, float globalscale)
@@ -1790,7 +1793,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	// Vertex data
 	AptnBufferCreationParams bufferParams
 	{
-		.usage = AptnBufferUsageFlagBits::TransferSrc,
+		.usage = AptnBufferUsageFlags::TransferSrc,
 		.size = vertexBufferSize,
 		.supportsMappedMemory = true
 	};
@@ -1840,7 +1843,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	// Vertex buffer
 	bufferParams.supportsMappedMemory = false;
 	bufferParams.size = vertexBufferSize;
-	bufferParams.usage = AptnBufferUsageFlagBits::VertexBuffer | AptnBufferUsageFlagBits::TransferDst; // | optional ray tracing flags
+	bufferParams.usage = AptnBufferUsageFlags::VertexBuffer | AptnBufferUsageFlags::TransferDst; // | optional ray tracing flags
 	vertices.buffer = Apparition::CreateBuffer(device, bufferParams);
 	/*
 	VK_CHECK_RESULT(device->createBuffer(
@@ -1852,7 +1855,7 @@ void vkglTF::Model::loadFromFile(std::string filename, /*vks::VulkanDevice* devi
 	//*/
 	// Index buffer
 	bufferParams.size = indexBufferSize;
-	bufferParams.usage = AptnBufferUsageFlagBits::IndexBuffer | AptnBufferUsageFlagBits::TransferDst; // | optional ray tracing flags
+	bufferParams.usage = AptnBufferUsageFlags::IndexBuffer | AptnBufferUsageFlags::TransferDst; // | optional ray tracing flags
 	indices.buffer = Apparition::CreateBuffer(device, bufferParams);
 	/*
 	VK_CHECK_RESULT(device->createBuffer(
@@ -2112,7 +2115,7 @@ void vkglTF::Model::drawNode(Node *node, /*VkCommandBuffer commandBuffer*/AptnCo
 					Apparition::BindDescriptorSets(commandBuffer, descriptorSetsDesc);
 					//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, bindImageSet, 1, &material.descriptorSet, 0, nullptr);
 				}
-				Apparition::DrawIndexed(commandBuffer, primitive->indexCount);
+				Apparition::DrawIndexed(commandBuffer, primitive->indexCount, primitive->firstIndex);
 				//vkCmdDrawIndexed(commandBuffer, primitive->indexCount, 1, primitive->firstIndex, 0, 0);
 			}
 		}

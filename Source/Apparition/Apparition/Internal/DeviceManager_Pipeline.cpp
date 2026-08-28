@@ -43,7 +43,7 @@ DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const Dynam
     return vkBindings;
 }
 
-DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<AptnImageFormat::Type>& formats)
+DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<AptnImageFormat>& formats)
 {
     DynamicArray<VkFormat> vkFormats(formats.Size());
     for (u32 i = 0; i < formats.Size(); ++i)
@@ -83,11 +83,22 @@ DynamicArray<VkPipelineColorBlendAttachmentState> ApparitionBlendAttachmentsToVk
 AptnVertexInputPipelineState DeviceManager::CreateVertexInputPipelineState(AptnDevice device, const AptnVertexInputPipelineStateCreationParams& params)
 {
     // GraphicsPipelineLibrary setup
-    const VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
+    VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
     {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT,
         .flags = VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT
     };
+
+    VkPipelineCreateFlags2CreateInfo pipelineFlagsInfo;
+    if (params.pipelineDesc.useDescriptorHeaps)
+    {
+        pipelineFlagsInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO,
+            .flags = VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT
+        };
+        libraryInfo.pNext = &pipelineFlagsInfo;
+    }
 
     const DynamicArray<VkVertexInputBindingDescription> vkBindings = ApparitionBindingsToVk(params.bindings);
     Assert(vkBindings.Size() == params.bindings.Size());
@@ -193,6 +204,7 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
     // Create VkPipelineLayout for this operation
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+    if (!params.pipelineDesc.useDescriptorHeaps)
     {
         AptnPipelineDescription pipelineDesc = params.pipelineDesc;
         DynamicArray<VkDescriptorSetLayout> vkLayouts;
@@ -214,14 +226,25 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
     }
 
     // GraphicsPipelineLibrary setup
-    const VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
+    VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
     {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT,
         .flags = VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT
     };
 
+    VkPipelineCreateFlags2CreateInfo pipelineFlagsInfo;
+    if (params.pipelineDesc.useDescriptorHeaps)
+    {
+        pipelineFlagsInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO,
+            .flags = VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT
+        };
+        libraryInfo.pNext = &pipelineFlagsInfo;
+    }
+
     // Pipeline State creation
-    const VkGraphicsPipelineCreateInfo pipelineStateInfo
+    VkGraphicsPipelineCreateInfo pipelineStateInfo
     {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
         .pNext = &libraryInfo,
@@ -239,7 +262,10 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
-        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        if (pipelineLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        }
 
         const PrerasterShadersPipelineStateInternal prerasterShadersInternal
         {
@@ -260,7 +286,10 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
     }
 
     // TODO - make this one call instead of multiple calls
-    vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+    if (pipelineLayout != VK_NULL_HANDLE)
+    {
+        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+    }
 
     return { AptnInvalidHandle };
 }
@@ -301,16 +330,28 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
     };
 
     // GraphicsPipelineLibrary setup
-    const VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
+    VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
     {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT,
         .flags = VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT
     };
 
+    VkPipelineCreateFlags2CreateInfo pipelineFlagsInfo;
+    if (params.pipelineDesc.useDescriptorHeaps)
+    {
+        pipelineFlagsInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO,
+            .flags = VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT
+        };
+        libraryInfo.pNext = &pipelineFlagsInfo;
+    }
+
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
     // Create VkPipelineLayout for this operation
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+    if (!params.pipelineDesc.useDescriptorHeaps)
     {
         AptnPipelineDescription pipelineDesc = params.pipelineDesc;
         DynamicArray<VkDescriptorSetLayout> vkLayouts;
@@ -332,7 +373,7 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
     }
 
     // Pipeline State creation
-    const VkGraphicsPipelineCreateInfo pipelineStateInfo
+    VkGraphicsPipelineCreateInfo pipelineStateInfo
     {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
         .pNext = &libraryInfo,
@@ -349,7 +390,10 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
-        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        if (pipelineLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        }
 
         const FragmentShaderPipelineStateInternal fragmentShadersInternal
         {
@@ -368,7 +412,10 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
             return AptnFragmentShaderPipelineState{ handleData };
         }
     }
-    vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+    if (pipelineLayout != VK_NULL_HANDLE)
+    {
+        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+    }
 
     return { AptnInvalidHandle };
 }
@@ -412,12 +459,23 @@ AptnFragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState
     };
 
     // GraphicsPipelineLibrary setup
-    const VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
+    VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo
     {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT,
         .pNext = &pipelineRenderingCreateInfo,
         .flags = VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT
     };
+
+    VkPipelineCreateFlags2CreateInfo pipelineFlagsInfo;
+    if (params.pipelineDesc.useDescriptorHeaps)
+    {
+        pipelineFlagsInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO,
+            .flags = VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT
+        };
+        pipelineRenderingCreateInfo.pNext = &pipelineFlagsInfo;
+    }
 
     // Pipeline State creation
     const VkGraphicsPipelineCreateInfo pipelineStateInfo
@@ -501,7 +559,7 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
     };
 
     // Pipeline Library Info
-    const VkPipelineLibraryCreateInfoKHR pipelineLibraryInfo
+    VkPipelineLibraryCreateInfoKHR pipelineLibraryInfo
     {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR,
         .libraryCount = libraries.Size(),
@@ -510,6 +568,7 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
 
     // Create VkPipelineLayout
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+    if (!params.pipelineDesc.useDescriptorHeaps)
     {
         AptnPipelineDescription pipelineDesc = params.pipelineDesc;
         DynamicArray<VkDescriptorSetLayout> vkLayouts;
@@ -530,6 +589,16 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
         CHECK_VK(result);
     }
 
+    if (params.pipelineDesc.useDescriptorHeaps)
+    {
+        const VkPipelineCreateFlags2CreateInfo pipelineFlagsInfo
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO,
+            .flags = VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT
+        };
+        pipelineLibraryInfo.pNext = &pipelineFlagsInfo;
+    }
+
     // Graphics Pipeline
     const VkGraphicsPipelineCreateInfo pipelineInfo
     {
@@ -543,7 +612,10 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
-        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        if (pipelineLayout != VK_NULL_HANDLE)
+        {
+            vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        }
 
         const PipelineInternal pipelineInternal
         {
@@ -562,7 +634,10 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
             return AptnPipeline{ handleData };
         }
     }
-    vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+    if (pipelineLayout != VK_NULL_HANDLE)
+    {
+        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+    }
 
     return { AptnInvalidHandle };
 }

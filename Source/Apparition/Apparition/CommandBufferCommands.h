@@ -36,21 +36,24 @@ struct AptnScissorDesc
     u32 extentY = 0;
 };
 
-namespace AptnBindPoint
-{
-enum Type
+enum class AptnBindPoint
 {
     Graphics,
     Compute
 };
-}
 
 struct AptnBindDescriptorSetsDesc
 {
     AptnPipelineDescription pipelineDesc;
-    AptnBindPoint::Type bindPoint = AptnBindPoint::Graphics;
+    AptnBindPoint bindPoint = AptnBindPoint::Graphics;
     u32 firstSet = 0;
     DynamicArray<AptnDescriptorSet> descriptorSets;
+};
+
+struct AptnPushDataDesc
+{
+    void* dataAddress = nullptr;
+    u64 dataSize = 0;
 };
 
 struct AptnBufferCopyDesc
@@ -67,11 +70,11 @@ struct AptnBufferToImageCopyOutline
 {
     u64 bufferOffset = 0;
     // Subresource
-    AptnImageAspect::Type aspect = AptnImageAspect::Color;
+    AptnImageAspectFlags aspect = AptnImageAspectFlags::Color;
     u32 mipLevel = 0;
-    // TODO - Support array layers
     u32 imgWidth = 0;
     u32 imgHeight = 0;
+    // TODO - Support array layers
 };
 
 struct AptnBufferToImageCopyDesc
@@ -81,8 +84,6 @@ struct AptnBufferToImageCopyDesc
     AptnBufferToImageCopyOutline outline;
 };
 
-// TODO - the BuffertoImageCopyDesc struct has a reference to a buffer and an image, just like VkBufferImageCopy. This
-// needs to be changed because of clarity. Make a separate copy structure that is shared by all Buffer -> Image commands
 struct AptnBufferRegionsToImageCopyDesc
 {
     AptnBuffer srcBuffer = { AptnInvalidHandle };
@@ -93,13 +94,13 @@ struct AptnBufferRegionsToImageCopyDesc
 struct AptnBlitImageDesc
 {
     AptnImage srcImage;
-    AptnImageAspect::Type srcAspect = AptnImageAspect::Color;
+    AptnImageAspectFlags srcAspect = AptnImageAspectFlags::Color;
     u32 srcMipLevel = 0;
     // TODO - Better understand why there are multiple offsets for both src and dst
     i32 srcOffsetX[2] = { 0, 0 };
     i32 srcOffsetY[2] = { 0, 0 };
     AptnImage dstImage;
-    AptnImageAspect::Type dstAspect = AptnImageAspect::Color;
+    AptnImageAspectFlags dstAspect = AptnImageAspectFlags::Color;
     u32 dstMipLevel = 0;
     i32 dstOffsetX[2] = { 0, 0 };
     i32 dstOffsetY[2] = { 0, 0 };
@@ -108,9 +109,9 @@ struct AptnBlitImageDesc
 struct AptnImageMemoryBarrierDesc
 {
     AptnImage image;
-    AptnImageAccess::Type access = AptnImageAccess::Undefined;
+    AptnImageAccess access = AptnImageAccess::Undefined;
     // Subresource range
-    AptnImageAspect::Type aspect = AptnImageAspect::Color;
+    AptnImageAspectFlags aspect = AptnImageAspectFlags::Color;
     u32 baseMipLevel = 0;
     u32 mipLevelCount = 0;
 };
@@ -130,11 +131,15 @@ APPARITION_API void SetViewportAndScissor(AptnCommandBuffer commandBuffer, const
 
 APPARITION_API void BindGraphicsPipeline(AptnCommandBuffer commandBuffer, AptnPipeline pipeline);
 
-
 APPARITION_API void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescriptorSetsDesc& bindDescriptorSetsDesc);
 
+APPARITION_API void BindSamplerHeap(AptnCommandBuffer commandBuffer, AptnSamplerHeap samplerHeap);
+APPARITION_API void BindResourceHeap(AptnCommandBuffer commandBuffer, AptnResourceHeap resourceHeap);
+
+APPARITION_API void PushData(AptnCommandBuffer commandBuffer, const AptnPushDataDesc& pushData);
+
 // Draw Commands
-APPARITION_API void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount);
+APPARITION_API void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount, u32 firstIndex, u32 instanceCount = 1, u32 firstInstance = 0);
 
 // Copy Commands
 APPARITION_API void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyDesc);

@@ -4,9 +4,7 @@
 #include "BasicTypes/Intrinsics.hpp"
 #include "Image.h"
 
-namespace AptnLoadOperation
-{
-enum Type
+enum class AptnLoadOperation : u8
 {
 	Load,
 	Clear,
@@ -14,26 +12,20 @@ enum Type
 
 	Count = DontCare + 1
 };
-}// LoadOperation
-static_assert(AptnLoadOperation::Count < 4, "LoadOperation must be less that 3 bit");
+static_assert((__underlying_type(AptnLoadOperation))AptnLoadOperation::Count < 4, "LoadOperation must be less that 3 bit");
 
-namespace AptnStoreOperation
-{
-enum Type
+enum class AptnStoreOperation : u8
 {
 	Store,
 	DontCare,
 
 	Count = DontCare + 1
 };
-}// StoreOperation
-static_assert(AptnStoreOperation::Count < 4, "StoreOperation must be less that 3 bit");
+static_assert((__underlying_type(AptnStoreOperation))AptnStoreOperation::Count < 4, "StoreOperation must be less that 3 bit");
 
 #define ATTACHMENT_OP_MASK 2
 #define CREATE_ATTACHMENT_OP(LoadOp, StoreOp) (((u8)AptnLoadOperation::LoadOp << ATTACHMENT_OP_MASK) | ((u8)AptnStoreOperation::StoreOp))
-namespace AptnAttachmentOperations
-{
-enum Type
+enum class AptnAttachmentOperations
 {
 	DontLoad_DontStore = CREATE_ATTACHMENT_OP(DontCare, DontCare),
 	DontLoad_Store = CREATE_ATTACHMENT_OP(DontCare, Store),
@@ -42,21 +34,20 @@ enum Type
 	Clear_DontStore = CREATE_ATTACHMENT_OP(Clear, DontCare),
 	Clear_Store = CREATE_ATTACHMENT_OP(Clear, Store)
 };
-}// AttachmentOperations
 
-constexpr AptnLoadOperation::Type LoadOperationFrom(AptnAttachmentOperations::Type op)
+constexpr AptnLoadOperation LoadOperationFrom(AptnAttachmentOperations op)
 {
-	return (AptnLoadOperation::Type)(op >> ATTACHMENT_OP_MASK);
+	return (AptnLoadOperation)((__underlying_type(AptnAttachmentOperations))op >> ATTACHMENT_OP_MASK);
 }
 
-constexpr AptnStoreOperation::Type StoreOperationFrom(AptnAttachmentOperations::Type op)
+constexpr AptnStoreOperation StoreOperationFrom(AptnAttachmentOperations op)
 {
-	return (AptnStoreOperation::Type)(op & ((1 << ATTACHMENT_OP_MASK) - 1));
+	return (AptnStoreOperation)((__underlying_type(AptnAttachmentOperations))op & ((1 << ATTACHMENT_OP_MASK) - 1));
 }
 
-constexpr AptnAttachmentOperations::Type AttachmentOperationsFrom(AptnLoadOperation::Type loadOp, AptnStoreOperation::Type storeOp)
+constexpr AptnAttachmentOperations AttachmentOperationsFrom(AptnLoadOperation loadOp, AptnStoreOperation storeOp)
 {
-	return (AptnAttachmentOperations::Type)((loadOp << ATTACHMENT_OP_MASK) | (storeOp));
+	return (AptnAttachmentOperations)(((__underlying_type(AptnLoadOperation))loadOp << ATTACHMENT_OP_MASK) | ((__underlying_type(AptnStoreOperation))storeOp));
 }
 
 #undef ATTACHMENT_OP_MASK
@@ -76,7 +67,7 @@ union AptnAttachmentClearValue
 struct AptnRenderAttachment
 {
 	AptnImageView imageView;
-	AptnAttachmentOperations::Type loadStoreOps;
+	AptnAttachmentOperations loadStoreOps;
 	AptnAttachmentClearValue clearValue;
 };
 

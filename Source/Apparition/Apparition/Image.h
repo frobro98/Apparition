@@ -18,16 +18,16 @@ struct AptnImageCreationParams
 {
     u32 width = 0;
     u32 height = 0;
-    AptnImageFormat::Type format = AptnImageFormat::Invalid;
+    AptnImageFormat format = AptnImageFormat::Invalid;
     u32 mipLevels = 0;
-    AptnImageUsageFlags usageFlags = 0;
+    AptnImageUsageFlags usageFlags = AptnImageUsageFlags::Max;
 
 };
 
 struct AptnImageViewCreationParams
 {
-    AptnImageFormat::Type format = AptnImageFormat::Invalid;
-    AptnImageAspect::Type aspect = AptnImageAspect::Color;
+    AptnImageFormat format = AptnImageFormat::Invalid;
+    AptnImageAspectFlags aspect = AptnImageAspectFlags::Color;
     u32 mipCount = 1;
     u32 baseMipLevel = 0;
 };

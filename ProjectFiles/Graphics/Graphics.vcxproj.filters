@@ -146,8 +146,11 @@
     <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Pipeline.cpp">
       <Filter>Source\Apparition\Internal</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_DescriptorSet.cpp">
+    <ClCompile Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager_Descriptors.cpp">
       <Filter>Source\Apparition\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Apparition\Apparition\DescriptorHeap.cpp">
+      <Filter>Source\Apparition</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

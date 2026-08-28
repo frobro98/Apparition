@@ -35,14 +35,14 @@ class Texture
   public:
 	AptnDevice                 device;
 	AptnImage                  image;
-	AptnImageAccess::Type      imageAccess;
+	AptnImageAccess            imageAccess;
 	AptnImageView              view;
-	uint32_t                           width, height;
-	uint32_t                           mipLevels;
-	uint32_t                           layerCount;
+	uint32_t                   width, height;
+	uint32_t                   mipLevels;
+	uint32_t                   layerCount;
 	AptnImageDescriptorInfo	   descriptor;
 	AptnSampler                sampler;
-	AptnImageFormat::Type      format;
+	AptnImageFormat            format;
 
 	void      updateDescriptor();
 	void      destroy();
@@ -54,22 +54,22 @@ class Texture2D : public Texture
   public:
 	void loadFromFile(
 	    std::string                    filename,
-	    AptnImageFormat::Type  format,
+	    AptnImageFormat        format,
 		AptnDevice             device,
 	    AptnQueue              copyQueue,
-		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlagBits::Sampled,
-		AptnImageAccess::Type  imageAccess = AptnImageAccess::ColorRead);
+		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlags::Sampled,
+		AptnImageAccess        imageAccess = AptnImageAccess::ColorRead);
 	void fromBuffer(
-	    void *                          buffer,
-	    VkDeviceSize                    bufferSize,
-	    AptnImageFormat::Type   format,
-	    uint32_t                        texWidth,
-	    uint32_t                        texHeight,
+	    void *                  buffer,
+	    VkDeviceSize            bufferSize,
+	    AptnImageFormat         format,
+	    uint32_t                texWidth,
+	    uint32_t                texHeight,
 		AptnDevice              device,
 	    AptnQueue               copyQueue,
-	    AptnSamplerFilter::Type filter = AptnSamplerFilter::Linear,
-		AptnImageUsageFlags     imageUsageFlags = AptnImageUsageFlagBits::Sampled,
-		AptnImageAccess::Type   imageAccess = AptnImageAccess::ColorRead);
+	    AptnSamplerFilter       filter = AptnSamplerFilter::Linear,
+		AptnImageUsageFlags     imageUsageFlags = AptnImageUsageFlags::Sampled,
+		AptnImageAccess         imageAccess = AptnImageAccess::ColorRead);
 };
 
 class Texture2DArray : public Texture
