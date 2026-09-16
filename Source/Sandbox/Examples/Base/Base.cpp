@@ -1,6 +1,7 @@
 
 #include "Base.h"
 
+#include "Core.h"
 #include "Math/Vector2.hpp"
 #include "Math/Vector3.hpp"
 
@@ -21,7 +22,7 @@ struct Vertex
 	Vector3 color;
 };
 
-static const StaticArray<Vertex, 4> vertices = {
+static const StaticArray vertices = {
 	Vertex{Vector2{-0.5f, -0.5f}, Vector3{1.0f, 0.0f, 0.0f}},
 	Vertex{Vector2{0.5f, -0.5f}, Vector3{0.0f, 1.0f, 0.0f}},
 	Vertex{Vector2{0.5f, 0.5f}, Vector3{0.0f, 0.0f, 1.0f}},
@@ -35,26 +36,33 @@ static const StaticArray<u16, 6> indices = {
 AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageFormat backbufferFormat)
 {
 	// Vertex Input
+	StaticArray attributes{
+		AptnVertexAttributeDescription
+		{
+			.location = 0,
+			.binding = 0,
+			.format = AptnVertexInputFormat::F32_2,
+			.offset = offsetof(Vertex, pos)
+		},
+		AptnVertexAttributeDescription
+		{
+			.location = 1,
+			.binding = 0,
+			.format = AptnVertexInputFormat::F32_3,
+			.offset = offsetof(Vertex, color)
+		}
+	};
+	StaticArray bindings
+	{
+		AptnVertexBindingDescription{.binding = 0, .stride = sizeof(Vertex), .inputRate = AptnVertexInputRate::Vertex}
+	};
 	AptnVertexInputPipelineState vertexInput;
 	{
 		AptnVertexInputPipelineStateCreationParams params
 		{
 			.primitiveTopology = AptnPrimitiveTopology::TriangleList,
-			.attributes{
-				AptnVertexAttributeDescription{
-					.location = 0,
-					.binding = 0,
-					.format = AptnVertexInputFormat::F32_2,
-					.offset = offsetof(Vertex, pos)
-				},
-				AptnVertexAttributeDescription{
-					.location = 1,
-					.binding = 0,
-					.format = AptnVertexInputFormat::F32_3,
-					.offset = offsetof(Vertex, color)
-				}
-			},
-			.bindings{{.binding = 0, .stride = sizeof(Vertex), .inputRate = AptnVertexInputRate::Vertex}}
+			.attributes{ attributes.internalData, attributes.Size() },
+			.bindings{ bindings.internalData, bindings.Size() }
 		};
 
 		vertexInput = Apparition::CreateVertexInputPipelineState(deviceHandle, params);
@@ -105,6 +113,21 @@ AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageForma
 		fragmentShader = Apparition::CreateFragmentShaderPipelineState(deviceHandle, params);
 	}
 
+	StaticArray attachments = {
+		AptnColorBlendAttachment
+        {
+            .srcColorFactor = AptnBlendFactor::One,
+            .dstColorFactor = AptnBlendFactor::Zero,
+            .colorBlendOperation = AptnBlendOperation::None,
+            .srcAlphaFactor = AptnBlendFactor::One,
+            .dstAlphaFactor = AptnBlendFactor::Zero,
+            .alphaBlendOperation = AptnBlendOperation::None,
+            .colorMask = AptnColorComponentFlags::RGBA
+        }
+	};
+
+	StaticArray colorFormats = { backbufferFormat };
+
 	// Fragment Output
 	AptnFragmentOutputPipelineState fragmentOutput;
 	{
@@ -112,20 +135,13 @@ AptnPipeline CreateBasicGraphicsPipeline(AptnDevice deviceHandle, AptnImageForma
 		{
 			.attachments
 			{
-				AptnColorBlendAttachment
-				{
-					.srcColorFactor = AptnBlendFactor::One,
-					.dstColorFactor = AptnBlendFactor::Zero,
-					.colorBlendOperation = AptnBlendOperation::None,
-					.srcAlphaFactor = AptnBlendFactor::One,
-					.dstAlphaFactor = AptnBlendFactor::Zero,
-					.alphaBlendOperation = AptnBlendOperation::None,
-					.colorMask = AptnColorComponentFlags::RGBA
-				}
+				attachments.internalData,
+				attachments.Size()
 			},
 			.colorAttachmentFormats
 			{
-				backbufferFormat
+				colorFormats.internalData,
+				colorFormats.Size()
 			}
 		};
 
@@ -290,18 +306,20 @@ void TickBaseExample(/*AptnDevice device*/)
 		Apparition::ImageMemoryBarrier(commandBuffer, barrierDesc);
 	}
 
-	AptnRenderAttachment colorAttachment
-	{
-		.imageView = backbufferView,
-		.loadStoreOps = AptnAttachmentOperations::Clear_Store,
-		.clearValue = {{.5f, .5f, .5f, 1.f}}
+	StaticArray colorAttachments = {
+        AptnRenderAttachment
+		{
+			.imageView = backbufferView,
+			.loadStoreOps = AptnAttachmentOperations::Clear_Store,
+			.clearValue = {{.5f, .5f, .5f, 1.f}}
+		}
 	};
 
 	const u32 backbufferWidth = Apparition::GetBackbufferWidth(device);
 	const u32 backbufferHeight = Apparition::GetBackbufferHeight(device);
 
 	AptnRenderSetupParams renderSetup = {};
-	renderSetup.colorAttachments.Add(colorAttachment);
+	renderSetup.colorAttachments = { colorAttachments.internalData, colorAttachments.Size() };
 	renderSetup.renderWidth = backbufferWidth;
 	renderSetup.renderHeight = backbufferHeight;
 	Apparition::BeginRendering(commandBuffer, renderSetup);

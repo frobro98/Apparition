@@ -5,6 +5,7 @@
 #include "BasicTypes/Intrinsics.hpp"
 #include "Debugging/Assertion.hpp"
 #include "Containers/DynamicArray.hpp"
+#include "Containers/StaticArray.hpp"
 #include "CoreAPI.hpp"
 
 // TODO - Need to support size_t instead of uint32 
@@ -18,10 +19,16 @@ class CORE_TEMPLATE ArrayView
 	template <typename OtherType>
 	friend class ArrayView;
 public:
+	constexpr ArrayView() noexcept;
 	constexpr ArrayView(ViewType* dataToView, u32 dataSize);
 	template <u32 N>
 	constexpr ArrayView(pointer_type (&arr)[N]);
-	ArrayView(DynamicArray<value_type>& arr);
+	template <typename OtherType, u32 size>
+	constexpr ArrayView(StaticArray<OtherType, size>& arr) noexcept;
+    template <typename OtherType, u32 size>
+	constexpr ArrayView(const StaticArray<OtherType, size>& arr) noexcept;
+	template <typename OtherType>
+	ArrayView(DynamicArray<OtherType>& arr);
 
 	template <typename OtherType>
 	constexpr ArrayView(const ArrayView<OtherType>& other) noexcept;
@@ -33,6 +40,7 @@ public:
 	constexpr ViewType& Last() const;
 
 	constexpr ViewType* GetData();
+	constexpr const ViewType* GetData() const;
 	constexpr u32 Size() const;
 	constexpr u32 SizeInBytes() const;
 	constexpr bool IsEmpty() const;
@@ -51,6 +59,13 @@ private:
 	u32 viewSize;
 };
 
+// TODO - Definitely needs to have some requires clauses in these definitions
+template<typename ViewType>
+inline constexpr ArrayView<ViewType>::ArrayView() noexcept
+    : viewData(nullptr), viewSize(0)
+{
+}
+
 template<typename ViewType>
 inline constexpr ArrayView<ViewType>::ArrayView(ViewType* dataToView, u32 dataSize)
 	: viewData(dataToView), viewSize(dataSize)
@@ -58,7 +73,8 @@ inline constexpr ArrayView<ViewType>::ArrayView(ViewType* dataToView, u32 dataSi
 }
 
 template<typename ViewType>
-inline ArrayView<ViewType>::ArrayView(DynamicArray<value_type>& arr)
+template <typename OtherType>
+inline ArrayView<ViewType>::ArrayView(DynamicArray<OtherType>& arr)
 	: viewData(arr.GetData()), viewSize(arr.Size())
 {
 }
@@ -69,6 +85,22 @@ template<u32 N>
 inline constexpr ArrayView<ViewType>::ArrayView(pointer_type(&arr)[N])
 	: viewData(arr), viewSize(N)
 {
+}
+
+template<typename ViewType>
+template <typename OtherType, u32 size>
+inline constexpr ArrayView<ViewType>::ArrayView(StaticArray<OtherType, size>& arr) noexcept
+	: viewData(arr.GetData()), viewSize(size)
+{
+
+}
+
+template<typename ViewType>
+template <typename OtherType, u32 size>
+inline constexpr ArrayView<ViewType>::ArrayView(const StaticArray<OtherType, size>& arr) noexcept
+	: viewData(arr.GetData()), viewSize(size)
+{
+
 }
 
 template<typename ViewType>
@@ -98,6 +130,12 @@ template<typename ViewType>
 inline constexpr ViewType* ArrayView<ViewType>::GetData()
 {
 	return viewData;
+}
+
+template<typename ViewType>
+inline constexpr const ViewType* ArrayView<ViewType>::GetData() const
+{
+    return viewData;
 }
 
 template<typename ViewType>

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "BasicTypes/Intrinsics.hpp"
-#include "Containers/DynamicArray.hpp"
+#include "Core.h"
 
 // Resizeable pool that keeps track of available handles
 // 

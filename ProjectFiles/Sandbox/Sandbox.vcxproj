@@ -152,6 +152,7 @@
     <ClCompile Include="..\..\Source\Sandbox\Examples\Base\Base.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.cpp" />
+    <ClCompile Include="..\..\Source\Sandbox\Examples\Indirect\Indirect.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.cpp" />
     <ClCompile Include="..\..\Source\Sandbox\Sandbox.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.h" />
     <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorSets\DescriptorSets.h" />
     <ClInclude Include="..\..\Source\Sandbox\Examples\ExampleCore.h" />
+    <ClInclude Include="..\..\Source\Sandbox\Examples\Indirect\Indirect.h" />
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h" />
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanTexture.h" />
     <ClInclude Include="..\..\Source\Sandbox\Window\Window.h" />
@@ -180,6 +182,12 @@
     <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.vert" />
     <None Include="..\..\Assets\Shaders\DescriptorSets\cube.frag" />
     <None Include="..\..\Assets\Shaders\DescriptorSets\cube.vert" />
+    <None Include="..\..\Assets\Shaders\Indirect\ground.frag" />
+    <None Include="..\..\Assets\Shaders\Indirect\ground.vert" />
+    <None Include="..\..\Assets\Shaders\Indirect\indirectdraw.frag" />
+    <None Include="..\..\Assets\Shaders\Indirect\indirectdraw.vert" />
+    <None Include="..\..\Assets\Shaders\Indirect\skysphere.frag" />
+    <None Include="..\..\Assets\Shaders\Indirect\skysphere.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

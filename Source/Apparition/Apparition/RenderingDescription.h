@@ -73,7 +73,7 @@ struct AptnRenderAttachment
 
 struct AptnRenderSetupParams
 {
-	DynamicArray<AptnRenderAttachment> colorAttachments;
+	ArrayView<const AptnRenderAttachment> colorAttachments;
 	AptnRenderAttachment depthAttachment;
 	AptnRenderAttachment stencilAttachment;
 	u32 renderWidth = 0;

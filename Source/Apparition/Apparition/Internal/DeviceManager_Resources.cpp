@@ -88,7 +88,7 @@ AptnImage DeviceManager::CreateImage(AptnDevice device, const AptnImageCreationP
         .format = ApparitionFormatToVk(params.format),
         .extent = {.width = params.width, .height = params.height, .depth = 1 },
         .mipLevels = params.mipLevels,
-        .arrayLayers = 1,
+        .arrayLayers = params.layerCount,
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .tiling = VK_IMAGE_TILING_OPTIMAL,
         .usage = ApparitionImageUsageToVk(params.usageFlags),
@@ -159,7 +159,7 @@ AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageVie
     {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
         .image = imageInternal.image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .viewType = params.layerCount == 1 ? VK_IMAGE_VIEW_TYPE_2D : VK_IMAGE_VIEW_TYPE_2D_ARRAY,
         .format = ApparitionFormatToVk(params.format),
         .components = 
         { 
@@ -173,7 +173,7 @@ AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageVie
             .aspectMask = ApparitionImageAspectToVk(params.aspect),
             .baseMipLevel = params.baseMipLevel,
             .levelCount = params.mipCount,
-            .layerCount = 1
+            .layerCount = params.layerCount
         }
     };
 

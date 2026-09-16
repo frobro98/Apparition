@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pch.h"
 #include "BasicTypes/Delegate.h"
 #include "Apparition/ApparitionAPI.hpp"
 #include "Apparition/EnumDefinitions.h"

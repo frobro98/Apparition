@@ -163,7 +163,7 @@ void BindVertexBuffers(AptnCommandBuffer commandBuffer, const AptnBindVertexBuff
 	VkBuffer vbBuffer = GetBufferInternal(desc.vertexBuffer).buffer;
 
 	const VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(cbInternal.commandBuffer, 0, 1, &vbBuffer, offsets);
+	vkCmdBindVertexBuffers(cbInternal.commandBuffer, desc.binding, 1, &vbBuffer, offsets);
 }
 
 void BindIndexBuffer(AptnCommandBuffer commandBuffer, const AptnBindIndexBufferDesc& desc)
@@ -209,6 +209,8 @@ void BindGraphicsPipeline(AptnCommandBuffer commandBuffer, AptnPipeline pipeline
 	vkCmdBindPipeline(cbInternal.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
 }
 
+static VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+
 void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescriptorSetsDesc& bindDescriptorSetsDesc)
 {
 	const DeviceInternal& deviceInternal = GetDeviceInternal(commandBuffer);
@@ -222,14 +224,18 @@ void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescripto
 		DescriptorSetInternal& setInternal = GetDescriptorSetInternal(descriptorSet);
 		setHandles.Add(setInternal.descriptorSet);
 	}
-	// Create VkPipelineLayout
-	VkPipelineLayout pipelineLayout = CreatePipelineLayout(bindDescriptorSetsDesc.pipelineDesc, deviceInternal.device);
+
+	if (pipelineLayout == VK_NULL_HANDLE)
+	{
+		// Create VkPipelineLayout
+		pipelineLayout = CreatePipelineLayout(bindDescriptorSetsDesc.pipelineDesc, deviceInternal.device);
+	}
 
 	VkPipelineBindPoint bindPoint = bindDescriptorSetsDesc.bindPoint == AptnBindPoint::Graphics ? VK_PIPELINE_BIND_POINT_GRAPHICS : VK_PIPELINE_BIND_POINT_COMPUTE;
 
 	vkCmdBindDescriptorSets(cbInternal.commandBuffer, bindPoint, pipelineLayout, bindDescriptorSetsDesc.firstSet, setHandles.Size(), setHandles.GetData(), 0, nullptr);
 
-	vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+	//vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 }
 
 void BindSamplerHeap(AptnCommandBuffer commandBuffer, AptnSamplerHeap samplerHeap)
@@ -295,6 +301,15 @@ void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount, u32 firstIndex
 	vkCmdDrawIndexed(cbInternal.commandBuffer, indexCount, instanceCount, firstIndex, 0, firstInstance);
 }
 
+void DrawIndexedIndirect(AptnCommandBuffer commandBuffer, AptnBuffer drawBuffer, u32 offset, u32 drawCount, u32 stride)
+{
+	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
+	Assert(cbInternal.hasBegun);
+	const BufferInternal& bufferInternal = GetBufferInternal(drawBuffer);
+
+	vkCmdDrawIndexedIndirect(cbInternal.commandBuffer, bufferInternal.buffer, offset, drawCount, stride);
+}
+
 void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyDesc)
 {
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
@@ -326,8 +341,8 @@ void CopyBufferToImage(AptnCommandBuffer commandBuffer, const AptnBufferToImageC
 		{
 			.aspectMask = ApparitionImageAspectToVk(outline.aspect),
 			.mipLevel = outline.mipLevel,
-			.baseArrayLayer = 0,
-			.layerCount = 1
+			.baseArrayLayer = outline.arrayLayer,
+			.layerCount = outline.layerCount
 		},
 		.imageExtent
 		{
@@ -347,7 +362,7 @@ void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferR
 	VkBuffer vkSrcBuffer = GetBufferInternal(copyRegions.srcBuffer).buffer;
 	VkImage vkDstImage = GetImageInternal(copyRegions.dstImage).image;
 
-	const DynamicArray<AptnBufferToImageCopyOutline>& outlines = copyRegions.outlines;
+	const ArrayView<AptnBufferToImageCopyOutline>& outlines = copyRegions.outlines;
 	DynamicArray<VkBufferImageCopy> bufferCopyRegions;
 	bufferCopyRegions.Reserve(outlines.Size());
 	for (const AptnBufferToImageCopyOutline& outline : outlines)
@@ -359,8 +374,8 @@ void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferR
 			{
 				.aspectMask = ApparitionImageAspectToVk(outline.aspect),
 				.mipLevel = outline.mipLevel,
-				.baseArrayLayer = 0,
-				.layerCount = 1
+				.baseArrayLayer = outline.arrayLayer,
+				.layerCount = outline.layerCount
 			},
 			.imageExtent
 			{
@@ -396,7 +411,7 @@ void ImageMemoryBarrier(AptnCommandBuffer commandBuffer, const AptnImageMemoryBa
 		.aspectMask = ApparitionImageAspectToVk(barrierDesc.aspect),
 		.baseMipLevel = barrierDesc.baseMipLevel,
 		.levelCount = barrierDesc.mipLevelCount,
-		.layerCount = 1
+		.layerCount = barrierDesc.layerCount
 	};
 
 	Assert(imgInternal.access.IsIndexValid(barrierDesc.baseMipLevel));

@@ -111,6 +111,7 @@
     <ClInclude Include="..\..\Source\Core\Containers\Set.h" />
     <ClInclude Include="..\..\Source\Core\Containers\Stack.hpp" />
     <ClInclude Include="..\..\Source\Core\Containers\StaticArray.hpp" />
+    <ClInclude Include="..\..\Source\Core\Core.h" />
     <ClInclude Include="..\..\Source\Core\CoreAPI.hpp" />
     <ClInclude Include="..\..\Source\Core\CoreFlags.hpp" />
     <ClInclude Include="..\..\Source\Core\Debugging\Assertion.hpp" />

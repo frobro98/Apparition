@@ -10,7 +10,7 @@
 namespace
 {
 // Vk structs
-DynamicArray<VkVertexInputAttributeDescription> ApparitionAttributesToVk(const DynamicArray<AptnVertexAttributeDescription>& attributes)
+DynamicArray<VkVertexInputAttributeDescription> ApparitionAttributesToVk(const ArrayView<const AptnVertexAttributeDescription>& attributes)
 {
     DynamicArray<VkVertexInputAttributeDescription> vkAttributes(attributes.Size());
     for (u32 i = 0; i < attributes.Size(); ++i)
@@ -27,7 +27,7 @@ DynamicArray<VkVertexInputAttributeDescription> ApparitionAttributesToVk(const D
     return vkAttributes;
 }
 
-DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const DynamicArray<AptnVertexBindingDescription>& bindings)
+DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const ArrayView<const AptnVertexBindingDescription>& bindings)
 {
     DynamicArray<VkVertexInputBindingDescription> vkBindings(bindings.Size());
     for (u32 i = 0; i < bindings.Size(); ++i)
@@ -43,7 +43,7 @@ DynamicArray<VkVertexInputBindingDescription> ApparitionBindingsToVk(const Dynam
     return vkBindings;
 }
 
-DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<AptnImageFormat>& formats)
+DynamicArray<VkFormat> ApparitionFormatsToVk(const ArrayView<const AptnImageFormat>& formats)
 {
     DynamicArray<VkFormat> vkFormats(formats.Size());
     for (u32 i = 0; i < formats.Size(); ++i)
@@ -54,7 +54,7 @@ DynamicArray<VkFormat> ApparitionFormatsToVk(const DynamicArray<AptnImageFormat>
     return vkFormats;
 }
 
-DynamicArray<VkPipelineColorBlendAttachmentState> ApparitionBlendAttachmentsToVk(const DynamicArray<AptnColorBlendAttachment>& blendAttachments)
+DynamicArray<VkPipelineColorBlendAttachmentState> ApparitionBlendAttachmentsToVk(const ArrayView<const AptnColorBlendAttachment>& blendAttachments)
 {
     DynamicArray<VkPipelineColorBlendAttachmentState> vkAttachments(blendAttachments.Size());
     for (u32 i = 0; i < blendAttachments.Size(); ++i)
@@ -440,11 +440,11 @@ AptnFragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState
     VkPipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-    //multisampling.sampleShadingEnable = VK_FALSE;
-    //multisampling.minSampleShading = 1.0f; // Optional
-    //multisampling.pSampleMask = nullptr; // Optional
-    //multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
-    //multisampling.alphaToOneEnable = VK_FALSE; // Optional
+    multisampling.sampleShadingEnable = VK_FALSE;
+    multisampling.minSampleShading = 1.0f; // Optional
+    multisampling.pSampleMask = nullptr; // Optional
+    multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
+    multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
 
     // Dynamic Rendering Setup: Gets passed to shader stages

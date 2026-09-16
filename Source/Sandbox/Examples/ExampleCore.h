@@ -3,6 +3,14 @@
 #include "BasicTypes/Intrinsics.hpp"
 #include "Containers/MemoryBuffer.hpp"
 #include "File/FileSystem.hpp"
+#include "Math/MathFunctions.hpp"
+#include "Math/Matrix4.hpp"
+#include "Math/MatrixFunctions.hpp"
+#include "Math/Quat.hpp"
+#include "Math/Vector3.hpp"
+
+#include <ctime>
+#include <random>
 
 // General Includes to help
 #include "Apparition/Backbuffer.h"

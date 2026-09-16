@@ -11,13 +11,13 @@
 
 struct AptnShaderData
 {
-    DynamicArray<u32> code;
+    ArrayView<u32> code;
     const char* entryName = nullptr;
 };
 
 struct AptnPipelineDescription
 {
-    DynamicArray<AptnDescriptorSetLayout> descriptorSets;
+    ArrayView<const AptnDescriptorSetLayout> descriptorSets;
     bool useDescriptorHeaps = false;
 };
 
@@ -50,10 +50,10 @@ struct AptnVertexInputPipelineStateCreationParams
     AptnPrimitiveTopology primitiveTopology;
 
     // Vertex attributes
-    DynamicArray<AptnVertexAttributeDescription> attributes;
+    ArrayView<const AptnVertexAttributeDescription> attributes;
 
     // Vertex bindings
-    DynamicArray<AptnVertexBindingDescription> bindings;
+    ArrayView<const AptnVertexBindingDescription> bindings;
 };
 
 
@@ -94,10 +94,10 @@ struct AptnColorBlendAttachment
 {
     AptnBlendFactor srcColorFactor = AptnBlendFactor::One;
     AptnBlendFactor dstColorFactor = AptnBlendFactor::Zero;
-    AptnBlendOperation colorBlendOperation = AptnBlendOperation::Add;
+    AptnBlendOperation colorBlendOperation = AptnBlendOperation::None;
     AptnBlendFactor srcAlphaFactor = AptnBlendFactor::One;
     AptnBlendFactor dstAlphaFactor = AptnBlendFactor::Zero;
-    AptnBlendOperation alphaBlendOperation = AptnBlendOperation::Add;
+    AptnBlendOperation alphaBlendOperation = AptnBlendOperation::None;
     AptnColorComponentFlags colorMask = AptnColorComponentFlags::RGBA;
 };
 
@@ -106,13 +106,13 @@ struct AptnFragmentOutputPipelineStateCreationParams
     AptnPipelineDescription pipelineDesc;
 
     // Blend states
-    DynamicArray<AptnColorBlendAttachment> attachments;
+    ArrayView<const AptnColorBlendAttachment> attachments;
 
     // Multisample State
     //MultisampleState multisampleState;
 
     // Output
-    DynamicArray<AptnImageFormat> colorAttachmentFormats;
+    ArrayView<const AptnImageFormat> colorAttachmentFormats;
     AptnImageFormat depthAttachmentFormat = AptnImageFormat::Invalid;
     AptnImageFormat stencilAttachmentFormat = AptnImageFormat::Invalid;
 };

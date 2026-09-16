@@ -75,14 +75,14 @@ class Texture2D : public Texture
 class Texture2DArray : public Texture
 {
   public:
-	/*
+	//*
 	void loadFromFile(
 	    std::string                    filename,
-		AptnImageFormat::Type  format,
+		AptnImageFormat  format,
 		AptnDevice             device,
 		AptnQueue              copyQueue,
-		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlagBits::Sampled,
-		AptnImageAccess::Type  imageAccess = AptnImageAccess::ColorRead);
+		AptnImageUsageFlags    imageUsageFlags = AptnImageUsageFlags::Sampled,
+		AptnImageAccess  imageAccess = AptnImageAccess::ColorRead);
 	//*/
 };
 

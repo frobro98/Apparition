@@ -146,7 +146,7 @@ namespace vks
 		{
 			.srcBuffer = stagingBuffer,
 			.dstImage = image,
-			.outlines = MOVE(bufferCopyRegions)
+			.outlines = bufferCopyRegions
 		};
 		// Copy mip levels from staging buffer
 		Apparition::CopyBufferRegionsToImage(copyCmd, bufferRegionCopy);
@@ -350,12 +350,12 @@ namespace vks
 	* @param (Optional) imageLayout Usage layout for the texture (defaults VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	*
 	*/
-	/*
-	void Texture2DArray::loadFromFile(std::string filename, Apparition::ImageFormat::Type format, Apparition::Device device, Apparition::Queue copyQueue, Apparition::ImageUsageFlags imageUsageFlags, Apparition::ImageAccess::Type imageAccess)
+	//*
+	void Texture2DArray::loadFromFile(std::string filename, AptnImageFormat format, AptnDevice device, AptnQueue copyQueue, AptnImageUsageFlags imageUsageFlags, AptnImageAccess imageAccess)
 	{
 		ktxTexture* ktxTexture;
 		ktxResult result = loadKTXFile(filename, &ktxTexture);
-		assert(result == KTX_SUCCESS);
+		Assert(result == KTX_SUCCESS);
 
 		this->device = device;
 		width = ktxTexture->baseWidth;
@@ -366,133 +366,129 @@ namespace vks
 		ktx_uint8_t *ktxTextureData = ktxTexture_GetData(ktxTexture);
 		ktx_size_t ktxTextureSize = ktxTexture_GetSize(ktxTexture);
 
-		// Create a host-visible staging buffer that contains the raw image data
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingMemory;
-
-		VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo();
-		bufferCreateInfo.size = ktxTextureSize;
-		// This buffer is used as a transfer source for the buffer copy
-		bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		VK_CHECK_RESULT(vkCreateBuffer(device->logicalDevice, &bufferCreateInfo, nullptr, &stagingBuffer));
-
-		// Get memory requirements for the staging buffer (alignment, memory type bits)
-		VkMemoryRequirements memReqs;
-		vkGetBufferMemoryRequirements(device->logicalDevice, stagingBuffer, &memReqs);
-		VkMemoryAllocateInfo memAllocInfo{
-			.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			.allocationSize = memReqs.size,
-			.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+		AptnBufferCreationParams bufferParams
+		{
+			.usage = AptnBufferUsageFlags::TransferSrc,
+			.supportsMappedMemory = true,
+			.size = ktxTextureSize
 		};
-		VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &stagingMemory));
-		VK_CHECK_RESULT(vkBindBufferMemory(device->logicalDevice, stagingBuffer, stagingMemory, 0));
+		AptnBuffer stagingBuffer = Apparition::CreateBuffer(device, bufferParams);
 
 		// Copy texture data into staging buffer
-		uint8_t *data{ nullptr };
-		VK_CHECK_RESULT(vkMapMemory(device->logicalDevice, stagingMemory, 0, memReqs.size, 0, (void **)&data));
+		void* data = Apparition::MapBuffer(stagingBuffer);
 		memcpy(data, ktxTextureData, ktxTextureSize);
-		vkUnmapMemory(device->logicalDevice, stagingMemory);
+		Apparition::UnmapBuffer(stagingBuffer);
 
 		// Setup buffer copy regions for each layer including all of its miplevels
-		std::vector<VkBufferImageCopy> bufferCopyRegions;
+		DynamicArray<AptnBufferToImageCopyOutline> outlines;
 
 		for (uint32_t layer = 0; layer < layerCount; layer++) {
 			for (uint32_t level = 0; level < mipLevels; level++) {
 				ktx_size_t offset;
 				KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, level, layer, 0, &offset);
-				assert(result == KTX_SUCCESS);
-				VkBufferImageCopy bufferCopyRegion{
+				Assert(result == KTX_SUCCESS);
+				AptnBufferToImageCopyOutline outline
+				{
 					.bufferOffset = offset,
-					.imageSubresource {
-						.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-						.mipLevel = level,
-						.baseArrayLayer = layer,
-						.layerCount = 1,
-					},
-					.imageExtent {
-						.width = ktxTexture->baseWidth >> level,
-						.height = ktxTexture->baseHeight >> level,
-						.depth = 1,
-					}
+					.aspect = AptnImageAspectFlags::Color,
+					.mipLevel = level,
+					.imgWidth = ktxTexture->baseWidth >> level,
+					.imgHeight = ktxTexture->baseHeight >> level,
+					.arrayLayer = layer,
+					.layerCount = 1
 				};
-				bufferCopyRegions.push_back(bufferCopyRegion);
+				outlines.Add(outline);
 			}
 		}
 
 		// Create optimal tiled target image
-		VkImageCreateInfo imageCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-			.imageType = VK_IMAGE_TYPE_2D,
+		AptnImageCreationParams imageParams
+		{
+			.width = width,
+			.height = height,
 			.format = format,
-			.extent = {.width = width, .height = height, .depth = 1 },
 			.mipLevels = mipLevels,
-			.arrayLayers = layerCount,
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.tiling = VK_IMAGE_TILING_OPTIMAL,
-			.usage = imageUsageFlags,
-			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.layerCount = layerCount,
+			.usageFlags = imageUsageFlags | AptnImageUsageFlags::TransferDst
 		};
-		// Ensure that the TRANSFER_DST bit is set for staging
-		if (!(imageCreateInfo.usage & VK_IMAGE_USAGE_TRANSFER_DST_BIT)) {
-			imageCreateInfo.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-		}
-		VK_CHECK_RESULT(vkCreateImage(device->logicalDevice, &imageCreateInfo, nullptr, &image));
-
-		vkGetImageMemoryRequirements(device->logicalDevice, image, &memReqs);
-		memAllocInfo.allocationSize = memReqs.size;
-		memAllocInfo.memoryTypeIndex = device->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		VK_CHECK_RESULT(vkAllocateMemory(device->logicalDevice, &memAllocInfo, nullptr, &deviceMemory));
-		VK_CHECK_RESULT(vkBindImageMemory(device->logicalDevice, image, deviceMemory, 0));
+		image = Apparition::CreateImage(device, imageParams);
 
 		// Use a separate command buffer for texture loading
-		VkCommandBuffer copyCmd = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-		// Image barrier for optimal image (target)
-		// Set initial layout for all array layers (faces) of the optimal (target) tiled texture
-		VkImageSubresourceRange subresourceRange{ .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = mipLevels, .layerCount = layerCount };
-		vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange);
-		// Copy the layers and mip levels from the staging buffer to the optimal tiled image
-		vkCmdCopyBufferToImage(copyCmd, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
-		// Change texture image layout to shader read after all faces have been copied
-		this->imageLayout = imageLayout;
-		vks::tools::setImageLayout(copyCmd, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, imageLayout, subresourceRange);
-		device->flushCommandBuffer(copyCmd, copyQueue);
+		AptnCommandPoolCreationParams poolParams
+		{
+			.queueIndex = Apparition::GetQueueIndex(copyQueue)
+		};
+		AptnCommandPool commandPool = Apparition::CreateCommandPool(device, poolParams);
+		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool);
+
+		Apparition::BeginCommandBuffer(copyCmd);
+
+		{
+			AptnImageMemoryBarrierDesc barrierDesc
+			{
+				.image = image,
+				.access = AptnImageAccess::TransferDst,
+				.aspect = AptnImageAspectFlags::Color,
+				.baseMipLevel = 0,
+				.mipLevelCount = mipLevels,
+				.layerCount = layerCount
+			};
+			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
+		}
+
+		AptnBufferRegionsToImageCopyDesc copyDesc
+		{
+			.srcBuffer = stagingBuffer,
+			.dstImage = image,
+			.outlines = outlines
+		};
+		Apparition::CopyBufferRegionsToImage(copyCmd, copyDesc);
+		this->imageAccess = imageAccess;
+		{
+			AptnImageMemoryBarrierDesc barrierDesc
+			{
+				.image = image,
+				.access = imageAccess,
+				.aspect = AptnImageAspectFlags::Color,
+				.baseMipLevel = 0,
+				.mipLevelCount = mipLevels,
+				.layerCount = layerCount
+			};
+			Apparition::ImageMemoryBarrier(copyCmd, barrierDesc);
+		}
+
+		Apparition::EndCommandBuffer(copyCmd);
+		Apparition::SubmitCommandBuffer(copyQueue, copyCmd);
+		Apparition::WaitForIdle(copyQueue);
 
 		// Create sampler
-		VkSamplerCreateInfo samplerCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-			.magFilter = VK_FILTER_LINEAR,
-			.minFilter = VK_FILTER_LINEAR,
-			.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-			.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-			.addressModeV = samplerCreateInfo.addressModeU,
-			.addressModeW = samplerCreateInfo.addressModeU,
-			.mipLodBias = 0.0f,
-			.anisotropyEnable = device->enabledFeatures.samplerAnisotropy,
-			.maxAnisotropy = device->enabledFeatures.samplerAnisotropy ? device->properties.limits.maxSamplerAnisotropy : 1.0f,
-			.compareOp = VK_COMPARE_OP_NEVER,
-			.minLod = 0.0f,
-			.maxLod = (float)mipLevels,
-			.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
+		AptnSamplerCreationParams samplerParams
+		{
+			.addressModeU = AptnSamplerAddressMode::Clamp,
+			.addressModeV = AptnSamplerAddressMode::Clamp,
+			.filter = AptnSamplerFilter::Linear,
+			.maxAnisotropy = 1.f,
+			.minLod = 0.f,
+			.maxLod = (float)mipLevels
 		};
-		VK_CHECK_RESULT(vkCreateSampler(device->logicalDevice, &samplerCreateInfo, nullptr, &sampler));
+		sampler = Apparition::CreateSampler(device, samplerParams);
 
 		// Create image view
-		VkImageViewCreateInfo viewCreateInfo{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			.image = image,
-			.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY,
+		AptnImageViewCreationParams viewParams
+		{
 			.format = format,
-			.subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT, .baseMipLevel = 0, .levelCount = mipLevels, .baseArrayLayer = 0, .layerCount = layerCount },
+			.aspect = AptnImageAspectFlags::Color,
+			.mipCount = mipLevels,
+			.baseMipLevel = 0,
+			.layerCount = layerCount
 		};
-		VK_CHECK_RESULT(vkCreateImageView(device->logicalDevice, &viewCreateInfo, nullptr, &view));
+		view = Apparition::CreateImageView(image, viewParams);
 
 		// Clean up staging resources
 		ktxTexture_Destroy(ktxTexture);
-		vkDestroyBuffer(device->logicalDevice, stagingBuffer, nullptr);
-		vkFreeMemory(device->logicalDevice, stagingMemory, nullptr);
+		Apparition::FreeCommandBuffer(copyCmd);
+		Apparition::DestroyCommandPool(commandPool);
+		Apparition::DestroyBuffer(stagingBuffer);
 
 		// Update descriptor image info member that can be used for setting up descriptor sets
 		updateDescriptor();

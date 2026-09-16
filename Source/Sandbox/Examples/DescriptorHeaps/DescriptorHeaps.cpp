@@ -167,12 +167,16 @@ void InitializeDescriptorHeapsExample(AptnDevice inDevice)
 	// Pipeline
 	AptnVertexInputPipelineState vertexInput;
 	{
+		const StaticArray vertexBindings = {
+			vkglTF::Vertex::inputBindingDescription(0)
+		};
+		constexpr StaticArray attributes = vkglTF::Vertex::inputAttributeDescriptions(0, StaticArray{ vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Normal, vkglTF::VertexComponent::UV, vkglTF::VertexComponent::Color });
 		AptnVertexInputPipelineStateCreationParams params
 		{
 			.pipelineDesc = {.useDescriptorHeaps = true },
 			.primitiveTopology = AptnPrimitiveTopology::TriangleList,
-			.attributes = vkglTF::Vertex::inputAttributeDescriptions(0, {vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Normal, vkglTF::VertexComponent::UV, vkglTF::VertexComponent::Color}),
-			.bindings = { vkglTF::Vertex::inputBindingDescription(0) }
+			.attributes = { attributes },
+			.bindings = { vertexBindings }
 		};
 		vertexInput = Apparition::CreateVertexInputPipelineState(device, params);
 	}
@@ -222,25 +226,31 @@ void InitializeDescriptorHeapsExample(AptnDevice inDevice)
 
 	AptnFragmentOutputPipelineState fragmentOutput;
 	{
+		StaticArray attachments = {
+			AptnColorBlendAttachment
+			{
+				.srcColorFactor = AptnBlendFactor::Zero,
+				.dstColorFactor = AptnBlendFactor::Zero,
+				.colorBlendOperation = AptnBlendOperation::None,
+				.srcAlphaFactor = AptnBlendFactor::Zero,
+				.dstAlphaFactor = AptnBlendFactor::Zero,
+				.alphaBlendOperation = AptnBlendOperation::None,
+				.colorMask = AptnColorComponentFlags::RGBA
+			}
+		};
+		StaticArray colorFormats = {
+			Apparition::GetBackbufferFormat(device)
+		};
 		AptnFragmentOutputPipelineStateCreationParams params
 		{
 			.pipelineDesc{ .useDescriptorHeaps = true },
 			.attachments
 			{
-				AptnColorBlendAttachment
-				{
-					.srcColorFactor = AptnBlendFactor::Zero,
-					.dstColorFactor = AptnBlendFactor::Zero,
-					.colorBlendOperation = AptnBlendOperation::None,
-					.srcAlphaFactor = AptnBlendFactor::Zero,
-					.dstAlphaFactor = AptnBlendFactor::Zero,
-					.alphaBlendOperation = AptnBlendOperation::None,
-					.colorMask = AptnColorComponentFlags::RGBA
-				}
+				attachments.internalData, attachments.Size()
 			},
 			.colorAttachmentFormats
 			{
-				Apparition::GetBackbufferFormat(device),
+				colorFormats.internalData, colorFormats.Size()
 			},
 			.depthAttachmentFormat = AptnImageFormat::DS_32f_8u,
 			.stencilAttachmentFormat = AptnImageFormat::DS_32f_8u
@@ -363,9 +373,12 @@ void TickDescriptorHeapsExample(/*Apparition::Device device*/)
 	const u32 backbufferWidth = Apparition::GetBackbufferWidth(device);
 	const u32 backbufferHeight = Apparition::GetBackbufferHeight(device);
 
-
+	StaticArray colorAttachments =
+	{
+		colorAttachment
+	};
 	AptnRenderSetupParams renderSetup = {};
-	renderSetup.colorAttachments.Add(colorAttachment);
+	renderSetup.colorAttachments = { colorAttachments.internalData, colorAttachments.Size() };
 	renderSetup.depthAttachment = depthAttachment;
 	renderSetup.renderWidth = backbufferWidth;
 	renderSetup.renderHeight = backbufferHeight;

@@ -12,34 +12,36 @@ struct CORE_TEMPLATE StaticArray
 	static_assert(size > 0, "Empty arrays aren't allowed currently!");
 	using ValueType = Type;
 
-	u32 Size() const;
-	Type& First() const;
-	Type& Last() const;
+	constexpr ValueType* GetData() noexcept;
+	constexpr const ValueType* GetData() const noexcept;
+	constexpr u32 Size() const;
+	constexpr Type& First() const;
+	constexpr Type& Last() const;
 
-	ValueType& operator[](u32 index);
-	const ValueType& operator[](u32 index) const;
+	constexpr ValueType& operator[](u32 index);
+	constexpr const ValueType& operator[](u32 index) const;
 
 	struct Iterator final
 	{
-		Iterator(ValueType(&arr)[size], u32 startIndex)
+		constexpr Iterator(ValueType(&arr)[size], u32 startIndex)
 			: elems(arr),
 			index(startIndex)
 		{
 		}
 
-		Iterator& operator++()
+		constexpr Iterator& operator++()
 		{
 			Assert(index < size);
 			++index;
 			return *this;
 		}
 
-		bool operator!=(const Iterator& other)
+		constexpr bool operator!=(const Iterator& other)
 		{
 			return index != other.index;
 		}
 
-		ValueType& operator*()
+		constexpr ValueType& operator*()
 		{
 			return elems[index];
 		}
@@ -50,25 +52,25 @@ struct CORE_TEMPLATE StaticArray
 
 	struct ConstIterator final
 	{
-		ConstIterator(const ValueType (&arr)[size], u32 startIndex)
+		constexpr ConstIterator(const ValueType (&arr)[size], u32 startIndex)
 			: elems(arr),
 			index(startIndex)
 		{
 		}
 
-		ConstIterator& operator++()
+		constexpr ConstIterator& operator++()
 		{
 			Assert(index < size);
 			++index;
 			return *this;
 		}
 
-		bool operator!=(const ConstIterator& other)
+		constexpr bool operator!=(const ConstIterator& other)
 		{
 			return elems != other.elems && index != other.index;
 		}
 
-		const ValueType& operator*()
+		constexpr const ValueType& operator*()
 		{
 			return elems[index];
 		}
@@ -86,33 +88,51 @@ struct CORE_TEMPLATE StaticArray
 };
 
 template<class Type, u32 size>
-inline u32 StaticArray<Type, size>::Size() const
+inline constexpr Type* StaticArray<Type, size>::GetData() noexcept
+{
+	return internalData;
+}
+
+template<class Type, u32 size>
+inline constexpr const Type* StaticArray<Type, size>::GetData() const noexcept
+{
+    return internalData;
+}
+
+template<class Type, u32 size>
+inline constexpr u32 StaticArray<Type, size>::Size() const
 {
 	return size;
 }
 
 template<class Type, u32 size>
-inline Type& StaticArray<Type, size>::First() const
+inline constexpr Type& StaticArray<Type, size>::First() const
 {
 	return internalData[0];
 }
 
 template<class Type, u32 size>
-inline Type& StaticArray<Type, size>::Last() const
+inline constexpr Type& StaticArray<Type, size>::Last() const
 {
 	return internalData[size - 1];
 }
 
 template<class Type, u32 size>
-inline Type& StaticArray<Type, size>::operator[](u32 index)
+inline constexpr Type& StaticArray<Type, size>::operator[](u32 index)
 {
 	Assert(index < size);
 	return internalData[index];
 }
 
 template<class Type, u32 size>
-inline const Type& StaticArray<Type, size>::operator[](u32 index) const
+inline constexpr const Type& StaticArray<Type, size>::operator[](u32 index) const
 {
 	Assert(index < size);
 	return internalData[index];
 }
+
+// StaticArray deduction guide
+template<typename First, typename... Rest>
+StaticArray(First, Rest...) -> StaticArray<First, 1 + sizeof...(Rest)>;
+
+

@@ -3,7 +3,6 @@
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/ImageDescription.h"
-#include "Containers/DynamicArray.hpp"
 #include "DeviceManager.h"
 #include "HandleDefinitions.h"
 #include "HandlePool.h"

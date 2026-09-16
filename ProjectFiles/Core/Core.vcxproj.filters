@@ -698,6 +698,9 @@
     <ClInclude Include="..\..\Source\Core\Utilities\EnumUtils.h">
       <Filter>Source\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Core\Core.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Source\Core\Utilities\ThirdParty\LICENSE">

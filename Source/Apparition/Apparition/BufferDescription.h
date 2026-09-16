@@ -11,7 +11,8 @@ enum class AptnBufferUsageFlags
     StorageBuffer = 1 << 3,
     VertexBuffer = 1 << 4,
     IndexBuffer = 1 << 5,
-    ShaderDeviceAddress = 1 << 6,
+    IndirectBuffer = 1 << 6,
+    ShaderDeviceAddress = 1 << 7,
 
     MAX = 0x7FFFFFFF
 };

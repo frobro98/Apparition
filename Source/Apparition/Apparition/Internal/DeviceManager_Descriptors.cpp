@@ -91,6 +91,7 @@ AptnDescriptorPool DeviceManager::CreateDescriptorPool(AptnDevice device, const 
     VkDescriptorPoolCreateInfo poolInfo
     {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
         .maxSets = maxSets,
         .poolSizeCount = poolSizes.Size(),
         .pPoolSizes = poolSizes.GetData()
@@ -173,7 +174,7 @@ void DeviceManager::FreeDescriptorSet(AptnDescriptorSet descriptorSet)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorSet);
     u32 dsPoolIndex = GetResourcePoolIndexFromHandle(descriptorSet);
-    DescriptorPoolInternal& dsPoolInternal = deviceInternal.descriptorPoolResources[dsPoolIndex];
+    DescriptorPoolInternal& dsPoolInternal = GetDescriptorPoolInternalFromIndex(deviceInternal, dsPoolIndex);
     DescriptorSetInternal& dsInternal = GetDescriptorSetInternal(descriptorSet);
     VkResult result = vkFreeDescriptorSets(deviceInternal.device, dsPoolInternal.descriptorPool, 1, &dsInternal.descriptorSet);
     CHECK_VK(result);
@@ -181,18 +182,18 @@ void DeviceManager::FreeDescriptorSet(AptnDescriptorSet descriptorSet)
     PushFreedHandleIndex(deviceInternal.descriptorSetHandlePools, GetHandleIndex(descriptorSet));
 }
 
-void DeviceManager::AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams)
+void DeviceManager::AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const ArrayView<AptnDescriptorSetAllocParams>& allocParams)
 {
     UNUSED(descriptorPool, allocParams);
     //return { Apparition::InvalidHandle };
 }
 
-void DeviceManager::FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets)
+void DeviceManager::FreeDescriptorSets(const ArrayView<AptnDescriptorSet> descriptorSets)
 {
     UNUSED(descriptorSets);
 }
 
-void DeviceManager::UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates)
+void DeviceManager::UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSetDesc> descriptorSetUpdates)
 {
     if (!descriptorSetUpdates.IsEmpty())
     {
@@ -200,6 +201,10 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptor
 
         DynamicArray<VkWriteDescriptorSet> writeDescriptorSets;
         writeDescriptorSets.Reserve(descriptorSetUpdates.Size());
+        DynamicArray<VkDescriptorImageInfo> cachedImageInfo;
+        cachedImageInfo.Reserve(descriptorSetUpdates.Size());
+        DynamicArray<VkDescriptorBufferInfo> cachedBufferInfo;
+        cachedBufferInfo.Reserve(descriptorSetUpdates.Size());
         for (const AptnUpdateDescriptorSetDesc& updateDescriptorSetDesc : descriptorSetUpdates)
         {
             const DescriptorSetInternal& setInternal = GetDescriptorSetInternal(updateDescriptorSetDesc.descriptorSet);
@@ -231,8 +236,9 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptor
                     .imageView = vkView,
                     .imageLayout = layout
                 };
+                cachedImageInfo.Add(imageDescriptor);
                 writeSet.descriptorCount = 1;
-                writeSet.pImageInfo = &imageDescriptor;
+                writeSet.pImageInfo = &cachedImageInfo.Last();
             }
             else if (updateDescriptorSetDesc.bufferDescriptor)
             {
@@ -246,9 +252,9 @@ void DeviceManager::UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptor
                     .offset = updateDescriptorSetDesc.bufferDescriptor->offset,
                     .range = updateDescriptorSetDesc.bufferDescriptor->range
                 };
-
+                cachedBufferInfo.Add(bufferDescriptor);
                 writeSet.descriptorCount = 1;
-                writeSet.pBufferInfo = &bufferDescriptor;
+                writeSet.pBufferInfo = &cachedBufferInfo.Last();
             }
 
             writeDescriptorSets.Add(writeSet);

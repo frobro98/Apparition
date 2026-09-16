@@ -1,8 +1,7 @@
 #pragma once
 
-#include "BasicTypes/Intrinsics.hpp"
+#include "Core.h"
 #include "BasicTypes/FunctionRef.hpp"
-#include "Containers/DynamicArray.hpp"
 #include "Apparition/ApparitionAPI.hpp"
 #include "Apparition/ApparitionCore.h"
 
@@ -35,7 +34,7 @@ struct AptnDeviceCreationParams
 		(const VkPhysicalDeviceFeatures& /*supportedFeatures*/, 
 		 VkPhysicalDeviceFeatures& /*enabledDeviceFeatures*/)> featureSetupCallback;
 	// Optional callback to allow for custom queue setup by user
-	DynamicArray<AptnQueueCreationParams> queueCreationParams;
+	ArrayView<const AptnQueueCreationParams> queueCreationParams;
 };
 
 HANDLE_TYPE(AptnDevice)

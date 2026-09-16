@@ -25,6 +25,7 @@ WALL_WRN_POP
 #include "Logging/LogCore.hpp"
 #include "Logging/LogFunctions.hpp"
 #include "Logging/Sinks/DebugOutputWindowSink.hpp"
+#include "Logging/Sinks/LogFileSink.hpp"
 #include "Math/Vector2.hpp"
 #include "Math/Vector3.hpp"
 #include "Memory/MemoryCore.hpp"
@@ -48,6 +49,7 @@ WALL_WRN_POP
 #include "Examples/Base/Base.h"
 #include "Examples/DescriptorSets/DescriptorSets.h"
 #include "Examples/DescriptorHeaps/DescriptorHeaps.h"
+#include "Examples/Indirect/Indirect.h"
 
 DEFINE_LOG_CHANNEL(VkValidation);
 
@@ -77,9 +79,7 @@ DEFINE_LOG_CHANNEL(VkValidation);
 //     - Opt-in mechanism upon initialization of the API
 //       - This forbids usage of DescriptorSet API
 //       - Forces checks within other parts of the API (e.g. Pipeline Creation) to ensure adherance to dheap functionality
-//     - Supports both "untyped" and "backwards compatible" descriptor heaps
-//       - Back compat heaps require more data in pipeline creation for shader stages. Currently no way to confirm one or the other
-//         - Because of this, it may only support untyped in the future (once I understand how it works)
+//     - Only supports untyped dheaps. No backwards compatible heaps
 // Features of this library
 //   - Typed handles that represent the resources
 //     - Image vs ImageView would be separate handles
@@ -87,7 +87,22 @@ DEFINE_LOG_CHANNEL(VkValidation);
 //     - Query information via device-based C api interface
 //   - Async compute support
 //     - No shit...
+//   - Drawing
+//     - Indirect
+//     - Instances
+//     - Push Constants
+//   - Host-Image Copy
+//     - If supported (which I believe it's fairly supported?)
+//   - Various other shaders
+//     - Geo, Tesselation
+//     - Mesh and Task shaders
+//   - Various Texture Types
+//     - 2D, 3D, Cube, Array
+//   - Multisampling
 // 
+//   - Debug
+//     - DebugUtils first class citizen
+//     - DebugPrintf can be turned on
 //
 
 // State of API notes
@@ -188,6 +203,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 #endif
 
 	GetLogger().AddLogSink(new DebugOutputWindowSink);
+	GetLogger().AddLogSink(new LogFileSink(logFilePath));
 
 	const u32 windowWidth = 1280;
 	const u32 windowHeight = 720;
@@ -206,31 +222,32 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Apparition::SetErrorLogCallback(MOVE(debugCallback), nullptr);
 	Apparition::InitializeApparition(initParams);
 
+	const StaticArray queueParams = {
+		AptnQueueCreationParams
+		{
+			.queueType = AptnQueueType::Graphics
+		},
+		AptnQueueCreationParams
+		{
+			.queueType = AptnQueueType::Compute
+		},
+		AptnQueueCreationParams
+		{
+			.queueType = AptnQueueType::Transfer
+		}
+	};
 	AptnDevice deviceHandle;
 	{
 		AptnDeviceCreationParams createParams{
-			.queueCreationParams
-			{
-				AptnQueueCreationParams
-				{
-					.queueType = AptnQueueType::Graphics
-				},
-				AptnQueueCreationParams
-				{
-					.queueType = AptnQueueType::Compute
-				},
-				AptnQueueCreationParams
-				{
-					.queueType = AptnQueueType::Transfer
-				}
-			}
+			.queueCreationParams = queueParams
 		};
 		deviceHandle = Apparition::CreateDevice(createParams);
 	}
 
 	//InitializeBaseExample(deviceHandle);
 	//InitializeDescriptorSetsExample(deviceHandle);
-	InitializeDescriptorHeapsExample(deviceHandle);
+	//InitializeDescriptorHeapsExample(deviceHandle);
+	InitializeIndirectExample(deviceHandle);
 
 	while (windowOpen)
 	{
@@ -238,14 +255,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		//TickBaseExample();
 		//TickDescriptorSetsExample();
-		TickDescriptorHeapsExample();
+		//TickDescriptorHeapsExample();
+		TickIndirectExample();
 	}
 
 	//DestroyBaseExample();
 	//DestroyDescriptorSetsExample();
-	DestroyDescriptorHeapsExample();
+	//DestroyDescriptorHeapsExample();
+	DestroyIndirectExample();
 
-	Apparition::TeardownBackbuffer(deviceHandle);
+	//Apparition::TeardownBackbuffer(deviceHandle);
 	Apparition::DestroyDevice(deviceHandle);
 
     return 0;

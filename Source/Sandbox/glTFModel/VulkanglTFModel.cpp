@@ -605,37 +605,6 @@ AptnVertexBindingDescription vkglTF::Vertex::inputBindingDescription(uint32_t bi
 	return AptnVertexBindingDescription({ binding, sizeof(Vertex), AptnVertexInputRate::Vertex });
 }
 
-AptnVertexAttributeDescription vkglTF::Vertex::inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component) {
-	switch (component) {
-		case VertexComponent::Position: 
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_3, offsetof(Vertex, pos) });
-		case VertexComponent::Normal:
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_3, offsetof(Vertex, normal) });
-		case VertexComponent::UV:
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_2, offsetof(Vertex, uv) });
-		case VertexComponent::Color:
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, color) });
-		case VertexComponent::Tangent:
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, tangent) });
-		case VertexComponent::Joint0:
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, joint0) });
-		case VertexComponent::Weight0:
-			return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, weight0) });
-		default:
-			return AptnVertexAttributeDescription({});
-	}
-}
-
-DynamicArray<AptnVertexAttributeDescription> vkglTF::Vertex::inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components) {
-	DynamicArray<AptnVertexAttributeDescription> result;
-	uint32_t location = 0;
-	for (VertexComponent component : components) {
-		result.Add(Vertex::inputAttributeDescription(binding, location, component));
-		location++;
-	}
-	return result;
-}
-
 vkglTF::Texture* vkglTF::Model::getTexture(uint32_t index)
 {
 
@@ -789,9 +758,11 @@ void vkglTF::Model::releaseResources()
 		}
 		if (IsValid(descriptorSetLayoutUbo)) {
 			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutUbo);
+			descriptorSetLayoutUbo = { AptnInvalidHandle };
 		}
 		if (IsValid(descriptorSetLayoutImage)) {
 			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutImage);
+			descriptorSetLayoutImage = { AptnInvalidHandle };
 		}
 		Apparition::DestroyDescriptorPool(descriptorPool);
 		emptyTexture.destroy();
@@ -1411,18 +1382,14 @@ void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQu
 		}
 	}
 	
-	AptnDescriptorPoolCreationParams poolParams
-	{
-		.poolSizes
-		{
-			AptnDescriptorPoolSize
+	DynamicArray poolSizes = {
+		AptnDescriptorPoolSize
 			{
 				.poolType = AptnDescriptor::UniformBuffer,
 				.size = uboCount
 			}
-		}
 	};
-	auto& poolSizes = poolParams.poolSizes;
+	AptnDescriptorPoolCreationParams poolParams;
 	if (imageCount > 0) {
 		if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) {
 			poolSizes.Add(
@@ -1443,25 +1410,25 @@ void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQu
 			);
 		}
 	}
-
+	poolParams.poolSizes = poolSizes;
 	descriptorPool = Apparition::CreateDescriptorPool(device, poolParams);
 
 	// Descriptors for per-node uniform buffers
 	{
 		// Layout is global, so only create if it hasn't already been created before
 		if (!IsValid(descriptorSetLayoutUbo)) {
+			const StaticArray bindings = {
+				AptnDescriptorSetLayoutDesc
+				{
+					.binding = 0,
+					.descriptorType = AptnDescriptor::UniformBuffer,
+					.descriptorCount = 1,
+					.shaderStageFlags = AptnShaderStageFlags::Vertex
+				}
+			};
 			AptnDescriptorSetLayoutCreationParams params
 			{
-				.bindings = 
-				{
-					AptnDescriptorSetLayoutDesc
-					{
-						.binding = 0,
-						.descriptorType = AptnDescriptor::UniformBuffer,
-						.descriptorCount = 1,
-						.shaderStageFlags = AptnShaderStageFlags::Vertex
-					}
-				}
+				.bindings = bindings
 			};
 			descriptorSetLayoutUbo = Apparition::CreateDescriptorSetLayout(device, params);
 		}
@@ -1474,21 +1441,22 @@ void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQu
 	{
 		// Layout is global, so only create if it hasn't already been created before
 		if (!IsValid(descriptorSetLayoutImage)) {
+			DynamicArray<AptnDescriptorSetLayoutDesc> layouts;
 			AptnDescriptorSetLayoutCreationParams params;
 			if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) 
 			{
-				params.bindings.Add(
-					AptnDescriptorSetLayoutDesc
-					{
-						.binding = params.bindings.Size(),
-						.descriptorType = AptnDescriptor::CombinedImageSampler,
-						.descriptorCount = 1,
-						.shaderStageFlags = AptnShaderStageFlags::Fragment
-					});
+				layouts.Add(
+                    AptnDescriptorSetLayoutDesc
+                    {
+                        .binding = params.bindings.Size(),
+                        .descriptorType = AptnDescriptor::CombinedImageSampler,
+                        .descriptorCount = 1,
+                        .shaderStageFlags = AptnShaderStageFlags::Fragment
+                    });
 			}
 			if (descriptorBindingFlags & DescriptorBindingFlags::ImageNormalMap)
 			{
-				params.bindings.Add(
+				layouts.Add(
 					AptnDescriptorSetLayoutDesc
 					{ 
 						.binding = params.bindings.Size(),
@@ -1498,6 +1466,7 @@ void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQu
 					});
 			}
 
+			params.bindings = layouts;
 			descriptorSetLayoutImage = Apparition::CreateDescriptorSetLayout(device, params);
 		}
 		for (auto& material : materials) {
@@ -1545,7 +1514,7 @@ void vkglTF::Model::drawNode(Node *node, AptnCommandBuffer commandBuffer, uint32
 						.pipelineDesc = pipelineDesc,
 						.bindPoint = AptnBindPoint::Graphics,
 						.firstSet = 0,
-						.descriptorSets = { material.descriptorSet }
+						.descriptorSets = { &material.descriptorSet, 1 }
 					};
 					Apparition::BindDescriptorSets(commandBuffer, descriptorSetsDesc);
 				}
@@ -1718,7 +1687,8 @@ void vkglTF::Model::prepareNodeDescriptor(vkglTF::Node* node, AptnDescriptorSetL
 			.descriptorType = AptnDescriptor::UniformBuffer,
 			.bufferDescriptor = &node->mesh->uniformBuffer.descriptor
 		};
-		Apparition::UpdateDescriptorSets({ updateDesc });
+		const StaticArray dsUpdates = { updateDesc };
+		Apparition::UpdateDescriptorSets(dsUpdates);
 	}
 	for (auto& child : node->children) {
 		prepareNodeDescriptor(child, descriptorSetLayout);

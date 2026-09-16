@@ -1,7 +1,6 @@
 #pragma once
 
-#include "BasicTypes/Intrinsics.hpp"
-#include "Containers/StaticArray.hpp"
+#include "Core.h"
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Buffer.h"
 #include "Apparition/DescriptorHeap.h"
@@ -46,7 +45,7 @@ struct AptnDescriptorSetLayoutDesc
 };
 struct AptnDescriptorSetLayoutCreationParams
 {
-    DynamicArray<AptnDescriptorSetLayoutDesc> bindings;
+    ArrayView<const AptnDescriptorSetLayoutDesc> bindings;
 };
 
 struct AptnDescriptorPoolSize
@@ -57,7 +56,7 @@ struct AptnDescriptorPoolSize
 
 struct AptnDescriptorPoolCreationParams
 {
-    DynamicArray<AptnDescriptorPoolSize> poolSizes;
+    ArrayView<const AptnDescriptorPoolSize> poolSizes;
 };
 
 struct AptnDescriptorSetAllocParams
@@ -112,12 +111,12 @@ NODISCARD APPARITION_API AptnDescriptorPool CreateDescriptorPool(AptnDevice devi
 APPARITION_API void DestroyDescriptorPool(AptnDescriptorPool descriptorPool);
 
 NODISCARD APPARITION_API AptnDescriptorSet AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams);
-APPARITION_API void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams);
+APPARITION_API void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const ArrayView<AptnDescriptorSetAllocParams>& allocParams);
 APPARITION_API void FreeDescriptorSet(AptnDescriptorSet descriptorSet);
-APPARITION_API void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets);
+APPARITION_API void FreeDescriptorSets(const ArrayView<AptnDescriptorSet> descriptorSets);
 
 NODISCARD APPARITION_API AptnSampler CreateSampler(AptnDevice device, const AptnSamplerCreationParams& params);
 APPARITION_API void DestroySampler(AptnSampler sampler);
 
-APPARITION_API void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates);
+APPARITION_API void UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSetDesc> descriptorSetUpdates);
 }

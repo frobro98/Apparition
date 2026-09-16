@@ -2,7 +2,6 @@
 #include "DeviceManager.h"
 
 #include "ApparitionInternals.h"
-#include "Containers/DynamicArray.hpp"
 #include "ImageFormatConversion.h"
 #include "HandleDefinitions.h"
 #include "VulkanInfos.h"
@@ -236,6 +235,7 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 
 void DeviceManager::TeardownBackbuffer(AptnDevice device)
 {
+	// TODO - Invalid ImageView being destoryed here, must fix
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
 	Backbuffer& backbuffer = deviceInternal.backbuffer;

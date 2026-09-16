@@ -4,7 +4,6 @@
 #include "ApparitionInternals.h"
 #include "HandleDefinitions.h"
 #include "ImageFormatConversion.h"
-#include "Utilities/Array.hpp"
 #include "VulkanDefinitions.h"
 #include "VulkanInfos.h"
 
@@ -28,12 +27,9 @@ PFN_vkCmdPushDataEXT vkCmdPushDataEXT_ = nullptr;
 
 constexpr const tchar* validationLayers[] = {
 	"VK_LAYER_KHRONOS_validation",
-	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_object_tracker"
-	//, "VK_LAYER_LUNARG_standard_validation"
-	//, "VK_LAYER_LUNARG_parameter_validation"
-	//, "VK_LAYER_GOOGLE_threading"
-	//, "VK_LAYER_GOOGLE_unique_objects"
+	"VK_LAYER_KHRONOS_shader_object",
+	"VK_LAYER_KHRONOS_synchronization2",
+	"VK_LAYER_LUNARG_api_dump",
 };
 
 constexpr const tchar* instanceExtensions[] = {
@@ -345,7 +341,6 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 		VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME,  // Required for graphics pipeline library ext
 		VK_EXT_GRAPHICS_PIPELINE_LIBRARY_EXTENSION_NAME, // Allows for segmented pipelines that can be reused
 		VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
-		VK_KHR_MAINTENANCE_4_EXTENSION_NAME,
 		VK_KHR_MAINTENANCE_5_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_HEAP_EXTENSION_NAME,
 		VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
@@ -419,7 +414,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	// Initialize Maintenance 5
 	VkPhysicalDeviceMaintenance5Features maintenance5Features
 	{
-		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES,
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_5_FEATURES,
 		.pNext = &vulkan13Features,
 		.maintenance5 = VK_TRUE
 	};
@@ -469,6 +464,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 
 	VkPhysicalDeviceFeatures enabledFeatures{};
 	enabledFeatures.samplerAnisotropy = VK_TRUE;
+	enabledFeatures.multiDrawIndirect = VK_TRUE;
 	supportedGpuFeatures.features = enabledFeatures;
 
 	VkDeviceCreateInfo deviceInfo;
@@ -478,7 +474,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	deviceInfo.pQueueCreateInfos = queueInfos.GetData();
 	deviceInfo.enabledExtensionCount = deviceExtensionCount;
 	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
-	deviceInfo.pEnabledFeatures = nullptr;//&enabledDeviceFeatures;
+	//deviceInfo.pEnabledFeatures = &enabledFeatures;
 	deviceInfo.pNext = &supportedGpuFeatures;
 	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
 	CHECK_VK(result);

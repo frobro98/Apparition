@@ -20,6 +20,7 @@ public:
 
 	explicit String(const tchar* cStr, u32 size);
 	String(const tchar* cStr);
+	String(std::nullptr_t) = delete;
 
 	String& operator=(const tchar* cStr);
 

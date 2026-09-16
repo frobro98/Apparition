@@ -19,7 +19,8 @@ struct AptnImageCreationParams
     u32 width = 0;
     u32 height = 0;
     AptnImageFormat format = AptnImageFormat::Invalid;
-    u32 mipLevels = 0;
+    u32 mipLevels = 1;
+    u32 layerCount = 1;
     AptnImageUsageFlags usageFlags = AptnImageUsageFlags::Max;
 
 };
@@ -30,6 +31,7 @@ struct AptnImageViewCreationParams
     AptnImageAspectFlags aspect = AptnImageAspectFlags::Color;
     u32 mipCount = 1;
     u32 baseMipLevel = 0;
+    u32 layerCount = 1;
 };
 
 namespace Apparition

@@ -13,6 +13,7 @@
 struct AptnBindVertexBufferDesc
 {
     AptnBuffer vertexBuffer;
+    u32 binding = 0;
 };
 
 struct AptnBindIndexBufferDesc
@@ -47,7 +48,7 @@ struct AptnBindDescriptorSetsDesc
     AptnPipelineDescription pipelineDesc;
     AptnBindPoint bindPoint = AptnBindPoint::Graphics;
     u32 firstSet = 0;
-    DynamicArray<AptnDescriptorSet> descriptorSets;
+    ArrayView<const AptnDescriptorSet> descriptorSets;
 };
 
 struct AptnPushDataDesc
@@ -74,7 +75,8 @@ struct AptnBufferToImageCopyOutline
     u32 mipLevel = 0;
     u32 imgWidth = 0;
     u32 imgHeight = 0;
-    // TODO - Support array layers
+    u32 arrayLayer = 0;
+    u32 layerCount = 1;
 };
 
 struct AptnBufferToImageCopyDesc
@@ -88,7 +90,7 @@ struct AptnBufferRegionsToImageCopyDesc
 {
     AptnBuffer srcBuffer = { AptnInvalidHandle };
     AptnImage dstImage = { AptnInvalidHandle };
-    DynamicArray<AptnBufferToImageCopyOutline> outlines;
+    ArrayView<AptnBufferToImageCopyOutline> outlines;
 };
 
 struct AptnBlitImageDesc
@@ -113,7 +115,33 @@ struct AptnImageMemoryBarrierDesc
     // Subresource range
     AptnImageAspectFlags aspect = AptnImageAspectFlags::Color;
     u32 baseMipLevel = 0;
-    u32 mipLevelCount = 0;
+    u32 mipLevelCount = 1;
+    u32 layerCount = 1;
+};
+
+// Indirect Commands
+struct AptnDrawIndirectCommand
+{
+    u32 vertexCount = 0;
+    u32 instanceCount = 0;
+    u32 firstVertex = 0;
+    u32 firstInstance = 0;
+};
+
+struct AptnDrawIndexedIndirectCommand
+{
+    u32 indexCount = 0;
+    u32 instanceCount = 0;
+    u32 firstIndex = 0;
+    i32 vertexOffset = 0;
+    u32 firstInstance = 0;
+};
+
+struct AptnDispatchIndirectCommand
+{
+    u32 x;
+    u32 y;
+    u32 z;
 };
 
 namespace Apparition
@@ -140,6 +168,13 @@ APPARITION_API void PushData(AptnCommandBuffer commandBuffer, const AptnPushData
 
 // Draw Commands
 APPARITION_API void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount, u32 firstIndex, u32 instanceCount = 1, u32 firstInstance = 0);
+APPARITION_API void DrawIndexedIndirect(AptnCommandBuffer commandBuffer, AptnBuffer drawBuffer, u32 offset, u32 drawCount, u32 stride);
+//APPARITION_API void Draw();
+//APPARITION_API void DrawIndirect();
+
+// Dispatch Commands
+//APPARITION_API void Dispatch(AptnCommandBuffer commandBuffer, u32 groupCountX, u32 groupCountY, u32 groupCountZ);
+//APPARITION_API void DispatchIndirect();
 
 // Copy Commands
 APPARITION_API void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyDesc);

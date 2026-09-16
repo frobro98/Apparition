@@ -35,6 +35,12 @@
     <Filter Include="Source\Examples\DescriptorHeap\Shaders">
       <UniqueIdentifier>{9831d314-e521-43cf-a710-a97f1d5fcc09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Examples\Indirect">
+      <UniqueIdentifier>{fb95f739-7d79-4476-b184-1ca7f8e337e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Examples\Indirect\Shaders">
+      <UniqueIdentifier>{6b1d6677-19b9-4c1a-9bb5-6e1cec8c3259}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.cpp">
@@ -79,6 +85,9 @@
     <ClCompile Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.cpp">
       <Filter>Source\Examples\DescriptorHeap</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Sandbox\Examples\Indirect\Indirect.cpp">
+      <Filter>Source\Examples\Indirect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Sandbox\glTFModel\VulkanglTFModel.h">
@@ -102,6 +111,9 @@
     <ClInclude Include="..\..\Source\Sandbox\Examples\DescriptorHeaps\DescriptorHeaps.h">
       <Filter>Source\Examples\DescriptorHeap</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Sandbox\Examples\Indirect\Indirect.h">
+      <Filter>Source\Examples\Indirect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Assets\Shaders\Base\base.frag">
@@ -121,6 +133,24 @@
     </None>
     <None Include="..\..\Assets\Shaders\DescriptorHeaps\cube.vert">
       <Filter>Source\Examples\DescriptorHeap\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Indirect\ground.frag">
+      <Filter>Source\Examples\Indirect\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Indirect\ground.vert">
+      <Filter>Source\Examples\Indirect\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Indirect\indirectdraw.frag">
+      <Filter>Source\Examples\Indirect\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Indirect\indirectdraw.vert">
+      <Filter>Source\Examples\Indirect\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Indirect\skysphere.frag">
+      <Filter>Source\Examples\Indirect\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\Indirect\skysphere.vert">
+      <Filter>Source\Examples\Indirect\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

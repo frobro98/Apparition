@@ -11,7 +11,9 @@ enum class AptnVertexInputFormat
 	F32_2,
 	F32_3,
 	F32_4,
+	U8_4,
 	U32,
+	I32,
 
 	MAX = 0x7FFFFFFF
 };

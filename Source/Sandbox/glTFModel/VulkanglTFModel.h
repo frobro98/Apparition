@@ -249,12 +249,39 @@ namespace vkglTF
 		//static VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
 		static AptnVertexBindingDescription inputBindingDescription(uint32_t binding);
 		//static VkVertexInputBindingDescription inputBindingDescription(uint32_t binding);
-		static AptnVertexAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
-		//static VkVertexInputAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component);
-		static DynamicArray<AptnVertexAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
-		//static std::vector<VkVertexInputAttributeDescription> inputAttributeDescriptions(uint32_t binding, const std::vector<VertexComponent> components);
-		/** @brief Returns the default pipeline vertex input state create info structure for the requested vertex components */
-		//static VkPipelineVertexInputStateCreateInfo* getPipelineVertexInputState(const std::vector<VertexComponent> components);
+		static constexpr AptnVertexAttributeDescription inputAttributeDescription(uint32_t binding, uint32_t location, VertexComponent component)
+		{
+            switch (component) {
+            case VertexComponent::Position:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_3, offsetof(Vertex, pos) });
+            case VertexComponent::Normal:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_3, offsetof(Vertex, normal) });
+            case VertexComponent::UV:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_2, offsetof(Vertex, uv) });
+            case VertexComponent::Color:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, color) });
+            case VertexComponent::Tangent:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, tangent) });
+            case VertexComponent::Joint0:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, joint0) });
+            case VertexComponent::Weight0:
+                return AptnVertexAttributeDescription({ location, binding, AptnVertexInputFormat::F32_4, offsetof(Vertex, weight0) });
+            default:
+                return AptnVertexAttributeDescription({});
+            }
+		}
+
+		template<u32 N>
+		static constexpr StaticArray<AptnVertexAttributeDescription, N> inputAttributeDescriptions(u32 binding, const StaticArray<VertexComponent, N> components)
+		{
+            StaticArray<AptnVertexAttributeDescription, N> result;
+            uint32_t location = 0;
+			for (u32 i = 0; i < N; ++i) {
+                result[i] = Vertex::inputAttributeDescription(binding, location, components[i]);
+                location++;
+            }
+            return result;
+		}
 	};
 
 	enum FileLoadingFlags {

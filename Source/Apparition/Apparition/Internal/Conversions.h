@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Apparition/BufferDescription.h"
+#include "Apparition/ImageDescription.h"
 #include "Apparition/RenderingDescription.h"
 #include "Apparition/PipelineStateDefinitions.h"
 #include "VulkanDefinitions.h"
@@ -58,6 +60,10 @@ constexpr VkBufferUsageFlags ApparitionToVkBufferUsage(AptnBufferUsageFlags usag
 	{
 		vkUsageFlags |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 	}
+	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::IndirectBuffer))
+	{
+		vkUsageFlags |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+	}
 	if (HasAnyEnumFlags(usageFlags, AptnBufferUsageFlags::ShaderDeviceAddress))
 	{
 		vkUsageFlags |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -78,8 +84,12 @@ constexpr VkFormat ApparitionInputFormatToVk(AptnVertexInputFormat type)
 		return VK_FORMAT_R32G32B32_SFLOAT;
 	case AptnVertexInputFormat::F32_4:
 		return VK_FORMAT_R32G32B32A32_SFLOAT;
-	case AptnVertexInputFormat::U32:
+	case AptnVertexInputFormat::U8_4:
 		return VK_FORMAT_R8G8B8A8_UNORM;
+	case AptnVertexInputFormat::U32:
+		return VK_FORMAT_R32_UINT;
+	case AptnVertexInputFormat::I32:
+		return VK_FORMAT_R32_SINT;
 	default:
 		Assert(false);
 		return VK_FORMAT_UNDEFINED;

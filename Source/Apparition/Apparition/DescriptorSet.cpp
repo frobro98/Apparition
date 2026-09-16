@@ -40,7 +40,7 @@ AptnDescriptorSet AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const
     return deviceManager.AllocateDescriptorSet(descriptorPool, allocParams);
 }
 
-void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams)
+void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const ArrayView<AptnDescriptorSetAllocParams>& allocParams)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
@@ -54,7 +54,7 @@ void FreeDescriptorSet(AptnDescriptorSet descriptorSet)
     deviceManager.FreeDescriptorSet(descriptorSet);
 }
 
-void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets)
+void FreeDescriptorSets(const ArrayView<AptnDescriptorSet> descriptorSets)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;
@@ -75,7 +75,7 @@ void DestroySampler(AptnSampler sampler)
     deviceManager.DestroySampler(sampler);
 }
 
-void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates)
+void UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSetDesc> descriptorSetUpdates)
 {
     Assert(apparition.deviceManager);
     DeviceManager& deviceManager = *apparition.deviceManager;

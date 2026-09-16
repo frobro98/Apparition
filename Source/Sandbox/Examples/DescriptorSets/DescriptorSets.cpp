@@ -80,34 +80,31 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
         }
     }
 
+    const StaticArray bindings = {
+        AptnDescriptorSetLayoutDesc
+        {
+            .binding = 0,
+            .descriptorType = AptnDescriptor::UniformBuffer,
+            .descriptorCount = 1,
+            .shaderStageFlags = AptnShaderStageFlags::Vertex
+        },
+        AptnDescriptorSetLayoutDesc
+        {
+            .binding = 1,
+            .descriptorType = AptnDescriptor::CombinedImageSampler,
+            .descriptorCount = 1,
+            .shaderStageFlags = AptnShaderStageFlags::Fragment
+        }
+    };
     // DescriptorSetLayout
     AptnDescriptorSetLayoutCreationParams layoutParams
     {
-        .bindings
-        {
-            AptnDescriptorSetLayoutDesc
-            {
-                .binding = 0,
-                .descriptorType = AptnDescriptor::UniformBuffer,
-                .descriptorCount = 1,
-                .shaderStageFlags = AptnShaderStageFlags::Vertex
-            },
-            AptnDescriptorSetLayoutDesc
-            {
-                .binding = 1,
-                .descriptorType = AptnDescriptor::CombinedImageSampler,
-                .descriptorCount = 1,
-                .shaderStageFlags = AptnShaderStageFlags::Fragment
-            }
-        }
+        .bindings = bindings
     };
     descriptorSetLayout = Apparition::CreateDescriptorSetLayout(device, layoutParams);
 
-    AptnDescriptorPoolCreationParams poolParams
-    {
-        .poolSizes
-        {
-            AptnDescriptorPoolSize
+    const StaticArray poolSizes = {
+        AptnDescriptorPoolSize
             {
                 .poolType = AptnDescriptor::UniformBuffer,
                 .size = cubes.Size() * maxConcurrentFrames
@@ -117,7 +114,10 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
                 .poolType = AptnDescriptor::CombinedImageSampler,
                 .size = cubes.Size() * maxConcurrentFrames
             },
-        }
+    };
+    AptnDescriptorPoolCreationParams poolParams
+    {
+        .poolSizes = poolSizes
     };
     descriptorPool = Apparition::CreateDescriptorPool(device, poolParams);
 
@@ -159,19 +159,21 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
         }
     }
 
+    const StaticArray descriptorSetLayouts = { descriptorSetLayout };
     // Pipeline
     AptnPipelineDescription pipelineDesc
     {
-        .descriptorSets{ descriptorSetLayout }
+        .descriptorSets = descriptorSetLayouts
     };
 
     AptnVertexInputPipelineState vertexInput;
     {
+        const StaticArray bindings = { vkglTF::Vertex::inputBindingDescription(0) };
         AptnVertexInputPipelineStateCreationParams params
         {
             .primitiveTopology = AptnPrimitiveTopology::TriangleList,
-            .attributes = vkglTF::Vertex::inputAttributeDescriptions(0, {vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Normal, vkglTF::VertexComponent::UV, vkglTF::VertexComponent::Color}),
-            .bindings = { vkglTF::Vertex::inputBindingDescription(0) }
+            .attributes = vkglTF::Vertex::inputAttributeDescriptions(0, StaticArray{vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Normal, vkglTF::VertexComponent::UV, vkglTF::VertexComponent::Color}),
+            .bindings = bindings
         };
         vertexInput = Apparition::CreateVertexInputPipelineState(device, params);
     }
@@ -219,13 +221,8 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
         fragmentShader = Apparition::CreateFragmentShaderPipelineState(device, params);
     }
 
-    AptnFragmentOutputPipelineState fragmentOutput;
-    {
-        AptnFragmentOutputPipelineStateCreationParams params
-        {
-            .attachments
-            {
-                AptnColorBlendAttachment
+    const StaticArray attachments = {
+        AptnColorBlendAttachment
                 {
                     .srcColorFactor = AptnBlendFactor::Zero,
                     .dstColorFactor = AptnBlendFactor::Zero,
@@ -235,11 +232,16 @@ void InitializeDescriptorSetsExample(AptnDevice inDevice)
                     .alphaBlendOperation = AptnBlendOperation::None,
                     .colorMask = AptnColorComponentFlags::RGBA
                 }
-            },
-            .colorAttachmentFormats
-            {
-                Apparition::GetBackbufferFormat(device),
-            },
+    };
+    const StaticArray colorFormats = {
+        Apparition::GetBackbufferFormat(device),
+    };
+    AptnFragmentOutputPipelineState fragmentOutput;
+    {
+        AptnFragmentOutputPipelineStateCreationParams params
+        {
+            .attachments = attachments,
+            .colorAttachmentFormats = colorFormats,
             .depthAttachmentFormat = AptnImageFormat::DS_32f_8u,
             .stencilAttachmentFormat = AptnImageFormat::DS_32f_8u
         };
@@ -371,9 +373,11 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
     const u32 backbufferWidth = Apparition::GetBackbufferWidth(device);
     const u32 backbufferHeight = Apparition::GetBackbufferHeight(device);
 
-
+    const StaticArray colorAttachments = {
+        colorAttachment
+    };
     AptnRenderSetupParams renderSetup = {};
-    renderSetup.colorAttachments.Add(colorAttachment);
+    renderSetup.colorAttachments = colorAttachments;
     renderSetup.depthAttachment = depthAttachment;
     renderSetup.renderWidth = backbufferWidth;
     renderSetup.renderHeight = backbufferHeight;
@@ -410,14 +414,17 @@ void TickDescriptorSetsExample(/*Apparition::Device device*/)
 
     for (auto cube : cubes)
     {
+        const StaticArray descriptorSetLayouts = {
+            descriptorSetLayout
+        };
         AptnBindDescriptorSetsDesc bindDesc
         {
             .bindPoint = AptnBindPoint::Graphics,
             .pipelineDesc =
             {
-                .descriptorSets{ descriptorSetLayout }
+                .descriptorSets = descriptorSetLayouts
             },
-            .descriptorSets{cube.descriptorSets[currentBuffer]},
+            .descriptorSets{&cube.descriptorSets[currentBuffer], 1},
             .firstSet = 0
         };
         Apparition::BindDescriptorSets(commandBuffer, bindDesc);

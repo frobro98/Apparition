@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BasicTypes/Function.hpp"
-#include "Containers/DynamicArray.hpp"
 
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/Backbuffer.h"
@@ -131,10 +130,10 @@ public:
 
 	AptnDescriptorSet AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams);
 	void FreeDescriptorSet(AptnDescriptorSet descriptorSet);
-	void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const DynamicArray<AptnDescriptorSetAllocParams>& allocParams);
-	void FreeDescriptorSets(const DynamicArray<AptnDescriptorSet> descriptorSets);
+	void AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const ArrayView<AptnDescriptorSetAllocParams>& allocParams);
+	void FreeDescriptorSets(const ArrayView<AptnDescriptorSet> descriptorSets);
 
-	void UpdateDescriptorSets(const DynamicArray<AptnUpdateDescriptorSetDesc>& descriptorSetUpdates);
+	void UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSetDesc> descriptorSetUpdates);
 #pragma endregion
 
 #pragma region Descriptor Heap
