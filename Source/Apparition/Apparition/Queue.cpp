@@ -46,15 +46,15 @@ void SubmitCommandBuffer(AptnQueue queue, AptnCommandBuffer commandBuffer)
     VkSubmitInfo submitInfo = {};
     Vk::ZeroInfoStruct(submitInfo, VK_STRUCTURE_TYPE_SUBMIT_INFO);
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cbInternal.commandBuffer;
-    VkResult result = vkQueueSubmit(queueInternal.queue, 1, &submitInfo, VK_NULL_HANDLE);
+    submitInfo.pCommandBuffers = &cbInternal.vkHandle;
+    VkResult result = vkQueueSubmit(queueInternal.vkHandle, 1, &submitInfo, VK_NULL_HANDLE);
     CHECK_VK(result);
 }
 void WaitForIdle(AptnQueue queue)
 {
     QueueInternal& queueInternal = GetQueueInternal(queue);
 
-    vkQueueWaitIdle(queueInternal.queue);
+    vkQueueWaitIdle(queueInternal.vkHandle);
 }
 
 u32 GetQueueIndex(AptnQueue queue)

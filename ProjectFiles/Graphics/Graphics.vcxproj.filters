@@ -27,16 +27,10 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h">
-      <Filter>Source\Apparition</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h">
       <Filter>Source\Apparition\Internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h">
-      <Filter>Source\Apparition</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\ImageDescription.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ImageFormatConversion.h">
@@ -54,9 +48,6 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\Buffer.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\BufferDescription.h">
-      <Filter>Source\Apparition</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Pipeline.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
@@ -67,9 +58,6 @@
       <Filter>Source\Apparition</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Synchronization.h">
-      <Filter>Source\Apparition</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\RenderingDescription.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\Conversions.h">
@@ -84,10 +72,13 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorHeap.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\PipelineStateDefinitions.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\DeviceLimits.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Apparition\Apparition\DeviceLimits.h">
+    <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionDefinitions.h">
+      <Filter>Source\Apparition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Apparition.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
   </ItemGroup>

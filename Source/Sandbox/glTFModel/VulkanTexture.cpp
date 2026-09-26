@@ -23,7 +23,7 @@ namespace vks
 	{
 		Apparition::DestroyImageView(view);
 		Apparition::DestroyImage(image);
-		if (IsValid(sampler))
+		if (Apparition::IsValid(sampler))
 		{
 			Apparition::DestroySampler(sampler);
 		}

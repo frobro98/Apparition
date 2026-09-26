@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "BasicTypes/Delegate.h"
 #include "Apparition/ApparitionAPI.hpp"
-#include "Apparition/EnumDefinitions.h"
+#include "Apparition/ApparitionDefinitions.h"
 
 struct VkDebugUtilsMessengerCallbackDataEXT;
 
@@ -11,17 +11,15 @@ struct VkDebugUtilsMessengerCallbackDataEXT;
 #define APPARITION_MAKE_VERSION(major, minor, patch) \
 	((((u32)(major)) << 22) | (((u32)(minor)) << 12) | ((u32)(patch)))
 
-static constexpr u32 AptnInvalidHandle = 0;
 
-
-using AptnAllocationDelegate = Delegate<void* (void* /* userData */, size_t /* allocSize */, size_t /* alignment */, AllocationScope /* scope */)>;
-using AptnReallocationDelegate = Delegate<void* (void*, void*, size_t, size_t, AllocationScope)>;
+using AptnAllocationDelegate = Delegate<void* (void* /* userData */, size_t /* allocSize */, size_t /* alignment */, AptnAllocationScope /* scope */)>;
+using AptnReallocationDelegate = Delegate<void* (void*, void*, size_t, size_t, AptnAllocationScope)>;
 using AptnFreeDelegate = Delegate<void(void* /* userData */, void* /* memory */)>;
-using AptnAllocationNotificationDelegate = Delegate<void(void* /* userData */, size_t /* allocSize */, AllocationScope /* scope */)>;
-using AptnFreeNotificationDelegate = Delegate<void(void* /* userData */, size_t /* size */, AllocationScope /* scope */)>;
+using AptnAllocationNotificationDelegate = Delegate<void(void* /* userData */, size_t /* allocSize */, AptnAllocationScope /* scope */)>;
+using AptnFreeNotificationDelegate = Delegate<void(void* /* userData */, size_t /* size */, AptnAllocationScope /* scope */)>;
 
 using AptnDebugMessageTypeFlags = u32;
-using AptnValidationDelegate = Delegate<bool(ValidationSeverity, AptnDebugMessageTypeFlags /* messageTypeFlags*/, const VkDebugUtilsMessengerCallbackDataEXT* /* callbackData */, void* /* userData */)>;
+using AptnValidationDelegate = Delegate<bool(AptnValidationSeverity, AptnDebugMessageTypeFlags /* messageTypeFlags*/, const VkDebugUtilsMessengerCallbackDataEXT* /* callbackData */, void* /* userData */)>;
 
 struct AptnAllocationCallbacks
 {
@@ -53,11 +51,12 @@ APPARITION_API void InitializeApparition(const AptnInitializeParams& initParams)
 }
 // TODO - The below could be done with templates and concepts
 
-// NOTE - This is partially correct, but it does not determine validity through the actual handle pools
+static constexpr u32 AptnInvalidHandle = 0;
+
 #define HANDLE_TYPE_ISVALID(HandleType)				\
-	constexpr bool IsValid(HandleType handle)		\
+	namespace Apparition							\
 	{												\
-		return handle.handle != AptnInvalidHandle;	\
+	APPARITION_API bool IsValid(HandleType handle);	\
 	}
 
 // Compare ops for InvalidHandle

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Apparition/ApparitionAPI.hpp"
+#include "Apparition/ApparitionDefinitions.h"
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/Device.h"
-#include "Apparition/ImageDescription.h"
 #include "Apparition/Image.h"
 #include "Apparition/Queue.h"
 #include "BasicTypes/Intrinsics.hpp"

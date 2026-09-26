@@ -11,7 +11,7 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 {
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
-    if (deviceInternal.backbuffer.swapchainHandle != VK_NULL_HANDLE)
+    if (deviceInternal.backbuffer.vkHandle != VK_NULL_HANDLE)
     {
 		// TODO - Log that backbuffer is already set up
 		return;
@@ -155,14 +155,14 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 	swapchainInfo.clipped = VK_TRUE;
 	swapchainInfo.oldSwapchain = VK_NULL_HANDLE; // No need for this sandbox atm
 
-	result = vkCreateSwapchainKHR(deviceInternal.device, &swapchainInfo, nullptr, &backbuffer.swapchainHandle);
+	result = vkCreateSwapchainKHR(deviceInternal.device, &swapchainInfo, nullptr, &backbuffer.vkHandle);
 	CHECK_VK(result);
 
 	// Creating image views for consistent use
 	u32 imageCount;
-	vkGetSwapchainImagesKHR(deviceInternal.device, backbuffer.swapchainHandle, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(deviceInternal.device, backbuffer.vkHandle, &imageCount, nullptr);
 	DynamicArray<VkImage> backbufferImages(imageCount);
-	vkGetSwapchainImagesKHR(deviceInternal.device, backbuffer.swapchainHandle, &imageCount, backbufferImages.GetData());
+	vkGetSwapchainImagesKHR(deviceInternal.device, backbuffer.vkHandle, &imageCount, backbufferImages.GetData());
 
 	backbuffer.images.Reserve(imageCount);
 	backbuffer.views.Reserve(imageCount);
@@ -170,10 +170,10 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 	for (u32 i = 0; i < imageCount; ++i)
 	{
 		// Image set up
-		u32 imageHandleIndex = PopFreeHandleIndex(deviceInternal.imageResourceHandlePool);
+		u32 imageHandleIndex = PopFreeHandleIndex(deviceInternal.imageResourcesHandlePool);
 		Assert(imageHandleIndex != InvalidHandleIndex);
 		ImageInternal& imgInternal = GetImageInternalFromIndex(deviceInternal, imageHandleIndex);
-		imgInternal.image = backbufferImages[i];
+		imgInternal.vkHandle = backbufferImages[i];
 		// image allocation is backed by the VkSwapchain, no need for this to be valid
 		imgInternal.allocation = VK_NULL_HANDLE;
 		// Swapchain doesn't have mips
@@ -184,7 +184,7 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 		backbuffer.images.Add(imageHandleIndex);
 
 		// ImageView set up
-		u32 imageViewHandleIndex = PopFreeHandleIndex(deviceInternal.imageViewResourceHandlePool);
+		u32 imageViewHandleIndex = PopFreeHandleIndex(deviceInternal.imageViewResourcesHandlePool);
 		Assert(imageViewHandleIndex != InvalidHandleIndex);
 		// No need to get the index gen because we're kind of backdooring the system. We only care about index
 
@@ -209,7 +209,7 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 		CHECK_VK(result);
 
 		ImageViewInternal& viewInternal = GetImageViewInternalFromIndex(deviceInternal, imageViewHandleIndex);
-		viewInternal.imageView = backbufferView;
+		viewInternal.vkHandle = backbufferView;
 		viewInternal.imageIndex = imageHandleIndex;
 
 		backbuffer.views.Add(imageViewHandleIndex);
@@ -245,14 +245,14 @@ void DeviceManager::TeardownBackbuffer(AptnDevice device)
 
 	for (u32 viewIndex : backbuffer.views)
 	{
-		VkImageView imageView = deviceInternal.imageViewResources[viewIndex].imageView;
+		VkImageView imageView = deviceInternal.imageViewResources[viewIndex].vkHandle;
 		vkDestroyImageView(deviceInternal.device, imageView, nullptr);
-		PushFreedHandleIndex(deviceInternal.imageViewResourceHandlePool, viewIndex);
+		PushFreedHandleIndex(deviceInternal.imageViewResourcesHandlePool, viewIndex);
 	}
 	backbuffer.views.Clear();
 	backbuffer.images.Clear();
 
-	vkDestroySwapchainKHR(deviceInternal.device, backbuffer.swapchainHandle, nullptr);
+	vkDestroySwapchainKHR(deviceInternal.device, backbuffer.vkHandle, nullptr);
 	vkDestroySurfaceKHR(instance, backbuffer.surfaceHandle, nullptr);
 }
 
@@ -260,10 +260,10 @@ AptnBackbufferStatus DeviceManager::AcquireNextBackbufferImage(AptnDevice device
 {
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
-	Assert(backbuffer.swapchainHandle != VK_NULL_HANDLE);
+	Assert(backbuffer.vkHandle != VK_NULL_HANDLE);
 
 	u32 imageIndex;
-	VkResult result = vkAcquireNextImageKHR(deviceInternal.device, backbuffer.swapchainHandle, UINT64_MAX, backbuffer.isImageAvailableSem, VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(deviceInternal.device, backbuffer.vkHandle, UINT64_MAX, backbuffer.isImageAvailableSem, VK_NULL_HANDLE, &imageIndex);
 	backbuffer.currentImageIndex = imageIndex;
 
 	// Set image index so that we can use it later on in the render

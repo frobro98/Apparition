@@ -79,7 +79,6 @@ inline ArrayView<ViewType>::ArrayView(DynamicArray<OtherType>& arr)
 {
 }
 
-
 template<typename ViewType>
 template<u32 N>
 inline constexpr ArrayView<ViewType>::ArrayView(pointer_type(&arr)[N])
@@ -92,7 +91,6 @@ template <typename OtherType, u32 size>
 inline constexpr ArrayView<ViewType>::ArrayView(StaticArray<OtherType, size>& arr) noexcept
 	: viewData(arr.GetData()), viewSize(size)
 {
-
 }
 
 template<typename ViewType>
@@ -100,7 +98,6 @@ template <typename OtherType, u32 size>
 inline constexpr ArrayView<ViewType>::ArrayView(const StaticArray<OtherType, size>& arr) noexcept
 	: viewData(arr.GetData()), viewSize(size)
 {
-
 }
 
 template<typename ViewType>

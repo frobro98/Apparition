@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Apparition/ImageDescription.h"
+#include "Apparition/ApparitionDefinitions.h"
 #include "Debugging/Assertion.hpp"
 #include "VulkanDefinitions.h"
 

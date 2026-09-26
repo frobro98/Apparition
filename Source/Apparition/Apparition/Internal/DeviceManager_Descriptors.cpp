@@ -41,14 +41,14 @@ AptnDescriptorSetLayout DeviceManager::CreateDescriptorSetLayout(AptnDevice devi
     {
         const DescriptorSetLayoutInternal layoutInternal
         {
-            .descriptorSetLayout = layout
+            .vkHandle = layout
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorSetLayoutHandlePools);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorSetLayoutsHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetDescriptorSetLayoutInternalFromIndex(deviceInternal, handleIndex) = layoutInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorSetLayoutHandlePools, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorSetLayoutsHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -64,9 +64,9 @@ void DeviceManager::DestroyDescriptorSetLayout(AptnDescriptorSetLayout descripto
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorSetLayout);
     DescriptorSetLayoutInternal& dsLayoutInternal = GetDescriptorSetLayoutInternal(descriptorSetLayout);
-    vkDestroyDescriptorSetLayout(deviceInternal.device, dsLayoutInternal.descriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(deviceInternal.device, dsLayoutInternal.vkHandle, nullptr);
 
-    PushFreedHandleIndex(deviceInternal.descriptorSetLayoutHandlePools, GetHandleIndex(descriptorSetLayout));
+    PushFreedHandleIndex(deviceInternal.descriptorSetLayoutsHandlePool, GetHandleIndex(descriptorSetLayout));
 }
 
 AptnDescriptorPool DeviceManager::CreateDescriptorPool(AptnDevice device, const AptnDescriptorPoolCreationParams& params)
@@ -103,14 +103,14 @@ AptnDescriptorPool DeviceManager::CreateDescriptorPool(AptnDevice device, const 
     {
         const DescriptorPoolInternal poolInternal
         {
-            .descriptorPool = descriptorPool
+            .vkHandle = descriptorPool
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorPoolHandlePools);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorPoolsHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetDescriptorPoolInternalFromIndex(deviceInternal, handleIndex) = poolInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorPoolHandlePools, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorPoolsHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -126,9 +126,9 @@ void DeviceManager::DestroyDescriptorPool(AptnDescriptorPool descriptorPool)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorPool);
     DescriptorPoolInternal& descriptorPoolInternal = GetDescriptorPoolInternal(descriptorPool);
-    vkDestroyDescriptorPool(deviceInternal.device, descriptorPoolInternal.descriptorPool, nullptr);
+    vkDestroyDescriptorPool(deviceInternal.device, descriptorPoolInternal.vkHandle, nullptr);
 
-    PushFreedHandleIndex(deviceInternal.descriptorPoolHandlePools, GetHandleIndex(descriptorPool));
+    PushFreedHandleIndex(deviceInternal.descriptorPoolsHandlePool, GetHandleIndex(descriptorPool));
 }
 
 AptnDescriptorSet DeviceManager::AllocateDescriptorSet(AptnDescriptorPool descriptorPool, const AptnDescriptorSetAllocParams& allocParams)
@@ -140,9 +140,9 @@ AptnDescriptorSet DeviceManager::AllocateDescriptorSet(AptnDescriptorPool descri
     VkDescriptorSetAllocateInfo allocInfo
     {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .descriptorPool = poolInternal.descriptorPool,
+        .descriptorPool = poolInternal.vkHandle,
         .descriptorSetCount = 1,
-        .pSetLayouts = &layoutInternal.descriptorSetLayout
+        .pSetLayouts = &layoutInternal.vkHandle
     };
     VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
     VkResult result = vkAllocateDescriptorSets(deviceInternal.device, &allocInfo, &descriptorSet);
@@ -151,14 +151,14 @@ AptnDescriptorSet DeviceManager::AllocateDescriptorSet(AptnDescriptorPool descri
     {
         const DescriptorSetInternal descriptorSetInternal
         {
-            .descriptorSet = descriptorSet
+            .vkHandle = descriptorSet
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorSetHandlePools);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.descriptorSetsHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetDescriptorSetInternalFromIndex(deviceInternal, handleIndex) = descriptorSetInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorSetHandlePools, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.descriptorSetsHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = ((u64)GetDeviceIndexFromHandle(descriptorPool) << DEVICE_INDEX_SHIFT)
                 | ((u64)GetHandleIndex(descriptorPool) << POOL_INDEX_SHIFT)
@@ -176,10 +176,10 @@ void DeviceManager::FreeDescriptorSet(AptnDescriptorSet descriptorSet)
     u32 dsPoolIndex = GetResourcePoolIndexFromHandle(descriptorSet);
     DescriptorPoolInternal& dsPoolInternal = GetDescriptorPoolInternalFromIndex(deviceInternal, dsPoolIndex);
     DescriptorSetInternal& dsInternal = GetDescriptorSetInternal(descriptorSet);
-    VkResult result = vkFreeDescriptorSets(deviceInternal.device, dsPoolInternal.descriptorPool, 1, &dsInternal.descriptorSet);
+    VkResult result = vkFreeDescriptorSets(deviceInternal.device, dsPoolInternal.vkHandle, 1, &dsInternal.vkHandle);
     CHECK_VK(result);
 
-    PushFreedHandleIndex(deviceInternal.descriptorSetHandlePools, GetHandleIndex(descriptorSet));
+    PushFreedHandleIndex(deviceInternal.descriptorSetsHandlePool, GetHandleIndex(descriptorSet));
 }
 
 void DeviceManager::AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const ArrayView<AptnDescriptorSetAllocParams>& allocParams)
@@ -211,7 +211,7 @@ void DeviceManager::UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSet
             VkWriteDescriptorSet writeSet
             {
                 .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                .dstSet = setInternal.descriptorSet,
+                .dstSet = setInternal.vkHandle,
                 .dstBinding = updateDescriptorSetDesc.setBinding,
                 .descriptorCount = 1,
                 .descriptorType = ApparitionDescriptorTypeToVk(updateDescriptorSetDesc.descriptorType)
@@ -226,8 +226,8 @@ void DeviceManager::UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSet
                 AptnImageView view = updateDescriptorSetDesc.imageDescriptor->imageView;
                 AptnSampler sampler = updateDescriptorSetDesc.imageDescriptor->sampler;
 
-                VkImageView vkView = IsValid(view) ? GetImageViewInternal(view).imageView : VK_NULL_HANDLE;
-                VkSampler vkSampler = IsValid(sampler) ? GetSamplerInternal(sampler).sampler : VK_NULL_HANDLE;
+                VkImageView vkView = IsValid(view) ? GetImageViewInternal(view).vkHandle : VK_NULL_HANDLE;
+                VkSampler vkSampler = IsValid(sampler) ? GetSamplerInternal(sampler).vkHandle : VK_NULL_HANDLE;
                 VkImageLayout layout = ApparitionImageAccessToVkLayout(access);
 
                 VkDescriptorImageInfo imageDescriptor
@@ -244,7 +244,7 @@ void DeviceManager::UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSet
             {
                 AptnBuffer buffer = updateDescriptorSetDesc.bufferDescriptor->buffer;
                 Assert(IsValid(buffer));
-                VkBuffer vkBuffer = GetBufferInternal(buffer).buffer;
+                VkBuffer vkBuffer = GetBufferInternal(buffer).vkHandle;
 
                 VkDescriptorBufferInfo bufferDescriptor
                 {
@@ -309,7 +309,7 @@ AptnSamplerHeap DeviceManager::CreateSamplerHeap(AptnDevice device, const AptnSa
     {
         SamplerHeapInternal samplerHeapInternal
         {
-            .heapBuffer = heapBuffer,
+            .vkHandle = heapBuffer,
             .vmaAllocation = vmaAllocation,
             .heapSize = heapSize,
             .pHeapStart = mappedData,
@@ -319,12 +319,12 @@ AptnSamplerHeap DeviceManager::CreateSamplerHeap(AptnDevice device, const AptnSa
             .samplerDescriptorSize = descriptorSize,
             .heapReservedRange = minSamplerHeapReservedRange
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.samplerHeapHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.samplerHeapsHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetSamplerHeapInternalFromIndex(deviceInternal, handleIndex) = samplerHeapInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.samplerHeapHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.samplerHeapsHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
@@ -340,9 +340,9 @@ void DeviceManager::DestroySamplerHeap(AptnSamplerHeap samplerHeap)
     DeviceInternal& deviceInternal = GetDeviceInternal(samplerHeap);
     SamplerHeapInternal& samplerHeapInternal = GetSamplerHeapInternal(samplerHeap);
     vmaUnmapMemory(deviceInternal.allocator, samplerHeapInternal.vmaAllocation);
-    vmaDestroyBuffer(deviceInternal.allocator, samplerHeapInternal.heapBuffer, samplerHeapInternal.vmaAllocation);
+    vmaDestroyBuffer(deviceInternal.allocator, samplerHeapInternal.vkHandle, samplerHeapInternal.vmaAllocation);
 
-    PushFreedHandleIndex(deviceInternal.samplerHeapHandlePool, GetHandleIndex(samplerHeap));
+    PushFreedHandleIndex(deviceInternal.samplerHeapsHandlePool, GetHandleIndex(samplerHeap));
 }
 
 void DeviceManager::WriteSamplerDescriptors(AptnSamplerHeap samplerHeap, u64 samplerDescriptorCount, const AptnSamplerDescriptor* samplerDescriptors)
@@ -453,7 +453,7 @@ AptnResourceHeap DeviceManager::CreateResourceHeap(AptnDevice device, const Aptn
     {
         ResourceHeapInternal resourceHeapInternal
         {
-            .heapBuffer = heapBuffer,
+            .vkHandle = heapBuffer,
             .vmaAllocation = vmaAllocation,
             .heapSize = heapSize,
             .heapData = mappedData,
@@ -468,12 +468,12 @@ AptnResourceHeap DeviceManager::CreateResourceHeap(AptnDevice device, const Aptn
             .heapReservedRange = minResourceHeapReservedRange
         };
 
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.resourceHeapHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.resourceHeapsHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetResourceHeapInternalFromIndex(deviceInternal, handleIndex) = resourceHeapInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.resourceHeapHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.resourceHeapsHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
@@ -490,9 +490,9 @@ void DeviceManager::DestroyResourceHeap(AptnResourceHeap resourceHeap)
     DeviceInternal& deviceInternal = GetDeviceInternal(resourceHeap);
     ResourceHeapInternal& resourceHeapInternal = GetResourceHeapInternal(resourceHeap);
     vmaUnmapMemory(deviceInternal.allocator, resourceHeapInternal.vmaAllocation);
-    vmaDestroyBuffer(deviceInternal.allocator, resourceHeapInternal.heapBuffer, resourceHeapInternal.vmaAllocation);
+    vmaDestroyBuffer(deviceInternal.allocator, resourceHeapInternal.vkHandle, resourceHeapInternal.vmaAllocation);
 
-    PushFreedHandleIndex(deviceInternal.resourceHeapHandlePool, GetHandleIndex(resourceHeap));
+    PushFreedHandleIndex(deviceInternal.resourceHeapsHandlePool, GetHandleIndex(resourceHeap));
 }
 
 void DeviceManager::WriteBufferAddressDescriptor(AptnResourceHeap resourceHeap, const AptnBufferAddressDescriptor& bufferAddr)
@@ -607,7 +607,7 @@ void DeviceManager::CommitResourceDescriptors(AptnResourceHeap resourceHeap)
                 VkImageViewCreateInfo
                 {
                     .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                    .image = imageInternal.image,
+                    .image = imageInternal.vkHandle,
                     // TODO - Support multiple view types
                     .viewType = VK_IMAGE_VIEW_TYPE_2D,
                     .format = ApparitionFormatToVk(imageDescriptor.format),

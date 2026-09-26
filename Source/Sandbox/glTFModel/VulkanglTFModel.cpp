@@ -106,7 +106,7 @@ void vkglTF::Texture::updateDescriptor()
 
 void vkglTF::Texture::destroy()
 {
-	if (IsValid(device))
+	if (Apparition::IsValid(device))
 	{
 		Apparition::DestroyCommandPool(commandPool);
 		Apparition::DestroyImageView(view);
@@ -198,7 +198,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		image = Apparition::CreateImage(device, imgParams);
 
 		// TODO - Could make this a function call instead?
-		Assert(IsValid(commandPool));
+		Assert(Apparition::IsValid(commandPool));
 		AptnCommandBufferAllocParams cmdBuffParams;
 		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 		Apparition::BeginCommandBuffer(copyCmd);
@@ -349,7 +349,7 @@ void vkglTF::Texture::fromglTfImage(tinygltf::Image &gltfimage, std::string path
 		//VkFormatProperties formatProperties;
 		//vkGetPhysicalDeviceFormatProperties(device->physicalDevice, format, &formatProperties);
 
-		Assert(IsValid(commandPool));
+		Assert(Apparition::IsValid(commandPool));
 		AptnCommandBufferAllocParams cmdBuffParams;
 		AptnCommandBuffer copyCmd = Apparition::AllocateCommandBuffer(commandPool, cmdBuffParams);
 		Apparition::BeginCommandBuffer(copyCmd);
@@ -742,7 +742,7 @@ vkglTF::Model::~Model()
 
 void vkglTF::Model::releaseResources()
 {
-	if (IsValid(vertices.buffer))
+	if (Apparition::IsValid(vertices.buffer))
 	{
 		Apparition::DestroyBuffer(vertices.buffer);
 		Apparition::DestroyBuffer(indices.buffer);
@@ -756,11 +756,11 @@ void vkglTF::Model::releaseResources()
 		for (auto& skin : skins) {
 			delete skin;
 		}
-		if (IsValid(descriptorSetLayoutUbo)) {
+		if (Apparition::IsValid(descriptorSetLayoutUbo)) {
 			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutUbo);
 			descriptorSetLayoutUbo = { AptnInvalidHandle };
 		}
-		if (IsValid(descriptorSetLayoutImage)) {
+		if (Apparition::IsValid(descriptorSetLayoutImage)) {
 			Apparition::DestroyDescriptorSetLayout(descriptorSetLayoutImage);
 			descriptorSetLayoutImage = { AptnInvalidHandle };
 		}
@@ -1416,7 +1416,7 @@ void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQu
 	// Descriptors for per-node uniform buffers
 	{
 		// Layout is global, so only create if it hasn't already been created before
-		if (!IsValid(descriptorSetLayoutUbo)) {
+		if (!Apparition::IsValid(descriptorSetLayoutUbo)) {
 			const StaticArray bindings = {
 				AptnDescriptorSetLayoutDesc
 				{
@@ -1440,7 +1440,7 @@ void vkglTF::Model::loadFromFile(std::string filename, AptnDevice device, AptnQu
 	// Descriptors for per-material images
 	{
 		// Layout is global, so only create if it hasn't already been created before
-		if (!IsValid(descriptorSetLayoutImage)) {
+		if (!Apparition::IsValid(descriptorSetLayoutImage)) {
 			DynamicArray<AptnDescriptorSetLayoutDesc> layouts;
 			AptnDescriptorSetLayoutCreationParams params;
 			if (descriptorBindingFlags & DescriptorBindingFlags::ImageBaseColor) 

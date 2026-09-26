@@ -2,7 +2,7 @@
 
 #include "Apparition/ApparitionCore.h"
 #include "Apparition/CommandBuffer.h"
-#include "Apparition/ImageDescription.h"
+#include "Apparition/ApparitionDefinitions.h"
 #include "DeviceManager.h"
 #include "HandleDefinitions.h"
 #include "HandlePool.h"
@@ -27,7 +27,7 @@ struct Backbuffer
 	static constexpr inline u32 numSwapchainImages = 2;
 	DynamicArray<u32> views;
 	DynamicArray<u32> images;
-	VkSwapchainKHR swapchainHandle = VK_NULL_HANDLE;
+	VkSwapchainKHR vkHandle = VK_NULL_HANDLE;
 	VkSurfaceKHR surfaceHandle = VK_NULL_HANDLE;
 	VkExtent2D extents = {};
 	AptnImageFormat format = AptnImageFormat::Invalid;
@@ -40,7 +40,7 @@ struct Backbuffer
 
 struct QueueInternal
 {
-	VkQueue queue = VK_NULL_HANDLE;
+	VkQueue vkHandle = VK_NULL_HANDLE;
 	u32 queueFamilyIndex = 0;
 	bool canPresent = false;
 	// Maybe have the type of queue this is?
@@ -48,7 +48,7 @@ struct QueueInternal
 
 struct CommandBufferInternal
 {
-	VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+	VkCommandBuffer vkHandle = VK_NULL_HANDLE;
 	// General state information.
 	u32 queueFamilyIndex = 0;
 	// TODO: Will need more specific state info about where we are in the CB's lifetime
@@ -58,13 +58,13 @@ struct CommandBufferInternal
 
 struct CommandPoolInternal
 {
-	VkCommandPool cmdPool = VK_NULL_HANDLE;
+	VkCommandPool vkHandle = VK_NULL_HANDLE;
 	u32 queueFamilyIndex = 0;
 };
 
 struct BufferInternal
 {
-	VkBuffer buffer = VK_NULL_HANDLE;
+	VkBuffer vkHandle = VK_NULL_HANDLE;
 	VmaAllocation allocation = VK_NULL_HANDLE;
 	VkDeviceAddress bufferDeviceAddress = 0;
 	bool isMappable = false;
@@ -72,7 +72,7 @@ struct BufferInternal
 
 struct ImageInternal
 {
-	VkImage image = VK_NULL_HANDLE;
+	VkImage vkHandle = VK_NULL_HANDLE;
 	VmaAllocation allocation = VK_NULL_HANDLE;
 
 	// Image formatting and access
@@ -83,7 +83,7 @@ struct ImageInternal
 
 struct ImageViewInternal
 {
-	VkImageView imageView = VK_NULL_HANDLE;
+	VkImageView vkHandle = VK_NULL_HANDLE;
 	u32 imageIndex = UINT32_MAX;
 
 	// View information
@@ -91,32 +91,32 @@ struct ImageViewInternal
 
 struct SamplerInternal
 {
-	VkSampler sampler = VK_NULL_HANDLE;
+	VkSampler vkHandle = VK_NULL_HANDLE;
 };
 
 struct VertexInputPipelineStateInternal
 {
-	VkPipeline state = VK_NULL_HANDLE;
+	VkPipeline vkHandle = VK_NULL_HANDLE;
 };
 
 struct PrerasterShadersPipelineStateInternal
 {
-	VkPipeline state = VK_NULL_HANDLE;
+	VkPipeline vkHandle = VK_NULL_HANDLE;
 };
 
 struct FragmentShaderPipelineStateInternal
 {
-	VkPipeline state = VK_NULL_HANDLE;
+	VkPipeline vkHandle = VK_NULL_HANDLE;
 };
 
 struct FragmentOutputPipelineStateInternal
 {
-	VkPipeline state = VK_NULL_HANDLE;
+	VkPipeline vkHandle = VK_NULL_HANDLE;
 };
 
 struct PipelineInternal
 {
-	VkPipeline pipeline = VK_NULL_HANDLE;
+	VkPipeline vkHandle = VK_NULL_HANDLE;
 
 	// States used in pipeline construction
 	u32 vertexInputIndex = 0;
@@ -127,7 +127,7 @@ struct PipelineInternal
 
 struct SamplerHeapInternal
 {
-	VkBuffer heapBuffer = VK_NULL_HANDLE;
+	VkBuffer vkHandle = VK_NULL_HANDLE;
 	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
 	VkDeviceSize heapSize = 0;
 	void* pHeapStart = nullptr;
@@ -141,7 +141,7 @@ struct SamplerHeapInternal
 
 struct ResourceHeapInternal
 {
-	VkBuffer heapBuffer = VK_NULL_HANDLE;
+	VkBuffer vkHandle = VK_NULL_HANDLE;
 	VmaAllocation vmaAllocation = VK_NULL_HANDLE;
 	VkDeviceSize heapSize = 0;
 	void* heapData = nullptr;
@@ -160,17 +160,17 @@ struct ResourceHeapInternal
 
 struct DescriptorSetLayoutInternal
 {
-	VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+	VkDescriptorSetLayout vkHandle = VK_NULL_HANDLE;
 };
 
 struct DescriptorPoolInternal
 {
-	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+	VkDescriptorPool vkHandle = VK_NULL_HANDLE;
 };
 
 struct DescriptorSetInternal
 {
-	VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+	VkDescriptorSet vkHandle = VK_NULL_HANDLE;
 };
 
 struct DeviceInternal
@@ -182,23 +182,23 @@ struct DeviceInternal
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VmaAllocator allocator = VK_NULL_HANDLE;
 	
-	HandlePool queueHandlePool;
+	HandlePool queuesHandlePool;
 	HandlePool commandPoolsHandlePool;
-	HandlePool commandBufferHandlePool;
-	HandlePool bufferResourceHandlePool;
-	HandlePool imageResourceHandlePool;
-	HandlePool imageViewResourceHandlePool;
-	HandlePool samplerResourceHandlePool;
-	HandlePool vertexInputResourceHandlePool;
-	HandlePool prerasterShadersResourceHandlePool;
-	HandlePool fragmentShaderResourceHandlePool;
-	HandlePool fragmentOutputResourceHandlePool;
-	HandlePool pipelineResourceHandlePool;
-	HandlePool samplerHeapHandlePool;
-	HandlePool resourceHeapHandlePool;
-	HandlePool descriptorSetLayoutHandlePools;
-	HandlePool descriptorPoolHandlePools;
-	HandlePool descriptorSetHandlePools;
+	HandlePool commandBuffersHandlePool;
+	HandlePool bufferResourcesHandlePool;
+	HandlePool imageResourcesHandlePool;
+	HandlePool imageViewResourcesHandlePool;
+	HandlePool samplerResourcesHandlePool;
+	HandlePool vertexInputResourcesHandlePool;
+	HandlePool prerasterShadersResourcesHandlePool;
+	HandlePool fragmentShaderResourcesHandlePool;
+	HandlePool fragmentOutputResourcesHandlePool;
+	HandlePool pipelineResourcesHandlePool;
+	HandlePool samplerHeapsHandlePool;
+	HandlePool resourceHeapsHandlePool;
+	HandlePool descriptorSetLayoutsHandlePool;
+	HandlePool descriptorPoolsHandlePool;
+	HandlePool descriptorSetsHandlePool;
 
 	DynamicArray<QueueInternal> queues;
 	DynamicArray<CommandPoolInternal> commandPools;
@@ -212,11 +212,11 @@ struct DeviceInternal
 	DynamicArray<FragmentShaderPipelineStateInternal> fragmentShaderResources;
 	DynamicArray<FragmentOutputPipelineStateInternal> fragmentOutputResources;
 	DynamicArray<PipelineInternal> pipelineResources;
-	DynamicArray<SamplerHeapInternal> samplerHeapResources;
-	DynamicArray<ResourceHeapInternal> resourceHeapResources;
-	DynamicArray<DescriptorSetLayoutInternal> descriptorSetLayoutResources;
-	DynamicArray<DescriptorPoolInternal> descriptorPoolResources;
-	DynamicArray<DescriptorSetInternal> descriptorSetResources;
+	DynamicArray<SamplerHeapInternal> samplerHeaps;
+	DynamicArray<ResourceHeapInternal> resourceHeaps;
+	DynamicArray<DescriptorSetLayoutInternal> descriptorSetLayouts;
+	DynamicArray<DescriptorPoolInternal> descriptorPools;
+	DynamicArray<DescriptorSetInternal> descriptorSets;
 	VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 	u32 graphicsFamilyIndex = 0;
 	u32 transferFamilyIndex = 0;
@@ -239,10 +239,10 @@ REGISTER_HANDLE_TYPE(FragmentShaderPipelineState, fragmentShaderResources);
 REGISTER_HANDLE_TYPE(FragmentOutputPipelineState, fragmentOutputResources);
 REGISTER_HANDLE_TYPE(Pipeline, pipelineResources);
 // DescriptorHeap
-REGISTER_HANDLE_TYPE(SamplerHeap, samplerHeapResources);
-REGISTER_HANDLE_TYPE(ResourceHeap, resourceHeapResources);
+REGISTER_HANDLE_TYPE(SamplerHeap, samplerHeaps);
+REGISTER_HANDLE_TYPE(ResourceHeap, resourceHeaps);
 // DescriptorSet Handles
-REGISTER_HANDLE_TYPE(DescriptorSetLayout, descriptorSetLayoutResources);
-REGISTER_HANDLE_TYPE(DescriptorPool, descriptorPoolResources);
-REGISTER_HANDLE_TYPE(DescriptorSet, descriptorSetResources);
+REGISTER_HANDLE_TYPE(DescriptorSetLayout, descriptorSetLayouts);
+REGISTER_HANDLE_TYPE(DescriptorPool, descriptorPools);
+REGISTER_HANDLE_TYPE(DescriptorSet, descriptorSets);
 

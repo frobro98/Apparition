@@ -35,7 +35,7 @@ AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreati
     if (result == VK_SUCCESS)
     {
         BufferInternal bufferInternal = {};
-        bufferInternal.buffer = buffer;
+        bufferInternal.vkHandle = buffer;
         bufferInternal.allocation = vmaAllocation;
         bufferInternal.isMappable = params.supportsMappedMemory;
         if (HasAnyEnumFlags(params.usage, AptnBufferUsageFlags::ShaderDeviceAddress))
@@ -48,13 +48,13 @@ AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreati
             bufferInternal.bufferDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.device, &deviceAddrInfo);
         }
 
-        u32 handleIndex = PopFreeHandleIndex(deviceInternal.bufferResourceHandlePool);
+        u32 handleIndex = PopFreeHandleIndex(deviceInternal.bufferResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             // TODO - this kinda is stinky to me, don't assign to the return of a function...
             GetBufferInternalFromIndex(deviceInternal, handleIndex) = bufferInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.bufferResourceHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.bufferResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
@@ -70,12 +70,10 @@ void DeviceManager::DestroyBuffer(AptnBuffer buffer)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(buffer);
     BufferInternal& bufferInternal = GetBufferInternal(buffer);
-    vmaDestroyBuffer(deviceInternal.allocator, bufferInternal.buffer, bufferInternal.allocation);
+    vmaDestroyBuffer(deviceInternal.allocator, bufferInternal.vkHandle, bufferInternal.allocation);
 
-    // TODO - Cleanup handle data?
-    
     // Let the handle pool know this handle is freed
-    PushFreedHandleIndex(deviceInternal.bufferResourceHandlePool, GetHandleIndex(buffer));
+    PushFreedHandleIndex(deviceInternal.bufferResourcesHandlePool, GetHandleIndex(buffer));
 }
 
 AptnImage DeviceManager::CreateImage(AptnDevice device, const AptnImageCreationParams& params)
@@ -110,7 +108,7 @@ AptnImage DeviceManager::CreateImage(AptnDevice device, const AptnImageCreationP
         // Intial Image Data Setup
         ImageInternal imageInternal
         {
-            .image = vkImage,
+            .vkHandle = vkImage,
             .allocation = vmaAllocation,
             .format = params.format
         };
@@ -122,13 +120,13 @@ AptnImage DeviceManager::CreateImage(AptnDevice device, const AptnImageCreationP
             access = AptnImageAccess::Undefined;
         }
 
-        u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageResourceHandlePool);
+        u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             // TODO - this kinda is stinky to me, don't assign to the return of a function...
             GetImageInternalFromIndex(deviceInternal, handleIndex) = imageInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.imageResourceHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.imageResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
@@ -144,11 +142,11 @@ void DeviceManager::DestroyImage(AptnImage image)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(image);
     ImageInternal& imageInternal = GetImageInternal(image);
-    vmaDestroyImage(deviceInternal.allocator, imageInternal.image, imageInternal.allocation);
+    vmaDestroyImage(deviceInternal.allocator, imageInternal.vkHandle, imageInternal.allocation);
 
     // TODO - Cleanup handle data?
 
-    PushFreedHandleIndex(deviceInternal.imageResourceHandlePool, GetHandleIndex(image));
+    PushFreedHandleIndex(deviceInternal.imageResourcesHandlePool, GetHandleIndex(image));
 }
 
 AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageViewCreationParams& params)
@@ -158,7 +156,7 @@ AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageVie
     VkImageViewCreateInfo viewInfo
     {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = imageInternal.image,
+        .image = imageInternal.vkHandle,
         .viewType = params.layerCount == 1 ? VK_IMAGE_VIEW_TYPE_2D : VK_IMAGE_VIEW_TYPE_2D_ARRAY,
         .format = ApparitionFormatToVk(params.format),
         .components = 
@@ -184,17 +182,17 @@ AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageVie
     {
         ImageViewInternal imageViewInternal
         {
-            .imageView = imageView,
+            .vkHandle = imageView,
             .imageIndex = GetHandleIndex(image)
         };
 
-        u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageViewResourceHandlePool);
+        u32 handleIndex = PopFreeHandleIndex(deviceInternal.imageViewResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             // TODO - this kinda is stinky to me, don't assign to the return of a function...
             GetImageViewInternalFromIndex(deviceInternal, handleIndex) = imageViewInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.imageViewResourceHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.imageViewResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             u64 handleData = ((u64)GetDeviceIndexFromHandle(image) << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
@@ -210,9 +208,9 @@ void DeviceManager::DestroyImageView(AptnImageView imageView)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(imageView);
     ImageViewInternal& imageViewInternal = GetImageViewInternal(imageView);
-    vkDestroyImageView(deviceInternal.device, imageViewInternal.imageView, nullptr);
+    vkDestroyImageView(deviceInternal.device, imageViewInternal.vkHandle, nullptr);
 
-    PushFreedHandleIndex(deviceInternal.imageViewResourceHandlePool, GetHandleIndex(imageView));
+    PushFreedHandleIndex(deviceInternal.imageViewResourcesHandlePool, GetHandleIndex(imageView));
 }
 
 AptnSampler DeviceManager::CreateSampler(AptnDevice device, const AptnSamplerCreationParams& params)
@@ -242,16 +240,16 @@ AptnSampler DeviceManager::CreateSampler(AptnDevice device, const AptnSamplerCre
     {
         SamplerInternal samplerInternal
         {
-            .sampler = sampler
+            .vkHandle = sampler
         };
 
-        u32 handleIndex = PopFreeHandleIndex(deviceInternal.samplerResourceHandlePool);
+        u32 handleIndex = PopFreeHandleIndex(deviceInternal.samplerResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             // TODO - this kinda is stinky to me, don't assign to the return of a function...
             GetSamplerInternalFromIndex(deviceInternal, handleIndex) = samplerInternal;
 
-            u32 handleGeneration = GetHandleGeneration(deviceInternal.samplerResourceHandlePool, handleIndex);
+            u32 handleGeneration = GetHandleGeneration(deviceInternal.samplerResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)handleGeneration) << RESOURCE_GEN_SHIFT)
@@ -267,7 +265,7 @@ void DeviceManager::DestroySampler(AptnSampler sampler)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(sampler);
     SamplerInternal& samplerInternal = GetSamplerInternal(sampler);
-    vkDestroySampler(deviceInternal.device, samplerInternal.sampler, nullptr);
+    vkDestroySampler(deviceInternal.device, samplerInternal.vkHandle, nullptr);
 
-    PushFreedHandleIndex(deviceInternal.samplerResourceHandlePool, GetHandleIndex(sampler));
+    PushFreedHandleIndex(deviceInternal.samplerResourcesHandlePool, GetHandleIndex(sampler));
 }

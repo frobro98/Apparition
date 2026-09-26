@@ -122,7 +122,7 @@ DEFINE_LOG_CHANNEL(VkValidation);
 //////////////////////////////////////////////////////
 
 static VkBool32 VulkanDebugMessengerCallback(
-	ValidationSeverity messageSeverity,
+	AptnValidationSeverity messageSeverity,
 	u32 messageType,
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* /*pUserData*/
@@ -159,15 +159,15 @@ static VkBool32 VulkanDebugMessengerCallback(
 				}
 			}
 
-			if (messageSeverity == ValidationSeverity::Error)
+			if (messageSeverity == AptnValidationSeverity::Error)
 			{
 				MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
-			else if (messageSeverity == ValidationSeverity::Warning)
+			else if (messageSeverity == AptnValidationSeverity::Warning)
 			{
 				MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
-			else if (messageSeverity == ValidationSeverity::Info)
+			else if (messageSeverity == AptnValidationSeverity::Info)
 			{
 				MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
@@ -246,8 +246,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	//InitializeBaseExample(deviceHandle);
 	//InitializeDescriptorSetsExample(deviceHandle);
-	//InitializeDescriptorHeapsExample(deviceHandle);
-	InitializeIndirectExample(deviceHandle);
+	InitializeDescriptorHeapsExample(deviceHandle);
+	//InitializeIndirectExample(deviceHandle);
 
 	while (windowOpen)
 	{
@@ -255,14 +255,14 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 		//TickBaseExample();
 		//TickDescriptorSetsExample();
-		//TickDescriptorHeapsExample();
-		TickIndirectExample();
+		TickDescriptorHeapsExample();
+		//TickIndirectExample();
 	}
 
 	//DestroyBaseExample();
 	//DestroyDescriptorSetsExample();
-	//DestroyDescriptorHeapsExample();
-	DestroyIndirectExample();
+	DestroyDescriptorHeapsExample();
+	//DestroyIndirectExample();
 
 	//Apparition::TeardownBackbuffer(deviceHandle);
 	Apparition::DestroyDevice(deviceHandle);

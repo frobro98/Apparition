@@ -24,7 +24,7 @@ HandlePool CreateHandlePool(u32 initialSize);
 void PushFreedHandleIndex(HandlePool& handlePool, u32 freedHandleIndex);
 u32 PopFreeHandleIndex(HandlePool& handlePool);
 // Returns the generation that this handle index is on
-u32 GetHandleGeneration(HandlePool& handlePool, u32 handleIndex);
+u32 GetHandleGeneration(const HandlePool& handlePool, u32 handleIndex);
 // We need to be able to resize
 void ResizeHandlePool(HandlePool& pool, u32 growSize);
 // Checks if a handle index is valid

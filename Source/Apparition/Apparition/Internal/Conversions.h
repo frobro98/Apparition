@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Apparition/BufferDescription.h"
-#include "Apparition/ImageDescription.h"
-#include "Apparition/RenderingDescription.h"
-#include "Apparition/PipelineStateDefinitions.h"
+#include "Apparition/Apparition/ApparitionDefinitions.h"
 #include "VulkanDefinitions.h"
 
 constexpr VkImageUsageFlags ApparitionImageUsageToVk(AptnImageUsageFlags imageUsageFlags)

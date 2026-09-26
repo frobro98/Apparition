@@ -64,7 +64,7 @@ u32 PopFreeHandleIndex(HandlePool& handlePool)
     return InvalidHandleIndex;
 }
 
-u32 GetHandleGeneration(HandlePool& handlePool, u32 handleIndex)
+u32 GetHandleGeneration(const HandlePool& handlePool, u32 handleIndex)
 {
     Assert(!handlePool.handleIndexGenerations.IsEmpty());
     Assert(handleIndex != InvalidHandleIndex);

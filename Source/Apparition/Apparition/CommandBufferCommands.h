@@ -1,13 +1,41 @@
 #pragma once
 
+#include "BasicTypes/Color.hpp"
 #include "Apparition/ApparitionAPI.hpp"
 #include "Apparition/ApparitionCore.h"
+#include "Apparition/ApparitionDefinitions.h"
 #include "Apparition/Buffer.h"
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/Image.h"
-#include "Apparition/ImageDescription.h"
 #include "Apparition/Pipeline.h"
-#include "Apparition/RenderingDescription.h"
+
+
+union AptnAttachmentClearValue
+{
+    Color32 color;
+    struct AptnDepthStencilValue
+    {
+        float depth;
+        u32 stencil;
+    } depthStencil;
+};
+
+// TODO: Move this somewhere else
+struct AptnRenderAttachment
+{
+    AptnImageView imageView;
+    AptnAttachmentOperations loadStoreOps;
+    AptnAttachmentClearValue clearValue;
+};
+
+struct AptnRenderSetupParams
+{
+    ArrayView<const AptnRenderAttachment> colorAttachments;
+    AptnRenderAttachment depthAttachment;
+    AptnRenderAttachment stencilAttachment;
+    u32 renderWidth = 0;
+    u32 renderHeight = 0;
+};
 
 // TODO: Revisit when implementing specific Sascha Williams functionality
 struct AptnBindVertexBufferDesc

@@ -2,10 +2,9 @@
 
 #include "BasicTypes/Intrinsics.hpp"
 #include "Apparition/ApparitionCore.h"
+#include "Apparition/ApparitionDefinitions.h"
 #include "Apparition/Device.h"
 #include "Apparition/DescriptorSet.h"
-#include "Apparition/ImageDescription.h"
-#include "Apparition/PipelineStateDefinitions.h"
 #include "Apparition/ApparitionAPI.hpp"
 
 

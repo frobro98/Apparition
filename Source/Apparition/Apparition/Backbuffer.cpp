@@ -63,8 +63,8 @@ void SubmitBackbufferCommandBuffer(AptnCommandBuffer commandBuffer, AptnQueue qu
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cbInternal.commandBuffer;
-    VkResult result = vkQueueSubmit(queueInternal.queue, 1, &submitInfo, VK_NULL_HANDLE);
+    submitInfo.pCommandBuffers = &cbInternal.vkHandle;
+    VkResult result = vkQueueSubmit(queueInternal.vkHandle, 1, &submitInfo, VK_NULL_HANDLE);
     CHECK_VK(result);
 }
 
@@ -91,11 +91,11 @@ void PresentBackbuffer(AptnQueue presentQueue)
     presentInfo.pWaitSemaphores = &backbuffer.submitRenderSemaphores[imageIndex];
     //*/
     presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &backbuffer.swapchainHandle;
+    presentInfo.pSwapchains = &backbuffer.vkHandle;
     presentInfo.pImageIndices = &backbuffer.currentImageIndex;
     presentInfo.pResults = nullptr;
 
-    VkResult result = vkQueuePresentKHR(queueInternal.queue, &presentInfo);
+    VkResult result = vkQueuePresentKHR(queueInternal.vkHandle, &presentInfo);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         //Recreate()
@@ -107,7 +107,7 @@ void PresentBackbuffer(AptnQueue presentQueue)
     }
 
     // TODO: DO NOT DO THIS!
-    result = vkQueueWaitIdle(queueInternal.queue);
+    result = vkQueueWaitIdle(queueInternal.vkHandle);
     CHECK_VK(result);
 }
 

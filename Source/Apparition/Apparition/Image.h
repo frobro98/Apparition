@@ -2,8 +2,8 @@
 
 #include "Apparition/ApparitionAPI.hpp"
 #include "Apparition/ApparitionCore.h"
+#include "Apparition/ApparitionDefinitions.h"
 #include "Apparition/Device.h"
-#include "Apparition/ImageDescription.h"
 #include "BasicTypes/Intrinsics.hpp"
 
 struct VkImageView_T;
@@ -21,7 +21,7 @@ struct AptnImageCreationParams
     AptnImageFormat format = AptnImageFormat::Invalid;
     u32 mipLevels = 1;
     u32 layerCount = 1;
-    AptnImageUsageFlags usageFlags = AptnImageUsageFlags::Max;
+    AptnImageUsageFlags usageFlags = AptnImageUsageFlags::ColorAttachment;
 
 };
 

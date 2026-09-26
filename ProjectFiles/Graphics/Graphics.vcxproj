@@ -185,18 +185,17 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Apparition.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionCore.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\ApparitionDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Buffer.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\BufferDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBuffer.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\CommandBufferCommands.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorHeap.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\DescriptorSet.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\DeviceLimits.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\EnumDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\ImageDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h" />
@@ -207,9 +206,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\VulkanDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Backbuffer.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Pipeline.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\PipelineStateDefinitions.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Queue.h" />
-    <ClInclude Include="..\..\Source\Apparition\Apparition\RenderingDescription.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Synchronization.h" />
   </ItemGroup>
   <ItemGroup>

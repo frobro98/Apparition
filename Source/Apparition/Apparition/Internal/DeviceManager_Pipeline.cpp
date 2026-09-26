@@ -138,14 +138,14 @@ AptnVertexInputPipelineState DeviceManager::CreateVertexInputPipelineState(AptnD
     {
         const VertexInputPipelineStateInternal vertexInputInternal
         {
-            .state = vertexInputState
+            .vkHandle = vertexInputState
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.vertexInputResourceHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.vertexInputResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetVertexInputPipelineStateInternalFromIndex(deviceInternal, handleIndex) = vertexInputInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.vertexInputResourceHandlePool, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.vertexInputResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -212,7 +212,7 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
         for (const AptnDescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
         {
             const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
-            vkLayouts.Add(dslInternal.descriptorSetLayout);
+            vkLayouts.Add(dslInternal.vkHandle);
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -269,14 +269,14 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
 
         const PrerasterShadersPipelineStateInternal prerasterShadersInternal
         {
-            .state = prerasterShadersState
+            .vkHandle = prerasterShadersState
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.prerasterShadersResourceHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.prerasterShadersResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetPrerasterShadersPipelineStateInternalFromIndex(deviceInternal, handleIndex) = prerasterShadersInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.prerasterShadersResourceHandlePool, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.prerasterShadersResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -359,7 +359,7 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
         for (const AptnDescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
         {
             const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
-            vkLayouts.Add(dslInternal.descriptorSetLayout);
+            vkLayouts.Add(dslInternal.vkHandle);
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -397,14 +397,14 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
 
         const FragmentShaderPipelineStateInternal fragmentShadersInternal
         {
-            .state = fragmentShaderState
+            .vkHandle = fragmentShaderState
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.fragmentShaderResourceHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.fragmentShaderResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetFragmentShaderPipelineStateInternalFromIndex(deviceInternal, handleIndex) = fragmentShadersInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.fragmentShaderResourceHandlePool, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.fragmentShaderResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -495,14 +495,14 @@ AptnFragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState
     {
         const FragmentOutputPipelineStateInternal fragmentOutputInternal
         {
-            .state = fragmentOutputState
+            .vkHandle = fragmentOutputState
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.fragmentOutputResourceHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.fragmentOutputResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetFragmentOutputPipelineStateInternalFromIndex(deviceInternal, handleIndex) = fragmentOutputInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.fragmentOutputResourceHandlePool, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.fragmentOutputResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -544,10 +544,10 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
     PrerasterShadersPipelineStateInternal& prerasterShadersInternal = GetPrerasterShadersPipelineStateInternal(params.prerasterShaders);
     FragmentShaderPipelineStateInternal& fragmentShaderInternal = GetFragmentShaderPipelineStateInternal(params.fragmentShader);
     FragmentOutputPipelineStateInternal& fragmentOutputInternal = GetFragmentOutputPipelineStateInternal(params.fragmentOutput);
-    VkPipeline vertexInput = vertexInputInternal.state;
-    VkPipeline prerasterShaders = prerasterShadersInternal.state;
-    VkPipeline fragmentShader = fragmentShaderInternal.state;
-    VkPipeline fragmentOutput = fragmentOutputInternal.state;
+    VkPipeline vertexInput = vertexInputInternal.vkHandle;
+    VkPipeline prerasterShaders = prerasterShadersInternal.vkHandle;
+    VkPipeline fragmentShader = fragmentShaderInternal.vkHandle;
+    VkPipeline fragmentOutput = fragmentOutputInternal.vkHandle;
 
     constexpr u32 numPipelineStates = 4;
     const StaticArray<VkPipeline, numPipelineStates> libraries
@@ -576,7 +576,7 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
         for (const AptnDescriptorSetLayout& dsLayout : pipelineDesc.descriptorSets)
         {
             const DescriptorSetLayoutInternal& dslInternal = GetDescriptorSetLayoutInternal(dsLayout);
-            vkLayouts.Add(dslInternal.descriptorSetLayout);
+            vkLayouts.Add(dslInternal.vkHandle);
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -619,14 +619,14 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
 
         const PipelineInternal pipelineInternal
         {
-            .pipeline = pipeline
+            .vkHandle = pipeline
         };
-        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.pipelineResourceHandlePool);
+        const u32 handleIndex = PopFreeHandleIndex(deviceInternal.pipelineResourcesHandlePool);
         if (handleIndex != InvalidHandleIndex)
         {
             GetPipelineInternalFromIndex(deviceInternal, handleIndex) = pipelineInternal;
 
-            const u32 indexGeneration = GetHandleGeneration(deviceInternal.pipelineResourceHandlePool, handleIndex);
+            const u32 indexGeneration = GetHandleGeneration(deviceInternal.pipelineResourcesHandlePool, handleIndex);
             // TODO(nblane): this MUST be moved so that it can be reused
             const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
                 | (((u64)indexGeneration) << RESOURCE_GEN_SHIFT)
@@ -646,7 +646,7 @@ void DeviceManager::DestroyPipeline(AptnPipeline pipeline)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(pipeline);
     PipelineInternal& pipelineInternal = GetPipelineInternal(pipeline);
-    vkDestroyPipeline(deviceInternal.device, pipelineInternal.pipeline, nullptr);
+    vkDestroyPipeline(deviceInternal.device, pipelineInternal.vkHandle, nullptr);
 
-    PushFreedHandleIndex(deviceInternal.pipelineResourceHandlePool, GetHandleIndex(pipeline));
+    PushFreedHandleIndex(deviceInternal.pipelineResourcesHandlePool, GetHandleIndex(pipeline));
 }

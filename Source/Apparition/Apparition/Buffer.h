@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Apparition/BufferDescription.h"
+#include "Apparition/ApparitionDefinitions.h"
 #include "Apparition/Device.h"
 #include "BasicTypes/Intrinsics.hpp"
 

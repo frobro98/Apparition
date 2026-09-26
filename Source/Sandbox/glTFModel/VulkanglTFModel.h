@@ -31,12 +31,12 @@
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #include "tinygltf/tiny_gltf.h"
 
+#include "Apparition/ApparitionDefinitions.h"
 #include "Apparition/Buffer.h"
 #include "Apparition/CommandBuffer.h"
 #include "Apparition/DescriptorSet.h"
 #include "Apparition/Device.h"
 #include "Apparition/Image.h"
-#include "Apparition/ImageDescription.h"
 #include "Apparition/Pipeline.h"
 #include "Apparition/Queue.h"
 

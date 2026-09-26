@@ -19,7 +19,7 @@ VkPipelineLayout CreatePipelineLayout(const AptnPipelineDescription& desc, VkDev
 	for (const AptnDescriptorSetLayout& layoutHandle : desc.descriptorSets)
 	{
 		DescriptorSetLayoutInternal& layoutInternal = GetDescriptorSetLayoutInternal(layoutHandle);
-		setLayouts.Add(layoutInternal.descriptorSetLayout);
+		setLayouts.Add(layoutInternal.vkHandle);
 	}
 
 	VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
@@ -47,7 +47,7 @@ void BeginCommandBuffer(AptnCommandBuffer commandBuffer, bool oneTimeSubmit)
 	Vk::ZeroInfoStruct(beginInfo, VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO);
 	beginInfo.flags = oneTimeSubmit ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : 0;
 
-	VkResult result = vkBeginCommandBuffer(cbInternal.commandBuffer, &beginInfo);
+	VkResult result = vkBeginCommandBuffer(cbInternal.vkHandle, &beginInfo);
 	CHECK_VK(result);
 	cbInternal.hasBegun = true;
 }
@@ -57,7 +57,7 @@ void EndCommandBuffer(AptnCommandBuffer commandBuffer)
 	CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkResult result = vkEndCommandBuffer(cbInternal.commandBuffer);
+	VkResult result = vkEndCommandBuffer(cbInternal.vkHandle);
 	CHECK_VK(result);
 	cbInternal.hasBegun = false;
 }
@@ -83,7 +83,7 @@ void EndCommandBuffer(AptnCommandBuffer commandBuffer)
 		renderAttachementInfo.storeOp = ApparitionStoreToVkStore(StoreOperationFrom(colorAttachment.loadStoreOps));
 
 		ImageViewInternal& viewInternal = GetImageViewInternal(colorAttachment.imageView);
-		renderAttachementInfo.imageView = viewInternal.imageView;
+		renderAttachementInfo.imageView = viewInternal.vkHandle;
 		colorAttachments.Add(renderAttachementInfo);
 	}
 
@@ -102,7 +102,7 @@ void EndCommandBuffer(AptnCommandBuffer commandBuffer)
 		depthAttachment.storeOp = ApparitionStoreToVkStore(StoreOperationFrom(renderDepthAttachment.loadStoreOps));
 
 		ImageViewInternal& viewInternal = GetImageViewInternal(renderDepthAttachment.imageView);
-		depthAttachment.imageView = viewInternal.imageView;
+		depthAttachment.imageView = viewInternal.vkHandle;
 	}
 
 	// Stencil attachment
@@ -120,7 +120,7 @@ void EndCommandBuffer(AptnCommandBuffer commandBuffer)
 		stencilAttachment.storeOp = ApparitionStoreToVkStore(StoreOperationFrom(renderStencilAttachment.loadStoreOps));
 
 		ImageViewInternal& viewInternal = GetImageViewInternal(renderStencilAttachment.imageView);
-		stencilAttachment.imageView = viewInternal.imageView;
+		stencilAttachment.imageView = viewInternal.vkHandle;
 	}
 	else if (depthAttachment.imageView != VK_NULL_HANDLE)
 	{
@@ -144,7 +144,7 @@ void EndCommandBuffer(AptnCommandBuffer commandBuffer)
 		renderingInfo.pStencilAttachment = &stencilAttachment;
 	}
 
-	vkCmdBeginRendering(cbInternal.commandBuffer, &renderingInfo);
+	vkCmdBeginRendering(cbInternal.vkHandle, &renderingInfo);
 }
 
 void EndRendering(AptnCommandBuffer commandBuffer)
@@ -152,7 +152,7 @@ void EndRendering(AptnCommandBuffer commandBuffer)
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	vkCmdEndRendering(cbInternal.commandBuffer);
+	vkCmdEndRendering(cbInternal.vkHandle);
 }
 
 void BindVertexBuffers(AptnCommandBuffer commandBuffer, const AptnBindVertexBufferDesc& desc)
@@ -160,10 +160,10 @@ void BindVertexBuffers(AptnCommandBuffer commandBuffer, const AptnBindVertexBuff
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkBuffer vbBuffer = GetBufferInternal(desc.vertexBuffer).buffer;
+	VkBuffer vbBuffer = GetBufferInternal(desc.vertexBuffer).vkHandle;
 
 	const VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(cbInternal.commandBuffer, desc.binding, 1, &vbBuffer, offsets);
+	vkCmdBindVertexBuffers(cbInternal.vkHandle, desc.binding, 1, &vbBuffer, offsets);
 }
 
 void BindIndexBuffer(AptnCommandBuffer commandBuffer, const AptnBindIndexBufferDesc& desc)
@@ -171,11 +171,11 @@ void BindIndexBuffer(AptnCommandBuffer commandBuffer, const AptnBindIndexBufferD
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkBuffer ibBuffer = GetBufferInternal(desc.indexBuffer).buffer;
+	VkBuffer ibBuffer = GetBufferInternal(desc.indexBuffer).vkHandle;
 
 	// TODO: VK_INDEX_TYPE must be a consistent setting for index buffers. Vulkan will catch this issue, theoretically,
 	// but we'd like to catch it in some way too
-	vkCmdBindIndexBuffer(cbInternal.commandBuffer, ibBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(cbInternal.vkHandle, ibBuffer, 0, VK_INDEX_TYPE_UINT32);
 }
 
 void SetViewportAndScissor(AptnCommandBuffer commandBuffer, const AptnViewportDesc& viewDesc, const AptnScissorDesc& scissorDesc)
@@ -191,13 +191,13 @@ void SetViewportAndScissor(AptnCommandBuffer commandBuffer, const AptnViewportDe
 		.minDepth = 0.f,
 		.maxDepth = 1.f
 	};
-	vkCmdSetViewport(cbInternal.commandBuffer, 0, 1, &viewport);
+	vkCmdSetViewport(cbInternal.vkHandle, 0, 1, &viewport);
 
 	VkRect2D scissor = {
 		.offset = { scissorDesc.offsetX, scissorDesc.offsetY },
 		.extent = { scissorDesc.extentX, scissorDesc.extentY }
 	};
-	vkCmdSetScissor(cbInternal.commandBuffer, 0, 1, &scissor);
+	vkCmdSetScissor(cbInternal.vkHandle, 0, 1, &scissor);
 }
 
 void BindGraphicsPipeline(AptnCommandBuffer commandBuffer, AptnPipeline pipeline)
@@ -205,8 +205,8 @@ void BindGraphicsPipeline(AptnCommandBuffer commandBuffer, AptnPipeline pipeline
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkPipeline vkPipeline = GetPipelineInternal(pipeline).pipeline;
-	vkCmdBindPipeline(cbInternal.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+	VkPipeline vkPipeline = GetPipelineInternal(pipeline).vkHandle;
+	vkCmdBindPipeline(cbInternal.vkHandle, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
 }
 
 static VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
@@ -222,7 +222,7 @@ void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescripto
 	for (const AptnDescriptorSet& descriptorSet : bindDescriptorSetsDesc.descriptorSets)
 	{
 		DescriptorSetInternal& setInternal = GetDescriptorSetInternal(descriptorSet);
-		setHandles.Add(setInternal.descriptorSet);
+		setHandles.Add(setInternal.vkHandle);
 	}
 
 	if (pipelineLayout == VK_NULL_HANDLE)
@@ -233,7 +233,7 @@ void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescripto
 
 	VkPipelineBindPoint bindPoint = bindDescriptorSetsDesc.bindPoint == AptnBindPoint::Graphics ? VK_PIPELINE_BIND_POINT_GRAPHICS : VK_PIPELINE_BIND_POINT_COMPUTE;
 
-	vkCmdBindDescriptorSets(cbInternal.commandBuffer, bindPoint, pipelineLayout, bindDescriptorSetsDesc.firstSet, setHandles.Size(), setHandles.GetData(), 0, nullptr);
+	vkCmdBindDescriptorSets(cbInternal.vkHandle, bindPoint, pipelineLayout, bindDescriptorSetsDesc.firstSet, setHandles.Size(), setHandles.GetData(), 0, nullptr);
 
 	//vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
 }
@@ -256,7 +256,7 @@ void BindSamplerHeap(AptnCommandBuffer commandBuffer, AptnSamplerHeap samplerHea
 		.reservedRangeOffset = samplerHeapInternal.heapSize - samplerHeapInternal.heapReservedRange,
 		.reservedRangeSize = samplerHeapInternal.heapReservedRange
 	};
-	vkCmdBindSamplerHeapEXT(cbInternal.commandBuffer, &bindSamplerHeapInfo);
+	vkCmdBindSamplerHeapEXT(cbInternal.vkHandle, &bindSamplerHeapInfo);
 }
 
 void BindResourceHeap(AptnCommandBuffer commandBuffer, AptnResourceHeap resourceHeap)
@@ -277,7 +277,7 @@ void BindResourceHeap(AptnCommandBuffer commandBuffer, AptnResourceHeap resource
 		.reservedRangeOffset = resourceHeapInternal.heapSize - resourceHeapInternal.heapReservedRange,
 		.reservedRangeSize = resourceHeapInternal.heapReservedRange
 	};
-	vkCmdBindResourceHeapEXT(cbInternal.commandBuffer, &bindSamplerHeapInfo);
+	vkCmdBindResourceHeapEXT(cbInternal.vkHandle, &bindSamplerHeapInfo);
 }
 
 void PushData(AptnCommandBuffer commandBuffer, const AptnPushDataDesc& pushData)
@@ -290,7 +290,7 @@ void PushData(AptnCommandBuffer commandBuffer, const AptnPushDataDesc& pushData)
 		.sType = VK_STRUCTURE_TYPE_PUSH_DATA_INFO_EXT,
 		.data = {.address = pushData.dataAddress, .size = pushData.dataSize }
 	};
-	vkCmdPushDataEXT(cbInternal.commandBuffer, &pushDataInfo);
+	vkCmdPushDataEXT(cbInternal.vkHandle, &pushDataInfo);
 }
 
 void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount, u32 firstIndex, u32 instanceCount, u32 firstInstance)
@@ -298,7 +298,7 @@ void DrawIndexed(AptnCommandBuffer commandBuffer, u32 indexCount, u32 firstIndex
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	vkCmdDrawIndexed(cbInternal.commandBuffer, indexCount, instanceCount, firstIndex, 0, firstInstance);
+	vkCmdDrawIndexed(cbInternal.vkHandle, indexCount, instanceCount, firstIndex, 0, firstInstance);
 }
 
 void DrawIndexedIndirect(AptnCommandBuffer commandBuffer, AptnBuffer drawBuffer, u32 offset, u32 drawCount, u32 stride)
@@ -307,7 +307,7 @@ void DrawIndexedIndirect(AptnCommandBuffer commandBuffer, AptnBuffer drawBuffer,
 	Assert(cbInternal.hasBegun);
 	const BufferInternal& bufferInternal = GetBufferInternal(drawBuffer);
 
-	vkCmdDrawIndexedIndirect(cbInternal.commandBuffer, bufferInternal.buffer, offset, drawCount, stride);
+	vkCmdDrawIndexedIndirect(cbInternal.vkHandle, bufferInternal.vkHandle, offset, drawCount, stride);
 }
 
 void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyDesc)
@@ -315,14 +315,14 @@ void CopyBuffer(AptnCommandBuffer commandBuffer, const AptnBufferCopyDesc& copyD
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkBuffer vkSrcBuffer = GetBufferInternal(copyDesc.srcBuffer).buffer;
-	VkBuffer vkDstBuffer = GetBufferInternal(copyDesc.dstBuffer).buffer;
+	VkBuffer vkSrcBuffer = GetBufferInternal(copyDesc.srcBuffer).vkHandle;
+	VkBuffer vkDstBuffer = GetBufferInternal(copyDesc.dstBuffer).vkHandle;
 
 	VkBufferCopy copyRegion{};
 	copyRegion.size = copyDesc.size;
 	copyRegion.srcOffset = copyDesc.srcOffset;
 	copyRegion.dstOffset = copyDesc.dstOffset;
-	vkCmdCopyBuffer(cbInternal.commandBuffer, vkSrcBuffer, vkDstBuffer, 1, &copyRegion);
+	vkCmdCopyBuffer(cbInternal.vkHandle, vkSrcBuffer, vkDstBuffer, 1, &copyRegion);
 }
 
 void CopyBufferToImage(AptnCommandBuffer commandBuffer, const AptnBufferToImageCopyDesc& copyDesc)
@@ -330,8 +330,8 @@ void CopyBufferToImage(AptnCommandBuffer commandBuffer, const AptnBufferToImageC
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkBuffer vkSrcBuffer = GetBufferInternal(copyDesc.srcBuffer).buffer;
-	VkImage vkDstImage = GetImageInternal(copyDesc.dstImage).image;
+	VkBuffer vkSrcBuffer = GetBufferInternal(copyDesc.srcBuffer).vkHandle;
+	VkImage vkDstImage = GetImageInternal(copyDesc.dstImage).vkHandle;
 
 	const AptnBufferToImageCopyOutline& outline = copyDesc.outline;
 	VkBufferImageCopy bufferCopyRegion
@@ -351,7 +351,7 @@ void CopyBufferToImage(AptnCommandBuffer commandBuffer, const AptnBufferToImageC
 			.depth = 1
 		}
 	};
-	vkCmdCopyBufferToImage(cbInternal.commandBuffer, vkSrcBuffer, vkDstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
+	vkCmdCopyBufferToImage(cbInternal.vkHandle, vkSrcBuffer, vkDstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferCopyRegion);
 }
 
 void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferRegionsToImageCopyDesc& copyRegions)
@@ -359,8 +359,8 @@ void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferR
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	VkBuffer vkSrcBuffer = GetBufferInternal(copyRegions.srcBuffer).buffer;
-	VkImage vkDstImage = GetImageInternal(copyRegions.dstImage).image;
+	VkBuffer vkSrcBuffer = GetBufferInternal(copyRegions.srcBuffer).vkHandle;
+	VkImage vkDstImage = GetImageInternal(copyRegions.dstImage).vkHandle;
 
 	const ArrayView<AptnBufferToImageCopyOutline>& outlines = copyRegions.outlines;
 	DynamicArray<VkBufferImageCopy> bufferCopyRegions;
@@ -386,7 +386,7 @@ void CopyBufferRegionsToImage(AptnCommandBuffer commandBuffer, const AptnBufferR
 		};
 		bufferCopyRegions.Add(bufferCopyRegion);
 	}
-	vkCmdCopyBufferToImage(cbInternal.commandBuffer, vkSrcBuffer, vkDstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, bufferCopyRegions.Size(), bufferCopyRegions.GetData());
+	vkCmdCopyBufferToImage(cbInternal.vkHandle, vkSrcBuffer, vkDstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, bufferCopyRegions.Size(), bufferCopyRegions.GetData());
 }
 
 void BlitImage(AptnCommandBuffer commandBuffer, const AptnBlitImageDesc& blitDesc)
@@ -394,8 +394,8 @@ void BlitImage(AptnCommandBuffer commandBuffer, const AptnBlitImageDesc& blitDes
 	const CommandBufferInternal& cbInternal = GetCommandBufferInternal(commandBuffer);
 	Assert(cbInternal.hasBegun);
 
-	NOT_USED VkImage srcImage = GetImageInternal(blitDesc.srcImage).image;
-	NOT_USED VkImage dstImage = GetImageInternal(blitDesc.dstImage).image;
+	NOT_USED VkImage srcImage = GetImageInternal(blitDesc.srcImage).vkHandle;
+	NOT_USED VkImage dstImage = GetImageInternal(blitDesc.dstImage).vkHandle;
 
 	//vkCmdBlitImage(cbInternal.commandBuffer, srcImage, srcAccessLayout, dstImage, dstAccessLayout, , filter);
 }
@@ -426,7 +426,7 @@ void ImageMemoryBarrier(AptnCommandBuffer commandBuffer, const AptnImageMemoryBa
 	// TODO - Expose stage mask, since this kind of assumption is a little much for this kind of API
 	imageBarrier.srcStageMask = ApparitionImageAccessToPipelineStage(imgAccess);
 	imageBarrier.dstStageMask = ApparitionImageAccessToPipelineStage(barrierDesc.access);
-	imageBarrier.image = imgInternal.image;
+	imageBarrier.image = imgInternal.vkHandle;
 	imageBarrier.subresourceRange = subresourceRange;
 
 	VkDependencyInfo dependencyInfo;
@@ -434,7 +434,7 @@ void ImageMemoryBarrier(AptnCommandBuffer commandBuffer, const AptnImageMemoryBa
 	dependencyInfo.imageMemoryBarrierCount = 1;
 	dependencyInfo.pImageMemoryBarriers = &imageBarrier;
 
-	vkCmdPipelineBarrier2(cbInternal.commandBuffer, &dependencyInfo);
+	vkCmdPipelineBarrier2(cbInternal.vkHandle, &dependencyInfo);
 
 	const u32 mipLevelsToChange = barrierDesc.baseMipLevel + barrierDesc.mipLevelCount;
 	for (u32 i = barrierDesc.baseMipLevel; i < mipLevelsToChange; ++i)

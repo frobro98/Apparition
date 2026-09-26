@@ -481,7 +481,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 
 	{
 		const u32 queueCount = graphicsQueueCount + transferQueueCount + computeQueueCount;
-		internalDevice.queueHandlePool = CreateHandlePool(queueCount);
+		internalDevice.queuesHandlePool = CreateHandlePool(queueCount);
 		internalDevice.queues.Resize(queueCount);
 	}
 
@@ -536,6 +536,7 @@ DeviceInternal& DeviceManager::DeviceInternalFrom(AptnDevice deviceHandle)
 
 DeviceInternal& DeviceManager::DeviceInternalFrom(u32 deviceIndex)
 {
+	Assert(deviceIndex != AptnInvalidHandle);
 	deviceIndex -= 1;
 	Assert(deviceInternals.IsIndexValid(deviceIndex));
 	return deviceInternals[deviceIndex];
@@ -552,58 +553,58 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 	}
 
 	{
-		HandlePool& commandBufferHandlePool = deviceInternal.commandBufferHandlePool;
+		HandlePool& commandBufferHandlePool = deviceInternal.commandBuffersHandlePool;
 		Assert(commandBufferHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.commandBufferHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.commandBuffersHandlePool = CreateHandlePool(initialPoolSize);
 		
 		deviceInternal.commandBuffers.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& bufferResourceHandlePool = deviceInternal.bufferResourceHandlePool;
+		HandlePool& bufferResourceHandlePool = deviceInternal.bufferResourcesHandlePool;
 		Assert(bufferResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.bufferResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.bufferResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.bufferResources.Resize(initialPoolSize);
 	}
 
 	// Pipeline State Internals
 	{
-		HandlePool& vertexInputResourceHandlePool = deviceInternal.vertexInputResourceHandlePool;
+		HandlePool& vertexInputResourceHandlePool = deviceInternal.vertexInputResourcesHandlePool;
 		Assert(vertexInputResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.vertexInputResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.vertexInputResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.vertexInputResources.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& prerasterShadersResourceHandlePool = deviceInternal.prerasterShadersResourceHandlePool;
+		HandlePool& prerasterShadersResourceHandlePool = deviceInternal.prerasterShadersResourcesHandlePool;
 		Assert(prerasterShadersResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.prerasterShadersResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.prerasterShadersResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.prerasterShadersResources.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& fragmentShaderResourceHandlePool = deviceInternal.fragmentShaderResourceHandlePool;
+		HandlePool& fragmentShaderResourceHandlePool = deviceInternal.fragmentShaderResourcesHandlePool;
 		Assert(fragmentShaderResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.fragmentShaderResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.fragmentShaderResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.fragmentShaderResources.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& fragmentOutputResourceHandlePool = deviceInternal.fragmentOutputResourceHandlePool;
+		HandlePool& fragmentOutputResourceHandlePool = deviceInternal.fragmentOutputResourcesHandlePool;
 		Assert(fragmentOutputResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.fragmentOutputResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.fragmentOutputResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.fragmentOutputResources.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& pipelineResourceHandlePool = deviceInternal.pipelineResourceHandlePool;
+		HandlePool& pipelineResourceHandlePool = deviceInternal.pipelineResourcesHandlePool;
 		Assert(pipelineResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.pipelineResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.pipelineResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.pipelineResources.Resize(initialPoolSize);
 	}
@@ -612,70 +613,70 @@ void DeviceManager::InitializeDeviceHandlePools(DeviceInternal& deviceInternal)
 	// 3 extra image/view resources to ensure access to the swapchain data
 	constexpr u32 extraSwapchainImages = 3;
 	{
-		HandlePool& imageResourceHandlePool = deviceInternal.imageResourceHandlePool;
+		HandlePool& imageResourceHandlePool = deviceInternal.imageResourcesHandlePool;
 		Assert(imageResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.imageResourceHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
+		deviceInternal.imageResourcesHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
 
 		deviceInternal.imageResources.Resize(initialPoolSize + extraSwapchainImages);
 	}
 
 	{
-		HandlePool& imageViewResourceHandlePool = deviceInternal.imageViewResourceHandlePool;
+		HandlePool& imageViewResourceHandlePool = deviceInternal.imageViewResourcesHandlePool;
 		Assert(imageViewResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.imageViewResourceHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
+		deviceInternal.imageViewResourcesHandlePool = CreateHandlePool(initialPoolSize + extraSwapchainImages);
 
 		deviceInternal.imageViewResources.Resize(initialPoolSize + extraSwapchainImages);
 	}
 
 	// Sampler
 	{
-		HandlePool& samplerResourceHandlePool = deviceInternal.samplerResourceHandlePool;
+		HandlePool& samplerResourceHandlePool = deviceInternal.samplerResourcesHandlePool;
 		Assert(samplerResourceHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.samplerResourceHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.samplerResourcesHandlePool = CreateHandlePool(initialPoolSize);
 
 		deviceInternal.samplerResources.Resize(initialPoolSize);
 	}
 
 	// Descriptor Heap
 	{
-		HandlePool& samplerHeapHandlePool = deviceInternal.samplerHeapHandlePool;
+		HandlePool& samplerHeapHandlePool = deviceInternal.samplerHeapsHandlePool;
 		Assert(samplerHeapHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.samplerHeapHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.samplerHeapsHandlePool = CreateHandlePool(initialPoolSize);
 
-		deviceInternal.samplerHeapResources.Resize(initialPoolSize);
+		deviceInternal.samplerHeaps.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& resourceHeapHandlePool = deviceInternal.resourceHeapHandlePool;
+		HandlePool& resourceHeapHandlePool = deviceInternal.resourceHeapsHandlePool;
 		Assert(resourceHeapHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.resourceHeapHandlePool = CreateHandlePool(initialPoolSize);
+		deviceInternal.resourceHeapsHandlePool = CreateHandlePool(initialPoolSize);
 
-		deviceInternal.resourceHeapResources.Resize(initialPoolSize);
+		deviceInternal.resourceHeaps.Resize(initialPoolSize);
 	}
 
 	// Descriptor Set Internals
 	{
-		HandlePool& descriptorSetLayoutHandlePool = deviceInternal.descriptorSetLayoutHandlePools;
+		HandlePool& descriptorSetLayoutHandlePool = deviceInternal.descriptorSetLayoutsHandlePool;
 		Assert(descriptorSetLayoutHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.descriptorSetLayoutHandlePools = CreateHandlePool(initialPoolSize);
+		deviceInternal.descriptorSetLayoutsHandlePool = CreateHandlePool(initialPoolSize);
 
-		deviceInternal.descriptorSetLayoutResources.Resize(initialPoolSize);
+		deviceInternal.descriptorSetLayouts.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& descriptorPoolHandlePool = deviceInternal.descriptorPoolHandlePools;
+		HandlePool& descriptorPoolHandlePool = deviceInternal.descriptorPoolsHandlePool;
 		Assert(descriptorPoolHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.descriptorPoolHandlePools = CreateHandlePool(initialPoolSize);
+		deviceInternal.descriptorPoolsHandlePool = CreateHandlePool(initialPoolSize);
 
-		deviceInternal.descriptorPoolResources.Resize(initialPoolSize);
+		deviceInternal.descriptorPools.Resize(initialPoolSize);
 	}
 
 	{
-		HandlePool& descriptorSetHandlePool = deviceInternal.descriptorSetHandlePools;
+		HandlePool& descriptorSetHandlePool = deviceInternal.descriptorSetsHandlePool;
 		Assert(descriptorSetHandlePool.freeHandleIndices.IsEmpty());
-		deviceInternal.descriptorSetHandlePools = CreateHandlePool(initialPoolSize);
+		deviceInternal.descriptorSetsHandlePool = CreateHandlePool(initialPoolSize);
 
-		deviceInternal.descriptorSetResources.Resize(initialPoolSize);
+		deviceInternal.descriptorSets.Resize(initialPoolSize);
 	}
 }
 
@@ -683,7 +684,7 @@ bool DeviceManager::CanAllocateQueue(const DeviceInternal& deviceInternal, u32 q
 {
 	for (const QueueInternal& queueInternal : deviceInternal.queues)
 	{
-		if (queueInternal.queue != VK_NULL_HANDLE && queueInternal.queueFamilyIndex == queueFamilyIndex)
+		if (queueInternal.vkHandle != VK_NULL_HANDLE && queueInternal.queueFamilyIndex == queueFamilyIndex)
 		{
 			// TODO - Right now, we only support one queue per type. More than that should be supported
 			Assert(false);
@@ -699,7 +700,7 @@ AptnQueue DeviceManager::AllocateGraphicsQueue(AptnDevice device)
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	if (CanAllocateQueue(deviceInternal, deviceInternal.graphicsFamilyIndex))
 	{
-		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.queueHandlePool);
+		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.queuesHandlePool);
 		if (handleIndex != InvalidHandleIndex)
 		{
 			constexpr u32 queueIndex = 0;
@@ -707,14 +708,14 @@ AptnQueue DeviceManager::AllocateGraphicsQueue(AptnDevice device)
 			vkGetDeviceQueue(deviceInternal.device, deviceInternal.graphicsFamilyIndex, queueIndex, &queue);
 
 			QueueInternal queueInternal{
-				.queue = queue,
+				.vkHandle = queue,
 				.queueFamilyIndex = deviceInternal.graphicsFamilyIndex,
 				.canPresent = true
 			};
 			
 			GetQueueInternalFromIndex(deviceInternal, handleIndex) = queueInternal;
 
-			const u32 indexGeneration = GetHandleGeneration(deviceInternal.queueHandlePool, handleIndex);
+			const u32 indexGeneration = GetHandleGeneration(deviceInternal.queuesHandlePool, handleIndex);
 			// TODO(nblane): this MUST be moved so that it can be reused
 			const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
 				| (((u64)deviceInternal.graphicsFamilyIndex) << POOL_INDEX_SHIFT)
@@ -732,7 +733,7 @@ AptnQueue DeviceManager::AllocateTransferQueue(AptnDevice device)
 	DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 	if (CanAllocateQueue(deviceInternal, deviceInternal.graphicsFamilyIndex))
 	{
-		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.queueHandlePool);
+		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.queuesHandlePool);
 		if (handleIndex != InvalidHandleIndex)
 		{
 			constexpr u32 queueIndex = 0;
@@ -740,12 +741,12 @@ AptnQueue DeviceManager::AllocateTransferQueue(AptnDevice device)
 			vkGetDeviceQueue(deviceInternal.device, deviceInternal.transferFamilyIndex, queueIndex, &queue);
 
 			QueueInternal queueInternal{
-				.queue = queue,
+				.vkHandle = queue,
 				.queueFamilyIndex = deviceInternal.transferFamilyIndex
 			};
 			GetQueueInternalFromIndex(deviceInternal, handleIndex) = queueInternal;
 
-			const u32 indexGeneration = GetHandleGeneration(deviceInternal.queueHandlePool, handleIndex);
+			const u32 indexGeneration = GetHandleGeneration(deviceInternal.queuesHandlePool, handleIndex);
 			// TODO(nblane): this MUST be moved so that it can be reused
 			const u64 handleData = (device.handle << DEVICE_INDEX_SHIFT)
 				| (((u64)deviceInternal.transferFamilyIndex) << POOL_INDEX_SHIFT)
@@ -793,7 +794,7 @@ void DeviceManager::FreeQueue(AptnQueue queue)
 {
 	// TODO: Assert handle is valid AND handle generation is correct
 	DeviceInternal& deviceInternal = GetDeviceInternal(queue);
-	PushFreedHandleIndex(deviceInternal.queueHandlePool, GetHandleIndex(queue));
+	PushFreedHandleIndex(deviceInternal.queuesHandlePool, GetHandleIndex(queue));
 }
 
 bool DeviceManager::BroadcastDebugCallback(
@@ -802,21 +803,21 @@ bool DeviceManager::BroadcastDebugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
 	void* pUserData)
 {
-	const ValidationSeverity severity = [messageSeverity]
+	const AptnValidationSeverity severity = [messageSeverity]
 	{
 			switch (messageSeverity)
 			{
 			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-				return ValidationSeverity::Verbose;
+				return AptnValidationSeverity::Verbose;
 			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-				return ValidationSeverity::Info;
+				return AptnValidationSeverity::Info;
 			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-				return ValidationSeverity::Warning;
+				return AptnValidationSeverity::Warning;
 			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-				return ValidationSeverity::Error;
+				return AptnValidationSeverity::Error;
 			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
 			default:
-				return ValidationSeverity::None;
+				return AptnValidationSeverity::None;
 			}
 	}();
 	const AptnDebugMessageTypeFlags messageTypeFlags = messageType;
@@ -837,7 +838,7 @@ AptnCommandPool DeviceManager::CreateCommandPool(AptnDevice deviceHandle, const 
 	if (result == VK_SUCCESS)
 	{
 		CommandPoolInternal commandPoolInternal{
-			.cmdPool = cmdPool,
+			.vkHandle = cmdPool,
 			.queueFamilyIndex = params.queueIndex
 		};
 		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.commandPoolsHandlePool);
@@ -864,7 +865,7 @@ void DeviceManager::DestroyCommandPool(AptnCommandPool commandPoolHandle)
 	// TODO: Assert handle is valid AND handle generation is correct
 	DeviceInternal& deviceInternal = GetDeviceInternal(commandPoolHandle);
 	u32 handleIndex = GetHandleIndex(commandPoolHandle);
-	VkCommandPool cmdPool = deviceInternal.commandPools[handleIndex-1].cmdPool;
+	VkCommandPool cmdPool = deviceInternal.commandPools[handleIndex-1].vkHandle;
 	vkDestroyCommandPool(deviceInternal.device, cmdPool, nullptr);
 
 	// Let the handle pool know this handle is freed
@@ -880,7 +881,7 @@ AptnCommandBuffer DeviceManager::AllocateCommandBuffer(AptnCommandPool commandPo
 	VkCommandBufferAllocateInfo allocInfo;
 	Vk::ZeroInfoStruct(allocInfo, VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
 	allocInfo.commandBufferCount = 1;
-	allocInfo.commandPool = commandPoolInternal.cmdPool;
+	allocInfo.commandPool = commandPoolInternal.vkHandle;
 	allocInfo.level = !params.isSecondary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 	VkCommandBuffer cmdBuffer;
 	VkResult result = vkAllocateCommandBuffers(deviceInternal.device, &allocInfo, &cmdBuffer);
@@ -889,17 +890,17 @@ AptnCommandBuffer DeviceManager::AllocateCommandBuffer(AptnCommandPool commandPo
 	{
 		CommandBufferInternal commandBufferInternal
 		{
-			.commandBuffer = cmdBuffer,
+			.vkHandle = cmdBuffer,
 			.queueFamilyIndex = commandPoolInternal.queueFamilyIndex
 		};
-		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.commandBufferHandlePool);
+		const u32 handleIndex = PopFreeHandleIndex(deviceInternal.commandBuffersHandlePool);
 		if (handleIndex != InvalidHandleIndex)
 		{
 			// Set the internal index to be the current data
 			// TODO - this kinda is stinky to me, don't assign to the return of a function...
 			GetCommandBufferInternalFromIndex(deviceInternal, handleIndex) = commandBufferInternal;
 
-			const u32 indexGeneration = GetHandleGeneration(deviceInternal.commandBufferHandlePool, handleIndex);
+			const u32 indexGeneration = GetHandleGeneration(deviceInternal.commandBuffersHandlePool, handleIndex);
 			// TODO(nblane): this MUST be moved so that it can be reused
 			const u64 handleData = ((u64)GetDeviceIndexFromHandle(commandPoolHandle) << DEVICE_INDEX_SHIFT)
 				| ((u64)cmdPoolIndex << POOL_INDEX_SHIFT)
@@ -920,10 +921,10 @@ void DeviceManager::FreeCommandBuffer(AptnCommandBuffer commandBufferHandle)
 	CommandPoolInternal& commandPoolInternal = deviceInternal.commandPools[cmdPoolIndex-1];
 	u32 cmdBufferIndex = GetHandleIndex(commandBufferHandle);
 	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex-1];
-	vkFreeCommandBuffers(deviceInternal.device, commandPoolInternal.cmdPool, 1, &commandBufferInternal.commandBuffer);
+	vkFreeCommandBuffers(deviceInternal.device, commandPoolInternal.vkHandle, 1, &commandBufferInternal.vkHandle);
 
 	// Let the handle pool know this handle is freed
-	PushFreedHandleIndex(deviceInternal.commandBufferHandlePool, cmdBufferIndex);
+	PushFreedHandleIndex(deviceInternal.commandBuffersHandlePool, cmdBufferIndex);
 }
 
 void DeviceManager::ResetCommandBuffer(AptnCommandBuffer commandBuffer)
@@ -932,6 +933,6 @@ void DeviceManager::ResetCommandBuffer(AptnCommandBuffer commandBuffer)
 	DeviceInternal& deviceInternal = deviceInternals[deviceIndex - 1];
 	u32 cmdBufferIndex = GetHandleIndex(commandBuffer);
 	CommandBufferInternal& commandBufferInternal = GetCommandBufferInternalFromIndex(deviceInternal, cmdBufferIndex);
-	VkResult result = vkResetCommandBuffer(commandBufferInternal.commandBuffer, 0);
+	VkResult result = vkResetCommandBuffer(commandBufferInternal.vkHandle, 0);
 	CHECK_VK(result);
 }
