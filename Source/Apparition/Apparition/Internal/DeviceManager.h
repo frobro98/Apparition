@@ -13,6 +13,8 @@
 
 #include "Apparition/Internal/VulkanDefinitions.h"
 
+DEFINE_LOG_CHANNEL(AptnInternal);
+
 using namespace Apparition;
 
 struct DeviceInternal;

@@ -4,11 +4,11 @@
 
 #include "Logging/LogCore.hpp"
 
-#define MUSA_LOG(Channel, level, msg, ...) GetLogger().Log(Channel, level, msg, ##__VA_ARGS__)
+#define LOG_INTERNAL_(Channel, level, msg, ...) GetLogger().Log(Channel, level, msg, ##__VA_ARGS__)
 
-#define MUSA_DEBUG(Channel, msg, ...) MUSA_LOG(Channel, LogLevel::Debug, msg, ##__VA_ARGS__)
-#define MUSA_INFO(Channel, msg, ...) MUSA_LOG(Channel, LogLevel::Info, msg, ##__VA_ARGS__)
-#define MUSA_WARN(Channel, msg, ...) MUSA_LOG(Channel, LogLevel::Warning, msg, ##__VA_ARGS__)
-#define MUSA_ERR(Channel, msg, ...) MUSA_LOG(Channel, LogLevel::Error, msg, ##__VA_ARGS__)
-#define MUSA_FATAL(Channel, msg, ...) MUSA_LOG(Channel, LogLevel::Fatal, msg, ##__VA_ARGS__)
+#define DebugLog(Channel, msg, ...) LOG_INTERNAL_(Channel, spdlog::level::debug, msg, ##__VA_ARGS__)
+#define InfoLog(Channel, msg, ...) LOG_INTERNAL_(Channel, spdlog::level::info, msg, ##__VA_ARGS__)
+#define WarnLog(Channel, msg, ...) LOG_INTERNAL_(Channel, spdlog::level::warn, msg, ##__VA_ARGS__)
+#define ErrorLog(Channel, msg, ...) LOG_INTERNAL_(Channel, spdlog::level::err, msg, ##__VA_ARGS__)
+#define FatalLog(Channel, msg, ...) LOG_INTERNAL_(Channel, spdlog::level::critical, msg, ##__VA_ARGS__)
 

@@ -161,19 +161,19 @@ static VkBool32 VulkanDebugMessengerCallback(
 
 			if (messageSeverity == AptnValidationSeverity::Error)
 			{
-				MUSA_ERR(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+				ErrorLog(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
 			else if (messageSeverity == AptnValidationSeverity::Warning)
 			{
-				MUSA_WARN(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+				WarnLog(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
 			else if (messageSeverity == AptnValidationSeverity::Info)
 			{
-				MUSA_INFO(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+				InfoLog(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
 			else // VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT 
 			{
-				MUSA_DEBUG(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
+				DebugLog(VkValidation, " {} : VUID({}): {}", typeStr, pCallbackData->pMessageIdName, pCallbackData->pMessage);
 			}
 		}
 	}
@@ -193,17 +193,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	LPSTR /*lpCmdLine*/,
 	int /*nCmdShow*/)
 {
-	// TODO - This should be named whatever the game name is determined to be
-	Path logFilePath = Path(EngineLogPath()) / "musa.log";
-
 #if M_DEBUG
-	GetLogger().InitLogging(LogLevel::Debug);
+	GetLogger().InitLogging(spdlog::level::debug);
 #else
-	GetLogger().InitLogging(LogLevel::Info);
+	GetLogger().InitLogging(spdlog::level::info);
 #endif
-
-	GetLogger().AddLogSink(new DebugOutputWindowSink);
-	GetLogger().AddLogSink(new LogFileSink(logFilePath));
 
 	const u32 windowWidth = 1280;
 	const u32 windowHeight = 720;

@@ -523,6 +523,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 
 void DeviceManager::DestroyDevice(AptnDevice deviceHandle)
 {
+	InfoLog(AptnInternal, "Attempting to destroy the device. There is no implementation to destroy the device");
 	UNUSED(deviceHandle);
 }
 

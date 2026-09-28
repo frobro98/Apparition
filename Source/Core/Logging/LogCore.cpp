@@ -1,10 +1,9 @@
 
 #include "LogCore.hpp"
-#include "LoggingThread.hpp"
-#include "File/DirectoryLocations.hpp"
-#include "Sinks/ConsoleWindowSink.hpp"
-#include "Sinks/DebugOutputWindowSink.hpp"
-#include "Sinks/LogFileSink.hpp"
+#include "Debugging/Assertion.hpp"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/msvc_sink.h>
 
 Logger& GetLogger()
 {
@@ -12,31 +11,22 @@ Logger& GetLogger()
 	return logger;
 }
 
-void Logger::InitLogging(LogLevel::Type level)
+void Logger::InitLogging(spdlog::level::level_enum level)
 {
-	loggingThread = new LoggingThread();
-	logLevel = level;
+	// TODO - Preserve existing log files via file sink handlers
+	auto msvcDebugSink = std::make_shared<spdlog::sinks::msvc_sink_st>();
+	constexpr bool truncate = true;
+	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_st>("logs/log.txt", truncate);
+	auto logger = std::make_shared<spdlog::logger>("Logger", spdlog::sinks_init_list{msvcDebugSink, fileSink});
+
+	logger->set_level(level);
+	logger->set_pattern("[%H:%M:%S][%l] %v");
+	spdlog::set_default_logger(logger);
+
+	isInitialized = true;
 }
 
-void Logger::AddLogSink(LogSink* sink)
+void Logger::LogInternal(const LogChannel& logChannel, spdlog::level::level_enum level, const fmt::memory_buffer& formatBuffer)
 {
-	Assert(loggingThread);
-	Assert(sink);
-	loggingThread->AddLogSink(*sink);
-}
-
-void Logger::RemoveLogSink(LogSink* sink)
-{
-	loggingThread->RemoveSink(*sink);
-}
-
-void Logger::PushLineToLog(const LogChannel& logChannel, LogLevel::Type level, const tchar* msg, size_t msgSize)
-{
-	// TODO - need to figure out if I don't format here or if I format here and then later not format
-	LogLineEntry entry;
-	entry.logMsg = String(msg, (u32)msgSize);
-	entry.level = level;
-	entry.logSlot = logChannel.logName;
-
-	loggingThread->PushLogLine(entry);
+    spdlog::log(level, "[{}] {}", logChannel.logName, formatBuffer.data(), formatBuffer.size());
 }

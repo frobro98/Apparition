@@ -34,7 +34,7 @@ void InitializeFixedBlockTable()
 		Assert(tableIndex < TotalSmallFixedTableSizes);
 		fixedSizeToIndexCache[i] = tableIndex;
 
-		MUSA_DEBUG(MemoryLog, "fixedSizeToIndexCache[{}] = {}", i, tableIndex);
+		DebugLog(MemoryLog, "fixedSizeToIndexCache[{}] = {}", i, tableIndex);
 	}
 }
 

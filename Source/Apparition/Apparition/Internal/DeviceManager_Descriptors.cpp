@@ -184,12 +184,14 @@ void DeviceManager::FreeDescriptorSet(AptnDescriptorSet descriptorSet)
 
 void DeviceManager::AllocateDescriptorSets(AptnDescriptorPool descriptorPool, const ArrayView<AptnDescriptorSetAllocParams>& allocParams)
 {
+    InfoLog(AptnInternal, "Attempting to free a descriptor set. There is no implementation to destroy the device");
     UNUSED(descriptorPool, allocParams);
     //return { Apparition::InvalidHandle };
 }
 
 void DeviceManager::FreeDescriptorSets(const ArrayView<AptnDescriptorSet> descriptorSets)
 {
+    InfoLog(AptnInternal, "Attempting to free descriptor sets. There is no implementation to destroy the device");
     UNUSED(descriptorSets);
 }
 
