@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BasicTypes/Function.hpp"
+#include "Containers/StaticArray.hpp"
 
-#include "Apparition/ApparitionCore.h"
 #include "Apparition/Backbuffer.h"
 #include "Apparition/Buffer.h"
 #include "Apparition/CommandBuffer.h"
@@ -11,15 +11,11 @@
 #include "Apparition/Queue.h"
 #include "Apparition/DescriptorHeap.h"
 
-#include "Apparition/Internal/VulkanDefinitions.h"
+#include "Apparition/Internal/ApparitionInternals.h"
 
 DEFINE_LOG_CHANNEL(AptnInternal);
 
 using namespace Apparition;
-
-struct DeviceInternal;
-struct HandlePool;
-struct QueueInternal;
 
 class DeviceManager final
 {
@@ -155,8 +151,11 @@ public:
 	void CommitResourceDescriptors(AptnResourceHeap resourceHeap);
 #pragma endregion
 private:
+	static constexpr u32 SupportedDeviceCount = 2;
+	HandlePool deviceHandlePool;
+	StaticArray<DeviceInternal, SupportedDeviceCount> deviceInternals;
+	
 	UserValidationCallbackData userValidation;
-	DynamicArray<DeviceInternal> deviceInternals;
 	
 	VkInstance instance = VK_NULL_HANDLE;
 	VkDebugUtilsMessengerEXT debugMessengerHandle = VK_NULL_HANDLE;

@@ -1,6 +1,7 @@
 #include "CommandBufferCommands.h"
 
 #include "Internal/ApparitionInternals.h"
+#include "Internal/ApparitionHandleInternal.h"
 #include "Internal/Conversions.h"
 #include "Internal/DeviceManager.h"
 #include "Internal/HandleDefinitions.h"
@@ -228,7 +229,7 @@ void BindDescriptorSets(AptnCommandBuffer commandBuffer, const AptnBindDescripto
 	if (pipelineLayout == VK_NULL_HANDLE)
 	{
 		// Create VkPipelineLayout
-		pipelineLayout = CreatePipelineLayout(bindDescriptorSetsDesc.pipelineDesc, deviceInternal.device);
+		pipelineLayout = CreatePipelineLayout(bindDescriptorSetsDesc.pipelineDesc, deviceInternal.handle);
 	}
 
 	VkPipelineBindPoint bindPoint = bindDescriptorSetsDesc.bindPoint == AptnBindPoint::Graphics ? VK_PIPELINE_BIND_POINT_GRAPHICS : VK_PIPELINE_BIND_POINT_COMPUTE;

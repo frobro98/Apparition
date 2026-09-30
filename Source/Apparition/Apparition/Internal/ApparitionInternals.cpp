@@ -1,5 +1,6 @@
 
 #include "ApparitionInternals.h"
+#include "ApparitionHandleInternal.h"
 
 ApparitionInternals apparition;
 

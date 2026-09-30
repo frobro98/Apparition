@@ -4,6 +4,7 @@
 #include "Apparition/Pipeline.h"
 
 #include "Apparition/Internal/ApparitionInternals.h"
+#include "Apparition/Internal/ApparitionHandleInternal.h"
 #include "Apparition/Internal/Conversions.h"
 #include "Apparition/Internal/ImageFormatConversion.h"
 
@@ -132,7 +133,7 @@ AptnVertexInputPipelineState DeviceManager::CreateVertexInputPipelineState(AptnD
     
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
     VkPipeline vertexInputState = VK_NULL_HANDLE;
-    VkResult result = vkCreateGraphicsPipelines(deviceInternal.device, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &vertexInputState);
+    VkResult result = vkCreateGraphicsPipelines(deviceInternal.handle, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &vertexInputState);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -221,7 +222,7 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
         pipelineLayoutInfo.pSetLayouts = vkLayouts.GetData(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-        const VkResult result = vkCreatePipelineLayout(deviceInternal.device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+        const VkResult result = vkCreatePipelineLayout(deviceInternal.handle, &pipelineLayoutInfo, nullptr, &pipelineLayout);
         CHECK_VK(result);
     }
 
@@ -258,13 +259,13 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
     };
 
     VkPipeline prerasterShadersState = VK_NULL_HANDLE;
-    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.device, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &prerasterShadersState);
+    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.handle, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &prerasterShadersState);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
         if (pipelineLayout != VK_NULL_HANDLE)
         {
-            vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+            vkDestroyPipelineLayout(deviceInternal.handle, pipelineLayout, nullptr);
         }
 
         const PrerasterShadersPipelineStateInternal prerasterShadersInternal
@@ -288,7 +289,7 @@ AptnPrerasterShadersPipelineState DeviceManager::CreatePrerasterShadersPipelineS
     // TODO - make this one call instead of multiple calls
     if (pipelineLayout != VK_NULL_HANDLE)
     {
-        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        vkDestroyPipelineLayout(deviceInternal.handle, pipelineLayout, nullptr);
     }
 
     return { AptnInvalidHandle };
@@ -368,7 +369,7 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
         pipelineLayoutInfo.pSetLayouts = vkLayouts.GetData(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-        const VkResult result = vkCreatePipelineLayout(deviceInternal.device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+        const VkResult result = vkCreatePipelineLayout(deviceInternal.handle, &pipelineLayoutInfo, nullptr, &pipelineLayout);
         CHECK_VK(result);
     }
 
@@ -386,13 +387,13 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
     };
 
     VkPipeline fragmentShaderState = VK_NULL_HANDLE;
-    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.device, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &fragmentShaderState);
+    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.handle, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &fragmentShaderState);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
         if (pipelineLayout != VK_NULL_HANDLE)
         {
-            vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+            vkDestroyPipelineLayout(deviceInternal.handle, pipelineLayout, nullptr);
         }
 
         const FragmentShaderPipelineStateInternal fragmentShadersInternal
@@ -414,7 +415,7 @@ AptnFragmentShaderPipelineState DeviceManager::CreateFragmentShaderPipelineState
     }
     if (pipelineLayout != VK_NULL_HANDLE)
     {
-        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        vkDestroyPipelineLayout(deviceInternal.handle, pipelineLayout, nullptr);
     }
 
     return { AptnInvalidHandle };
@@ -489,7 +490,7 @@ AptnFragmentOutputPipelineState DeviceManager::CreateFragmentOutputPipelineState
 
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
     VkPipeline fragmentOutputState = VK_NULL_HANDLE;
-    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.device, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &fragmentOutputState);
+    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.handle, VK_NULL_HANDLE, 1, &pipelineStateInfo, nullptr, &fragmentOutputState);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -585,7 +586,7 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
         pipelineLayoutInfo.pSetLayouts = vkLayouts.GetData(); // Optional
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-        const VkResult result = vkCreatePipelineLayout(deviceInternal.device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+        const VkResult result = vkCreatePipelineLayout(deviceInternal.handle, &pipelineLayoutInfo, nullptr, &pipelineLayout);
         CHECK_VK(result);
     }
 
@@ -608,13 +609,13 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
     };
 
     VkPipeline pipeline = VK_NULL_HANDLE;
-    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline);
+    const VkResult result = vkCreateGraphicsPipelines(deviceInternal.handle, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
         if (pipelineLayout != VK_NULL_HANDLE)
         {
-            vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+            vkDestroyPipelineLayout(deviceInternal.handle, pipelineLayout, nullptr);
         }
 
         const PipelineInternal pipelineInternal
@@ -636,7 +637,7 @@ AptnPipeline DeviceManager::CreatePipeline(AptnDevice device, const AptnPipeline
     }
     if (pipelineLayout != VK_NULL_HANDLE)
     {
-        vkDestroyPipelineLayout(deviceInternal.device, pipelineLayout, nullptr);
+        vkDestroyPipelineLayout(deviceInternal.handle, pipelineLayout, nullptr);
     }
 
     return { AptnInvalidHandle };
@@ -646,7 +647,7 @@ void DeviceManager::DestroyPipeline(AptnPipeline pipeline)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(pipeline);
     PipelineInternal& pipelineInternal = GetPipelineInternal(pipeline);
-    vkDestroyPipeline(deviceInternal.device, pipelineInternal.vkHandle, nullptr);
+    vkDestroyPipeline(deviceInternal.handle, pipelineInternal.vkHandle, nullptr);
 
     PushFreedHandleIndex(deviceInternal.pipelineResourcesHandlePool, GetHandleIndex(pipeline));
 }

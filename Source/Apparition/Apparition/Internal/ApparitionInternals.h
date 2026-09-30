@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Apparition/ApparitionCore.h"
-#include "Apparition/CommandBuffer.h"
 #include "Apparition/ApparitionDefinitions.h"
-#include "DeviceManager.h"
+#include "Apparition/CommandBuffer.h"
+#include "Apparition/DescriptorSet.h"
+#include "Apparition/Queue.h"
 #include "HandleDefinitions.h"
 #include "HandlePool.h"
 #include "VulkanDefinitions.h"
@@ -176,9 +177,9 @@ struct DescriptorSetInternal
 struct DeviceInternal
 {
 	Backbuffer backbuffer{};
-	VkPhysicalDeviceLimits physicalDeviceLimits;
-	VkPhysicalDeviceDescriptorHeapPropertiesEXT descriptorHeapProperties;
-	VkDevice device = VK_NULL_HANDLE;
+	VkPhysicalDeviceLimits physicalDeviceLimits{};
+	VkPhysicalDeviceDescriptorHeapPropertiesEXT descriptorHeapProperties{};
+	VkDevice handle = VK_NULL_HANDLE;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VmaAllocator allocator = VK_NULL_HANDLE;
 	
@@ -222,27 +223,4 @@ struct DeviceInternal
 	u32 transferFamilyIndex = 0;
 	u32 computeFamilyIndex = 0;
 };
-
-REGISTER_HANDLE_TYPE(Queue, queues);
-
-REGISTER_HANDLE_TYPE(CommandPool, commandPools);
-REGISTER_HANDLE_TYPE(CommandBuffer, commandBuffers);
-// Resource Handles
-REGISTER_HANDLE_TYPE(Buffer, bufferResources);
-REGISTER_HANDLE_TYPE(Image, imageResources);
-REGISTER_HANDLE_TYPE(ImageView, imageViewResources);
-REGISTER_HANDLE_TYPE(Sampler, samplerResources);
-// Pipeline Handles
-REGISTER_HANDLE_TYPE(VertexInputPipelineState, vertexInputResources);
-REGISTER_HANDLE_TYPE(PrerasterShadersPipelineState, prerasterShadersResources);
-REGISTER_HANDLE_TYPE(FragmentShaderPipelineState, fragmentShaderResources);
-REGISTER_HANDLE_TYPE(FragmentOutputPipelineState, fragmentOutputResources);
-REGISTER_HANDLE_TYPE(Pipeline, pipelineResources);
-// DescriptorHeap
-REGISTER_HANDLE_TYPE(SamplerHeap, samplerHeaps);
-REGISTER_HANDLE_TYPE(ResourceHeap, resourceHeaps);
-// DescriptorSet Handles
-REGISTER_HANDLE_TYPE(DescriptorSetLayout, descriptorSetLayouts);
-REGISTER_HANDLE_TYPE(DescriptorPool, descriptorPools);
-REGISTER_HANDLE_TYPE(DescriptorSet, descriptorSets);
 

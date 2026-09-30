@@ -5,6 +5,7 @@
 #include "Apparition/Image.h"
 
 #include "ApparitionInternals.h"
+#include "ApparitionHandleInternal.h"
 #include "Conversions.h"
 #include "HandleDefinitions.h"
 #include "ImageFormatConversion.h"
@@ -45,7 +46,7 @@ AptnBuffer DeviceManager::CreateBuffer(AptnDevice device, const AptnBufferCreati
                 .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
                 .buffer = buffer
             };
-            bufferInternal.bufferDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.device, &deviceAddrInfo);
+            bufferInternal.bufferDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.handle, &deviceAddrInfo);
         }
 
         u32 handleIndex = PopFreeHandleIndex(deviceInternal.bufferResourcesHandlePool);
@@ -176,7 +177,7 @@ AptnImageView DeviceManager::CreateImageView(AptnImage image, const AptnImageVie
     };
 
     VkImageView imageView = VK_NULL_HANDLE;
-    VkResult result = vkCreateImageView(deviceInternal.device, &viewInfo, nullptr, &imageView);
+    VkResult result = vkCreateImageView(deviceInternal.handle, &viewInfo, nullptr, &imageView);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -208,7 +209,7 @@ void DeviceManager::DestroyImageView(AptnImageView imageView)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(imageView);
     ImageViewInternal& imageViewInternal = GetImageViewInternal(imageView);
-    vkDestroyImageView(deviceInternal.device, imageViewInternal.vkHandle, nullptr);
+    vkDestroyImageView(deviceInternal.handle, imageViewInternal.vkHandle, nullptr);
 
     PushFreedHandleIndex(deviceInternal.imageViewResourcesHandlePool, GetHandleIndex(imageView));
 }
@@ -234,7 +235,7 @@ AptnSampler DeviceManager::CreateSampler(AptnDevice device, const AptnSamplerCre
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
 
     VkSampler sampler = VK_NULL_HANDLE;
-    VkResult result = vkCreateSampler(deviceInternal.device, &samplerInfo, nullptr, &sampler);
+    VkResult result = vkCreateSampler(deviceInternal.handle, &samplerInfo, nullptr, &sampler);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -265,7 +266,7 @@ void DeviceManager::DestroySampler(AptnSampler sampler)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(sampler);
     SamplerInternal& samplerInternal = GetSamplerInternal(sampler);
-    vkDestroySampler(deviceInternal.device, samplerInternal.vkHandle, nullptr);
+    vkDestroySampler(deviceInternal.handle, samplerInternal.vkHandle, nullptr);
 
     PushFreedHandleIndex(deviceInternal.samplerResourcesHandlePool, GetHandleIndex(sampler));
 }

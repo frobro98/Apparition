@@ -4,6 +4,7 @@
 #include "Apparition/DescriptorSet.h"
 
 #include "ApparitionInternals.h"
+#include "ApparitionHandleInternal.h"
 #include "Conversions.h"
 #include "ImageFormatConversion.h"
 #include "Memory/MemoryCore.hpp"
@@ -35,7 +36,7 @@ AptnDescriptorSetLayout DeviceManager::CreateDescriptorSetLayout(AptnDevice devi
     DeviceInternal& deviceInternal = DeviceInternalFrom(device);
     
     VkDescriptorSetLayout layout = VK_NULL_HANDLE;
-    VkResult result = vkCreateDescriptorSetLayout(deviceInternal.device, &layoutInfo, nullptr, &layout);
+    VkResult result = vkCreateDescriptorSetLayout(deviceInternal.handle, &layoutInfo, nullptr, &layout);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -64,7 +65,7 @@ void DeviceManager::DestroyDescriptorSetLayout(AptnDescriptorSetLayout descripto
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorSetLayout);
     DescriptorSetLayoutInternal& dsLayoutInternal = GetDescriptorSetLayoutInternal(descriptorSetLayout);
-    vkDestroyDescriptorSetLayout(deviceInternal.device, dsLayoutInternal.vkHandle, nullptr);
+    vkDestroyDescriptorSetLayout(deviceInternal.handle, dsLayoutInternal.vkHandle, nullptr);
 
     PushFreedHandleIndex(deviceInternal.descriptorSetLayoutsHandlePool, GetHandleIndex(descriptorSetLayout));
 }
@@ -97,7 +98,7 @@ AptnDescriptorPool DeviceManager::CreateDescriptorPool(AptnDevice device, const 
         .pPoolSizes = poolSizes.GetData()
     };
     VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-    VkResult result = vkCreateDescriptorPool(deviceInternal.device, &poolInfo, nullptr, &descriptorPool);
+    VkResult result = vkCreateDescriptorPool(deviceInternal.handle, &poolInfo, nullptr, &descriptorPool);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -126,7 +127,7 @@ void DeviceManager::DestroyDescriptorPool(AptnDescriptorPool descriptorPool)
 {
     DeviceInternal& deviceInternal = GetDeviceInternal(descriptorPool);
     DescriptorPoolInternal& descriptorPoolInternal = GetDescriptorPoolInternal(descriptorPool);
-    vkDestroyDescriptorPool(deviceInternal.device, descriptorPoolInternal.vkHandle, nullptr);
+    vkDestroyDescriptorPool(deviceInternal.handle, descriptorPoolInternal.vkHandle, nullptr);
 
     PushFreedHandleIndex(deviceInternal.descriptorPoolsHandlePool, GetHandleIndex(descriptorPool));
 }
@@ -145,7 +146,7 @@ AptnDescriptorSet DeviceManager::AllocateDescriptorSet(AptnDescriptorPool descri
         .pSetLayouts = &layoutInternal.vkHandle
     };
     VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-    VkResult result = vkAllocateDescriptorSets(deviceInternal.device, &allocInfo, &descriptorSet);
+    VkResult result = vkAllocateDescriptorSets(deviceInternal.handle, &allocInfo, &descriptorSet);
     CHECK_VK(result);
     if (result == VK_SUCCESS)
     {
@@ -176,7 +177,7 @@ void DeviceManager::FreeDescriptorSet(AptnDescriptorSet descriptorSet)
     u32 dsPoolIndex = GetResourcePoolIndexFromHandle(descriptorSet);
     DescriptorPoolInternal& dsPoolInternal = GetDescriptorPoolInternalFromIndex(deviceInternal, dsPoolIndex);
     DescriptorSetInternal& dsInternal = GetDescriptorSetInternal(descriptorSet);
-    VkResult result = vkFreeDescriptorSets(deviceInternal.device, dsPoolInternal.vkHandle, 1, &dsInternal.vkHandle);
+    VkResult result = vkFreeDescriptorSets(deviceInternal.handle, dsPoolInternal.vkHandle, 1, &dsInternal.vkHandle);
     CHECK_VK(result);
 
     PushFreedHandleIndex(deviceInternal.descriptorSetsHandlePool, GetHandleIndex(descriptorSet));
@@ -262,7 +263,7 @@ void DeviceManager::UpdateDescriptorSets(ArrayView<const AptnUpdateDescriptorSet
             writeDescriptorSets.Add(writeSet);
         }
 
-        vkUpdateDescriptorSets(deviceInternal.device, writeDescriptorSets.Size(), writeDescriptorSets.GetData(), 0, nullptr);
+        vkUpdateDescriptorSets(deviceInternal.handle, writeDescriptorSets.Size(), writeDescriptorSets.GetData(), 0, nullptr);
     }
 }
 
@@ -304,7 +305,7 @@ AptnSamplerHeap DeviceManager::CreateSamplerHeap(AptnDevice device, const AptnSa
         .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
         .buffer = heapBuffer
     };
-    VkDeviceAddress heapDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.device, &bdaInfo);
+    VkDeviceAddress heapDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.handle, &bdaInfo);
     Assert(heapDeviceAddress > 0);
 
     if (result == VK_SUCCESS)
@@ -399,7 +400,7 @@ void DeviceManager::CommitSamplerDescriptors(AptnSamplerHeap samplerHeap)
         }
 
         const DeviceInternal& deviceInternal = GetDeviceInternal(samplerHeap);
-        const VkResult result = vkWriteSamplerDescriptorsEXT(deviceInternal.device, samplerCreateInfos.Size(), samplerCreateInfos.GetData(), hostAddressRanges.GetData());
+        const VkResult result = vkWriteSamplerDescriptorsEXT(deviceInternal.handle, samplerCreateInfos.Size(), samplerCreateInfos.GetData(), hostAddressRanges.GetData());
         CHECK_VK(result);
 
         // Reset internal tracking
@@ -448,7 +449,7 @@ AptnResourceHeap DeviceManager::CreateResourceHeap(AptnDevice device, const Aptn
         .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
         .buffer = heapBuffer
     };
-    VkDeviceAddress heapDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.device, &bdaInfo);
+    VkDeviceAddress heapDeviceAddress = vkGetBufferDeviceAddress(deviceInternal.handle, &bdaInfo);
     Assert(heapDeviceAddress > 0);
 
     if (result == VK_SUCCESS)
@@ -650,7 +651,7 @@ void DeviceManager::CommitResourceDescriptors(AptnResourceHeap resourceHeap)
         }
 
         const DeviceInternal& deviceInternal = GetDeviceInternal(resourceHeap);
-        const VkResult result = vkWriteResourceDescriptorsEXT(deviceInternal.device, totalPendingDescriptors, resourceDescriptorInfos.GetData(), hostAddressRanges.GetData());
+        const VkResult result = vkWriteResourceDescriptorsEXT(deviceInternal.handle, totalPendingDescriptors, resourceDescriptorInfos.GetData(), hostAddressRanges.GetData());
         CHECK_VK(result);
 
         // Reset internal arrays

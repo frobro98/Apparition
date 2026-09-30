@@ -81,6 +81,9 @@
     <ClInclude Include="..\..\Source\Apparition\Apparition\Apparition.h">
       <Filter>Source\Apparition</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionHandleInternal.h">
+      <Filter>Source\Apparition\Internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Apparition\Apparition\Device.cpp">

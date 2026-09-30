@@ -2,6 +2,7 @@
 #include "Buffer.h"
 
 #include "Internal/ApparitionInternals.h"
+#include "Internal/ApparitionHandleInternal.h"
 #include "Internal/DeviceManager.h"
 #include "Internal/HandleDefinitions.h"
 #include "Internal/VulkanDefinitions.h"

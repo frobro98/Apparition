@@ -20,7 +20,7 @@ bool IsValid(AptnDevice handle)
     // Purposely not calling the handle overload because it does its own "IsValid" call, which
     // will infinitely recurse
     const DeviceInternal& deviceInternal = apparition.deviceManager->DeviceInternalFrom(deviceHandleIndex);
-    return deviceInternal.device != VK_NULL_HANDLE;
+    return deviceInternal.handle != VK_NULL_HANDLE;
 }
 
 AptnDevice CreateDevice(const AptnDeviceCreationParams& params)

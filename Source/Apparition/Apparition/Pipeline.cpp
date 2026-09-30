@@ -2,6 +2,7 @@
 #include "Apparition/Pipeline.h"
 
 #include "Apparition/Internal/ApparitionInternals.h"
+#include "Apparition/Internal/DeviceManager.h"
 
 namespace Apparition
 {

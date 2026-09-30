@@ -2,6 +2,7 @@
 #include "DescriptorSet.h"
 
 #include "Internal/ApparitionInternals.h"
+#include "Internal/DeviceManager.h"
 
 namespace Apparition
 {

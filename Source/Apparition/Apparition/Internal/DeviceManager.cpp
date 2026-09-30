@@ -2,6 +2,7 @@
 #include "DeviceManager.h"
 
 #include "ApparitionInternals.h"
+#include "ApparitionHandleInternal.h"
 #include "HandleDefinitions.h"
 #include "ImageFormatConversion.h"
 #include "VulkanDefinitions.h"
@@ -164,6 +165,10 @@ void DeviceManager::Initialize(const AptnInitializeParams& params)
 
 	result = vkCreateDebugUtilsMessengerEXT(instance, &debugInfo, nullptr, &debugMessengerHandle);
 	CHECK_VK(result);
+
+	// Initialize Device handle pool
+    Assert(deviceHandlePool.freeHandleIndices.IsEmpty());
+	deviceHandlePool = CreateHandlePool(SupportedDeviceCount);
 }
 
 void DeviceManager::Deinitialize()
@@ -285,6 +290,8 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 
 	if (graphicsFamilyIndex == invalidFamilyIndex && graphicsSupport)
 	{
+		ErrorLog(AptnInternal, "No valid graphics queue index found when graphics should be supported");
+		return { AptnInvalidHandle };
 		// TODO- Assert and return
 	}
 
@@ -292,14 +299,16 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	{
 		if (transferFamilyIndex == invalidFamilyIndex)
 		{
-
+            ErrorLog(AptnInternal, "No valid transfer queue index found when transfer should be supported");
+            return { AptnInvalidHandle };
 		}
 		// TODO- Assert and return
 	}
 
 	if (computeFamilyIndex == invalidFamilyIndex && computeSupport)
 	{
-		// TODO- Assert and return
+        ErrorLog(AptnInternal, "No valid compute queue index found when compute should be supported");
+        return { AptnInvalidHandle };
 	}
 
 	u32 graphicsQueueCount = 0;
@@ -381,12 +390,6 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	deviceExtensionCount = availableDeviceExtensions.Size();
 #endif
 
-	DeviceInternal internalDevice = {
-		.physicalDevice = selectedGpu,
-		.graphicsFamilyIndex = graphicsFamilyIndex,
-		.transferFamilyIndex = transferFamilyIndex,
-		.computeFamilyIndex = computeFamilyIndex
-	};
 
 	// Initialize Vulkan 1.2 features
 	VkPhysicalDeviceVulkan12Features vulkan12Features =
@@ -452,7 +455,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	VkPhysicalDeviceFeatures2 supportedGpuFeatures;
 	supportedGpuFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 	supportedGpuFeatures.pNext = &graphicsPipelineLibraryFeatures;
-	vkGetPhysicalDeviceFeatures2(internalDevice.physicalDevice, &supportedGpuFeatures);
+	vkGetPhysicalDeviceFeatures2(selectedGpu, &supportedGpuFeatures);
 
 	//VkPhysicalDeviceFeatures enabledDeviceFeatures;
 	/*
@@ -476,23 +479,27 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	deviceInfo.ppEnabledExtensionNames = deviceExtensions;
 	//deviceInfo.pEnabledFeatures = &enabledFeatures;
 	deviceInfo.pNext = &supportedGpuFeatures;
-	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &internalDevice.device);
+	VkDevice device = VK_NULL_HANDLE;
+	result = vkCreateDevice(selectedGpu, &deviceInfo, nullptr, &device);
 	CHECK_VK(result);
 
-	{
-		const u32 queueCount = graphicsQueueCount + transferQueueCount + computeQueueCount;
-		internalDevice.queuesHandlePool = CreateHandlePool(queueCount);
-		internalDevice.queues.Resize(queueCount);
-	}
+	const u64 handleIndex = PopFreeHandleIndex(deviceHandlePool);
+	// 0 is an invalid handle, so we have to make it start at the first actual element
+	DeviceInternal& internalDevice = deviceInternals[handleIndex - 1]; 
+	internalDevice.handle = device;
+    internalDevice.physicalDevice = selectedGpu;
+    internalDevice.graphicsFamilyIndex = graphicsFamilyIndex;
+    internalDevice.transferFamilyIndex = transferFamilyIndex;
+	internalDevice.computeFamilyIndex = computeFamilyIndex;
 
-	// We want zero to be reserved, since that's the "invalid handle" value
-	u64 handleIndex = deviceInternals.Size() + 1;
-	u64 handleValue = ((NextDeviceHandle++) << DEVICE_INDEX_SHIFT) | (handleIndex & RESOURCE_INDEX_MASK);
-	AptnDevice NewDeviceHandle{
-		.handle = handleValue
-	};
+    {
+        const u32 queueCount = graphicsQueueCount + transferQueueCount + computeQueueCount;
+        internalDevice.queuesHandlePool = CreateHandlePool(queueCount);
+        internalDevice.queues.Resize(queueCount);
+    }
+
 	InitializeDeviceHandlePools(internalDevice);
-	SetupDescriptorHeapFunctions(internalDevice.device);
+	SetupDescriptorHeapFunctions(internalDevice.handle);
 
 	const VmaAllocatorCreateInfo allocatorCreateInfo{
 		//.flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
@@ -500,7 +507,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 				| VMA_ALLOCATOR_CREATE_KHR_MAINTENANCE4_BIT 
 				| VMA_ALLOCATOR_CREATE_KHR_MAINTENANCE5_BIT,
 		.physicalDevice = internalDevice.physicalDevice,
-		.device = internalDevice.device,
+		.device = internalDevice.handle,
 		.instance = instance,
 		.vulkanApiVersion = VK_API_VERSION_1_3,
 	};
@@ -516,14 +523,16 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	vkGetPhysicalDeviceProperties2(internalDevice.physicalDevice, &deviceProperties2);
 	internalDevice.physicalDeviceLimits = deviceProperties2.properties.limits;
 
-	deviceInternals.Add(internalDevice);
-
-	return NewDeviceHandle;
+    u64 handleValue = ((handleIndex) << DEVICE_INDEX_SHIFT)
+        | (((u64)GetHandleGeneration(deviceHandlePool, handleIndex)) << RESOURCE_GEN_SHIFT)
+        | (handleIndex & RESOURCE_INDEX_MASK);
+    return AptnDevice {
+        .handle = handleValue
+    };
 }
 
 void DeviceManager::DestroyDevice(AptnDevice deviceHandle)
 {
-	InfoLog(AptnInternal, "Attempting to destroy the device. There is no implementation to destroy the device");
 	UNUSED(deviceHandle);
 }
 
@@ -539,7 +548,7 @@ DeviceInternal& DeviceManager::DeviceInternalFrom(u32 deviceIndex)
 {
 	Assert(deviceIndex != AptnInvalidHandle);
 	deviceIndex -= 1;
-	Assert(deviceInternals.IsIndexValid(deviceIndex));
+	Assert(deviceIndex < SupportedDeviceCount);
 	return deviceInternals[deviceIndex];
 }
 
@@ -706,7 +715,7 @@ AptnQueue DeviceManager::AllocateGraphicsQueue(AptnDevice device)
 		{
 			constexpr u32 queueIndex = 0;
 			VkQueue queue = VK_NULL_HANDLE;
-			vkGetDeviceQueue(deviceInternal.device, deviceInternal.graphicsFamilyIndex, queueIndex, &queue);
+			vkGetDeviceQueue(deviceInternal.handle, deviceInternal.graphicsFamilyIndex, queueIndex, &queue);
 
 			QueueInternal queueInternal{
 				.vkHandle = queue,
@@ -739,7 +748,7 @@ AptnQueue DeviceManager::AllocateTransferQueue(AptnDevice device)
 		{
 			constexpr u32 queueIndex = 0;
 			VkQueue queue = VK_NULL_HANDLE;
-			vkGetDeviceQueue(deviceInternal.device, deviceInternal.transferFamilyIndex, queueIndex, &queue);
+			vkGetDeviceQueue(deviceInternal.handle, deviceInternal.transferFamilyIndex, queueIndex, &queue);
 
 			QueueInternal queueInternal{
 				.vkHandle = queue,
@@ -834,7 +843,7 @@ AptnCommandPool DeviceManager::CreateCommandPool(AptnDevice deviceHandle, const 
 	createInfo.queueFamilyIndex = params.queueIndex;
 	createInfo.flags = params.canResetCommandBuffers ? VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT : 0;
 	VkCommandPool cmdPool;
-	VkResult result = vkCreateCommandPool(deviceInternal.device, &createInfo, nullptr, &cmdPool);
+	VkResult result = vkCreateCommandPool(deviceInternal.handle, &createInfo, nullptr, &cmdPool);
 	CHECK_VK(result);
 	if (result == VK_SUCCESS)
 	{
@@ -867,7 +876,7 @@ void DeviceManager::DestroyCommandPool(AptnCommandPool commandPoolHandle)
 	DeviceInternal& deviceInternal = GetDeviceInternal(commandPoolHandle);
 	u32 handleIndex = GetHandleIndex(commandPoolHandle);
 	VkCommandPool cmdPool = deviceInternal.commandPools[handleIndex-1].vkHandle;
-	vkDestroyCommandPool(deviceInternal.device, cmdPool, nullptr);
+	vkDestroyCommandPool(deviceInternal.handle, cmdPool, nullptr);
 
 	// Let the handle pool know this handle is freed
 	PushFreedHandleIndex(deviceInternal.commandPoolsHandlePool, handleIndex);
@@ -885,7 +894,7 @@ AptnCommandBuffer DeviceManager::AllocateCommandBuffer(AptnCommandPool commandPo
 	allocInfo.commandPool = commandPoolInternal.vkHandle;
 	allocInfo.level = !params.isSecondary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 	VkCommandBuffer cmdBuffer;
-	VkResult result = vkAllocateCommandBuffers(deviceInternal.device, &allocInfo, &cmdBuffer);
+	VkResult result = vkAllocateCommandBuffers(deviceInternal.handle, &allocInfo, &cmdBuffer);
 	CHECK_VK(result);
 	if (result == VK_SUCCESS)
 	{
@@ -922,7 +931,7 @@ void DeviceManager::FreeCommandBuffer(AptnCommandBuffer commandBufferHandle)
 	CommandPoolInternal& commandPoolInternal = deviceInternal.commandPools[cmdPoolIndex-1];
 	u32 cmdBufferIndex = GetHandleIndex(commandBufferHandle);
 	CommandBufferInternal& commandBufferInternal = deviceInternal.commandBuffers[cmdBufferIndex-1];
-	vkFreeCommandBuffers(deviceInternal.device, commandPoolInternal.vkHandle, 1, &commandBufferInternal.vkHandle);
+	vkFreeCommandBuffers(deviceInternal.handle, commandPoolInternal.vkHandle, 1, &commandBufferInternal.vkHandle);
 
 	// Let the handle pool know this handle is freed
 	PushFreedHandleIndex(deviceInternal.commandBuffersHandlePool, cmdBufferIndex);

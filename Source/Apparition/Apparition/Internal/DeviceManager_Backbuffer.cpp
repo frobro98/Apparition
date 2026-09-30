@@ -2,6 +2,7 @@
 #include "DeviceManager.h"
 
 #include "ApparitionInternals.h"
+#include "ApparitionHandleInternal.h"
 #include "ImageFormatConversion.h"
 #include "HandleDefinitions.h"
 #include "VulkanInfos.h"
@@ -155,14 +156,14 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 	swapchainInfo.clipped = VK_TRUE;
 	swapchainInfo.oldSwapchain = VK_NULL_HANDLE; // No need for this sandbox atm
 
-	result = vkCreateSwapchainKHR(deviceInternal.device, &swapchainInfo, nullptr, &backbuffer.vkHandle);
+	result = vkCreateSwapchainKHR(deviceInternal.handle, &swapchainInfo, nullptr, &backbuffer.vkHandle);
 	CHECK_VK(result);
 
 	// Creating image views for consistent use
 	u32 imageCount;
-	vkGetSwapchainImagesKHR(deviceInternal.device, backbuffer.vkHandle, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(deviceInternal.handle, backbuffer.vkHandle, &imageCount, nullptr);
 	DynamicArray<VkImage> backbufferImages(imageCount);
-	vkGetSwapchainImagesKHR(deviceInternal.device, backbuffer.vkHandle, &imageCount, backbufferImages.GetData());
+	vkGetSwapchainImagesKHR(deviceInternal.handle, backbuffer.vkHandle, &imageCount, backbufferImages.GetData());
 
 	backbuffer.images.Reserve(imageCount);
 	backbuffer.views.Reserve(imageCount);
@@ -205,7 +206,7 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 		viewInfo.subresourceRange.layerCount = 1;
 		viewInfo.subresourceRange.levelCount = 1;
 		VkImageView backbufferView = VK_NULL_HANDLE;
-		result = vkCreateImageView(deviceInternal.device, &viewInfo, nullptr, &backbufferView);
+		result = vkCreateImageView(deviceInternal.handle, &viewInfo, nullptr, &backbufferView);
 		CHECK_VK(result);
 
 		ImageViewInternal& viewInternal = GetImageViewInternalFromIndex(deviceInternal, imageViewHandleIndex);
@@ -219,14 +220,14 @@ void DeviceManager::SetupBackbuffer(AptnDevice device, const AptnBackbufferSetup
 	Vk::ZeroInfoStruct(semaphoreCreateInfo, VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
 	for (u32 i = 0; i < Backbuffer::numSwapchainImages; ++i)
 	{
-		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.acquireImageSemaphores[i]);
+		result = vkCreateSemaphore(deviceInternal.handle, &semaphoreCreateInfo, nullptr, &backbuffer.acquireImageSemaphores[i]);
 		CHECK_VK(result);
-		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.submitRenderSemaphores[i]);
+		result = vkCreateSemaphore(deviceInternal.handle, &semaphoreCreateInfo, nullptr, &backbuffer.submitRenderSemaphores[i]);
 		CHECK_VK(result);
 
-		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.isImageAvailableSem);
+		result = vkCreateSemaphore(deviceInternal.handle, &semaphoreCreateInfo, nullptr, &backbuffer.isImageAvailableSem);
 		CHECK_VK(result);
-		result = vkCreateSemaphore(deviceInternal.device, &semaphoreCreateInfo, nullptr, &backbuffer.hasRenderingFinishedSem);
+		result = vkCreateSemaphore(deviceInternal.handle, &semaphoreCreateInfo, nullptr, &backbuffer.hasRenderingFinishedSem);
 		CHECK_VK(result);
 	}
 
@@ -240,19 +241,19 @@ void DeviceManager::TeardownBackbuffer(AptnDevice device)
 
 	Backbuffer& backbuffer = deviceInternal.backbuffer;
 
-	vkDestroySemaphore(deviceInternal.device, backbuffer.isImageAvailableSem, nullptr);
-	vkDestroySemaphore(deviceInternal.device, backbuffer.hasRenderingFinishedSem, nullptr);
+	vkDestroySemaphore(deviceInternal.handle, backbuffer.isImageAvailableSem, nullptr);
+	vkDestroySemaphore(deviceInternal.handle, backbuffer.hasRenderingFinishedSem, nullptr);
 
 	for (u32 viewIndex : backbuffer.views)
 	{
 		VkImageView imageView = deviceInternal.imageViewResources[viewIndex].vkHandle;
-		vkDestroyImageView(deviceInternal.device, imageView, nullptr);
+		vkDestroyImageView(deviceInternal.handle, imageView, nullptr);
 		PushFreedHandleIndex(deviceInternal.imageViewResourcesHandlePool, viewIndex);
 	}
 	backbuffer.views.Clear();
 	backbuffer.images.Clear();
 
-	vkDestroySwapchainKHR(deviceInternal.device, backbuffer.vkHandle, nullptr);
+	vkDestroySwapchainKHR(deviceInternal.handle, backbuffer.vkHandle, nullptr);
 	vkDestroySurfaceKHR(instance, backbuffer.surfaceHandle, nullptr);
 }
 
@@ -263,7 +264,7 @@ AptnBackbufferStatus DeviceManager::AcquireNextBackbufferImage(AptnDevice device
 	Assert(backbuffer.vkHandle != VK_NULL_HANDLE);
 
 	u32 imageIndex;
-	VkResult result = vkAcquireNextImageKHR(deviceInternal.device, backbuffer.vkHandle, UINT64_MAX, backbuffer.isImageAvailableSem, VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(deviceInternal.handle, backbuffer.vkHandle, UINT64_MAX, backbuffer.isImageAvailableSem, VK_NULL_HANDLE, &imageIndex);
 	backbuffer.currentImageIndex = imageIndex;
 
 	// Set image index so that we can use it later on in the render

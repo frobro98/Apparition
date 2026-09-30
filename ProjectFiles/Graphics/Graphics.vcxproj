@@ -196,6 +196,7 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
     <ClInclude Include="..\..\Source\Apparition\Apparition\Device.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\DeviceLimits.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Image.h" />
+    <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionHandleInternal.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\DeviceManager.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\ApparitionInternals.h" />
     <ClInclude Include="..\..\Source\Apparition\Apparition\Internal\HandleDefinitions.h" />
