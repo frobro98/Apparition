@@ -11,11 +11,9 @@
 
 #include "BasicTypes/Intrinsics.hpp"
 WALL_WRN_PUSH
-#include <fmt/format.h>
 #include <spdlog/spdlog.h>
 WALL_WRN_POP
 #include "CoreAPI.hpp"
-#include "String/CStringUtilities.hpp"
 #include "Logging/LogChannel.hpp"
 
 WALL_WRN_PUSH
@@ -25,7 +23,6 @@ WALL_WRN_POP
 
 DEFINE_LOG_CHANNEL(DefaultLog);
 
-#pragma optimize("", off)
 // TODO - Not really cleaning things up currently. If I delete the thread, then the os thread execution
 // will be using dealloced memory. Need a better way of cleaning things up potentially
 class CORE_API Logger
@@ -38,9 +35,7 @@ public:
 	{
 		if (isInitialized)
 		{
-			fmt::vformat_to(std::back_inserter(formatBuf), msg, fmt::make_format_args(args...));
-			LogInternal(logChannel, level, formatBuf);
-			formatBuf.clear();
+			LogInternal(logChannel, level, msg, fmt::make_format_args(args...));
 		}
 	}
 
@@ -54,14 +49,13 @@ public:
 	}
 
 private:
-	void LogInternal(const LogChannel& logChannel, spdlog::level::level_enum level, const fmt::memory_buffer& formatBuffer);
+	void LogInternal(const LogChannel& logChannel, spdlog::level::level_enum level, const tchar* msg, const fmt::format_args& formatArgs);
 
 private:
 	std::shared_ptr<spdlog::logger> logger;
-    fmt::memory_buffer formatBuf{};
 	bool isInitialized = false;
 };
-#pragma optimize("", on)
+
 CORE_API Logger& GetLogger();
 
 

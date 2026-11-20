@@ -1,6 +1,8 @@
 
 #include "DeviceManager.h"
 
+#include "String/CStringUtilities.hpp"
+
 #include "ApparitionInternals.h"
 #include "ApparitionHandleInternal.h"
 #include "HandleDefinitions.h"
@@ -292,7 +294,6 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 	{
 		ErrorLog(AptnInternal, "No valid graphics queue index found when graphics should be supported");
 		return { AptnInvalidHandle };
-		// TODO- Assert and return
 	}
 
 	if (transferSupport)
@@ -302,7 +303,6 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
             ErrorLog(AptnInternal, "No valid transfer queue index found when transfer should be supported");
             return { AptnInvalidHandle };
 		}
-		// TODO- Assert and return
 	}
 
 	if (computeFamilyIndex == invalidFamilyIndex && computeSupport)
@@ -351,6 +351,7 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 		VK_EXT_GRAPHICS_PIPELINE_LIBRARY_EXTENSION_NAME, // Allows for segmented pipelines that can be reused
 		VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
 		VK_KHR_MAINTENANCE_5_EXTENSION_NAME,
+		VK_KHR_MAINTENANCE_6_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_HEAP_EXTENSION_NAME,
 		VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
 		VK_KHR_SHADER_UNTYPED_POINTERS_EXTENSION_NAME,
@@ -422,11 +423,19 @@ AptnDevice DeviceManager::CreateDevice(const AptnDeviceCreationParams& params)
 		.maintenance5 = VK_TRUE
 	};
 
+	// Initialize Maintenance 6
+	VkPhysicalDeviceMaintenance6Features maintenance6Features
+	{
+		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_6_FEATURES,
+		.pNext = &maintenance5Features,
+		.maintenance6 = VK_TRUE
+	};
+
 	// Initialize unified image layout features
 	VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR unifiedImageLayoutsFeatures =
 	{
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFIED_IMAGE_LAYOUTS_FEATURES_KHR,
-		.pNext = &maintenance5Features,
+		.pNext = &maintenance6Features,
 		.unifiedImageLayouts = VK_TRUE
 	};
 

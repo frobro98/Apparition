@@ -88,9 +88,6 @@ namespace Apparition
 APPARITION_API AptnSamplerHeap CreateSamplerHeap(AptnDevice device, const AptnSamplerHeapCreationParams& params);
 APPARITION_API void DestroySamplerHeap(AptnSamplerHeap samplerHeap);
 
-APPARITION_API u64 QuerySamplerHeapCapacity(AptnSamplerHeap samplerHeap);
-APPARITION_API u64 QuerySamplerHeapDescriptorCount(AptnSamplerHeap samplerHeap);
-
 APPARITION_API void WriteSamplerDescriptor(AptnSamplerHeap samplerHeap, const AptnSamplerDescriptor& samplerDescriptor);
 APPARITION_API void WriteSamplerDescriptors(AptnSamplerHeap samplerHeap, u64 samplerDescriptorCount, const AptnSamplerDescriptor* samplerDescriptors);
 APPARITION_API void CommitSamplerDescriptors(AptnSamplerHeap samplerHeap);
@@ -98,12 +95,23 @@ APPARITION_API void CommitSamplerDescriptors(AptnSamplerHeap samplerHeap);
 APPARITION_API AptnResourceHeap CreateResourceHeap(AptnDevice device, const AptnResourceHeapCreationParams& params);
 APPARITION_API void DestroyResourceHeap(AptnResourceHeap resourceHeap);
 
-APPARITION_API u64 QueryResourceHeapCapacity(AptnResourceHeap resourceHeap);
-APPARITION_API u64 QueryResourceHeapDescriptorCount(AptnResourceHeap resourceHeap);
-
 APPARITION_API void WriteBufferAddressDescriptor(AptnResourceHeap resourceHeap, const AptnBufferAddressDescriptor& bufferAddr);
 APPARITION_API void WriteImageResourceDescriptor(AptnResourceHeap resourceHeap, const AptnImageDescriptor& imageDescriptor);
 APPARITION_API void WriteBufferAddressDescriptors(AptnResourceHeap resourceHeap, const AptnBufferAddressDescriptor* bufferAddrDescriptors, u64 descriptorCount);
 APPARITION_API void WriteImageResourceDescriptor(AptnResourceHeap resourceHeap, const AptnImageDescriptor* imageDescriptors, u64 descriptorCount);
 APPARITION_API void CommitResourceDescriptors(AptnResourceHeap resourceHeap);
+
+APPARITION_API u64 QueryHeapCapacity(AptnSamplerHeap samplerHeap);
+APPARITION_API u64 QueryHeapCapacity(AptnResourceHeap resourceHeap);
+APPARITION_API u64 QuerySamplerDescriptorCount(AptnSamplerHeap samplerHeap);
+APPARITION_API u64 QueryBufferDescriptorCount(AptnResourceHeap resourceHeap);
+APPARITION_API u64 QueryImageDescriptorCount(AptnResourceHeap resourceHeap);
+APPARITION_API void QueryResourceHeapDescriptorCount(AptnResourceHeap resourceHeap, u64& bufferDescriptorCount, u64& imageDescriptorCount);
+
+APPARITION_API u32 GetBufferDescriptorsStartIndex(AptnResourceHeap resourceHeap);
+APPARITION_API u32 GetImageDescriptorsStartIndex(AptnResourceHeap resourceHeap);
+
+APPARITION_API u64 GetSamplerDescriptorSize(AptnSamplerHeap samplerHeap);
+APPARITION_API u64 GetBufferDescriptorSize(AptnResourceHeap resourceHeap);
+APPARITION_API u64 GetImageDescriptorSize(AptnResourceHeap resourceHeap);
 }

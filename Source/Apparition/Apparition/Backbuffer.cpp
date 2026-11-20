@@ -103,7 +103,7 @@ void PresentBackbuffer(AptnQueue presentQueue)
     }
     else if (result != VK_SUCCESS)
     {
-        // TODO - Log
+        ErrorLog(AptnInternal, "QueuePresent failed with error {}", EnumAsUnderlyingValue(result));
         Assert(false);
     }
 

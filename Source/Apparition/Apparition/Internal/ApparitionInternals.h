@@ -22,7 +22,6 @@ struct ApparitionInternals
 
 extern ApparitionInternals apparition;
 
-// TODO - Move these to separate header
 struct Backbuffer
 {
 	static constexpr inline u32 numSwapchainImages = 2;

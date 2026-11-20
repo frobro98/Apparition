@@ -16,9 +16,6 @@
     <Filter Include="Source\Debugging">
       <UniqueIdentifier>{39678485-22c7-4330-a667-3a294a59b843}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\fmt">
-      <UniqueIdentifier>{5b5e6b49-8ed5-4153-a192-ccd784b67c6d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\GUID">
       <UniqueIdentifier>{45f62ae9-afa3-4a7a-9f67-ba0919febde9}</UniqueIdentifier>
     </Filter>
@@ -57,9 +54,6 @@
     </Filter>
     <Filter Include="Source\Threading\Windows">
       <UniqueIdentifier>{c46bce56-b762-4761-b7bf-8fbc09c7cdb9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Logging\Sinks">
-      <UniqueIdentifier>{149bfef3-f759-41a1-8923-1c581931c343}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\File">
       <UniqueIdentifier>{386ea910-a1fb-4058-8455-9a41468bb04b}</UniqueIdentifier>
@@ -165,12 +159,6 @@
     <ClCompile Include="..\..\Source\Core\Threading\Windows\Win32Semaphore.cpp">
       <Filter>Source\Threading\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.cpp">
-      <Filter>Source\Logging\Sinks</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.cpp">
-      <Filter>Source\Logging\Sinks</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Core\File\FileUtilities.cpp">
       <Filter>Source\File</Filter>
     </ClCompile>
@@ -179,9 +167,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Core\File\DirectoryUtilities.cpp">
       <Filter>Source\File</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Core\Logging\Sinks\LogFileSink.cpp">
-      <Filter>Source\Logging\Sinks</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Core\Time\Time.cpp">
       <Filter>Source\Time</Filter>
@@ -212,12 +197,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Core\Platform\Platform.cpp">
       <Filter>Source\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Core\fmt\format.cc">
-      <Filter>Source\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Core\fmt\os.cc">
-      <Filter>Source\fmt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Core\Memory\Memory.cpp">
       <Filter>Source\Memory</Filter>
@@ -500,15 +479,6 @@
     <ClInclude Include="..\..\Source\Core\Threading\ScopedLock.hpp">
       <Filter>Source\Threading</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.hpp">
-      <Filter>Source\Logging\Sinks</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.hpp">
-      <Filter>Source\Logging\Sinks</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\Logging\Sinks\LogFileSink.hpp">
-      <Filter>Source\Logging\Sinks</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Core\Logging\LogLevel.hpp">
       <Filter>Source\Logging</Filter>
     </ClInclude>
@@ -574,45 +544,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Core\Utilities\ThirdParty\city.h">
       <Filter>Source\Utilities\ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\format.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\format-inl.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\os.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\ostream.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\printf.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\ranges.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\std.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\xchar.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\args.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\chrono.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\color.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\compile.h">
-      <Filter>Source\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Core\fmt\core.h">
-      <Filter>Source\fmt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Core\String\StringUtils.hpp">
       <Filter>Source\String</Filter>

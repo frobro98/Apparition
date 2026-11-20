@@ -3,8 +3,6 @@
 #include "Internal/ApparitionInternals.h"
 #include "Internal/ApparitionHandleInternal.h"
 #include "Internal/Conversions.h"
-#include "Internal/DeviceManager.h"
-#include "Internal/HandleDefinitions.h"
 #include "Internal/ImageFormatConversion.h"
 #include "Internal/VulkanInfos.h"
 

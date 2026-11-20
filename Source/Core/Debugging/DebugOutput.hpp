@@ -19,8 +19,9 @@ CORE_API void Print(const tchar* str);
 CORE_API void Print(const fmt::memory_buffer& buf);
 
 template <typename... Args>
-CORE_TEMPLATE void Printf(const tchar* strFormat, Args... args)
+CORE_TEMPLATE void Printf(const tchar* strFormat, NOT_USED Args... args)
 {
+	UNUSED(strFormat);
 	fmt::memory_buffer buf;
 	fmt::vformat_to(std::back_inserter(buf), strFormat, fmt::make_format_args(args...));
 	Print(buf);

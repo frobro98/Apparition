@@ -162,10 +162,10 @@ void InitializeDescriptorHeapsExample(AptnDevice inDevice)
 
 	Apparition::CommitResourceDescriptors(resourceHeap);
 
-	uniformData.imageHeapIndexOffset = 1; //1;
+	uniformData.imageHeapIndexOffset = Apparition::GetImageDescriptorsStartIndex(resourceHeap);
 
 	// Pipeline
-	AptnVertexInputPipelineState vertexInput;
+	AptnVertexInputPipelineState vertexInput{};
 	{
 		const StaticArray vertexBindings = {
 			vkglTF::Vertex::inputBindingDescription(0)
@@ -181,7 +181,7 @@ void InitializeDescriptorHeapsExample(AptnDevice inDevice)
 		vertexInput = Apparition::CreateVertexInputPipelineState(device, params);
 	}
 
-	AptnPrerasterShadersPipelineState prerasterShaders;
+	AptnPrerasterShadersPipelineState prerasterShaders{};
 	{
 		const MemoryBuffer vertShaderCode = LoadShader("DescriptorHeaps/cube.vert.spv");
 		DynamicArray<u32> vertShader(vertShaderCode.Size() / sizeof(u32));
@@ -203,7 +203,7 @@ void InitializeDescriptorHeapsExample(AptnDevice inDevice)
 		prerasterShaders = Apparition::CreatePrerasterShadersPipelineState(device, params);
 	}
 
-	AptnFragmentShaderPipelineState fragmentShader;
+	AptnFragmentShaderPipelineState fragmentShader{};
 	{
 		MemoryBuffer fragShaderCode = LoadShader("DescriptorHeaps/cube.frag.spv");
 		DynamicArray<u32> fragShader(fragShaderCode.Size() / sizeof(u32));
@@ -224,7 +224,7 @@ void InitializeDescriptorHeapsExample(AptnDevice inDevice)
 		fragmentShader = Apparition::CreateFragmentShaderPipelineState(device, params);
 	}
 
-	AptnFragmentOutputPipelineState fragmentOutput;
+	AptnFragmentOutputPipelineState fragmentOutput{};
 	{
 		StaticArray attachments = {
 			AptnColorBlendAttachment

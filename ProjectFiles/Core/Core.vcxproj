@@ -32,14 +32,9 @@
     <ClCompile Include="..\..\Source\Core\File\FileSystem.cpp" />
     <ClCompile Include="..\..\Source\Core\File\FileUtilities.cpp" />
     <ClCompile Include="..\..\Source\Core\File\md5.cpp" />
-    <ClCompile Include="..\..\Source\Core\fmt\format.cc" />
-    <ClCompile Include="..\..\Source\Core\fmt\os.cc" />
     <ClCompile Include="..\..\Source\Core\GUID\Guid.cpp" />
     <ClCompile Include="..\..\Source\Core\Logging\LogCore.cpp" />
     <ClCompile Include="..\..\Source\Core\Logging\LoggingThread.cpp" />
-    <ClCompile Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.cpp" />
-    <ClCompile Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.cpp" />
-    <ClCompile Include="..\..\Source\Core\Logging\Sinks\LogFileSink.cpp" />
     <ClCompile Include="..\..\Source\Core\Math\Internal\QuaternionImplementation.cpp" />
     <ClCompile Include="..\..\Source\Core\Math\Internal\VectorImplementation.cpp" />
     <ClCompile Include="..\..\Source\Core\Math\IntVector2.cpp" />
@@ -124,19 +119,6 @@
     <ClInclude Include="..\..\Source\Core\File\FileSystem.hpp" />
     <ClInclude Include="..\..\Source\Core\File\FileUtilities.hpp" />
     <ClInclude Include="..\..\Source\Core\File\md5.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\args.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\chrono.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\color.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\compile.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\core.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\format-inl.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\format.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\os.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\ostream.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\printf.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\ranges.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\std.h" />
-    <ClInclude Include="..\..\Source\Core\fmt\xchar.h" />
     <ClInclude Include="..\..\Source\Core\GUID\Guid.hpp" />
     <ClInclude Include="..\..\Source\Core\Logging\CoreLogChannels.hpp" />
     <ClInclude Include="..\..\Source\Core\Logging\LogCore.hpp" />
@@ -146,9 +128,6 @@
     <ClInclude Include="..\..\Source\Core\Logging\LogLevel.hpp" />
     <ClInclude Include="..\..\Source\Core\Logging\LogSink.hpp" />
     <ClInclude Include="..\..\Source\Core\Logging\LogChannel.hpp" />
-    <ClInclude Include="..\..\Source\Core\Logging\Sinks\ConsoleWindowSink.hpp" />
-    <ClInclude Include="..\..\Source\Core\Logging\Sinks\DebugOutputWindowSink.hpp" />
-    <ClInclude Include="..\..\Source\Core\Logging\Sinks\LogFileSink.hpp" />
     <ClInclude Include="..\..\Source\Core\Math\3DMathUtilites.h" />
     <ClInclude Include="..\..\Source\Core\Math\BitManipulation.hpp" />
     <ClInclude Include="..\..\Source\Core\Math\BoundsVolumes.hpp" />
@@ -314,9 +293,9 @@
       <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>CORE_EXPORT;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CORE_EXPORT;SPDLOG_COMPILED_LIB;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
       <Command>
@@ -332,7 +311,7 @@
     </Lib>
     <Link>
       <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
-      <AdditionalDependencies>spdlogd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmtd.lib;spdlogd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\ThirdParty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -347,9 +326,9 @@
       <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>CORE_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CORE_EXPORT;SPDLOG_COMPILED_LIB;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
       <Command>set targetDir="$(SolutionDir)\Binaries\$(Platform)\$(Configuration)\"
@@ -384,14 +363,14 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>CORE_EXPORT;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CORE_EXPORT;SPDLOG_COMPILED_LIB;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>spdlog.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmt.lib;spdlog.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\ThirdParty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -423,9 +402,9 @@ copy "$(OutputPath)\*.pdb" %targetDir%</Command>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4710;4711;4668;4514;5039;5045;4625;4307;4251;26812</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalOptions>/w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>CORE_EXPORT;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CORE_EXPORT;SPDLOG_COMPILED_LIB;FMT_LIB_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

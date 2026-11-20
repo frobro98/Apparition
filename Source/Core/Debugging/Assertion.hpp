@@ -32,8 +32,9 @@ namespace Debug
 	template<typename... Args>
 	forceinline void AssertionFailed(const tchar* expr, const tchar* file, i32 line, const tchar* desc, NOT_USED Args... args)
 	{
-		fmt::memory_buffer buffer;
-		fmt::vformat_to(std::back_inserter(buffer), std::string_view{ desc }, fmt::make_format_args(args...));
+		UNUSED(expr, file, line, desc);
+ 		fmt::memory_buffer buffer;
+ 		fmt::vformat_to(std::back_inserter(buffer), std::string_view{ desc }, fmt::make_format_args(args...));
 
 		FatalLog(AssertionLog, "{} failed! File {}, Line {}. {}", expr, file, line, buffer.data());
 		spdlog::flush_all();

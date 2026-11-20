@@ -1,7 +1,7 @@
 
 #include "LogCore.hpp"
 #include "Debugging/Assertion.hpp"
-#include <spdlog/spdlog.h>
+
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
 
@@ -26,7 +26,7 @@ void Logger::InitLogging(spdlog::level::level_enum level)
 	isInitialized = true;
 }
 
-void Logger::LogInternal(const LogChannel& logChannel, spdlog::level::level_enum level, const fmt::memory_buffer& formatBuffer)
+void Logger::LogInternal(const LogChannel& logChannel, spdlog::level::level_enum level, const tchar* msg, const fmt::format_args& formatArgs)
 {
-    spdlog::log(level, "[{}] {}", logChannel.logName, formatBuffer.data(), formatBuffer.size());
+    spdlog::log(level, "[{}] {}", logChannel.logName, fmt::vformat(msg, formatArgs));
 }

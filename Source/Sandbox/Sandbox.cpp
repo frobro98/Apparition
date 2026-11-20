@@ -24,12 +24,11 @@ WALL_WRN_POP
 #include "File/FileSystem.hpp"
 #include "Logging/LogCore.hpp"
 #include "Logging/LogFunctions.hpp"
-#include "Logging/Sinks/DebugOutputWindowSink.hpp"
-#include "Logging/Sinks/LogFileSink.hpp"
 #include "Math/Vector2.hpp"
 #include "Math/Vector3.hpp"
 #include "Memory/MemoryCore.hpp"
 #include "Path/Path.hpp"
+#include "String/CStringUtilities.hpp"
 #include "Utilities/Array.hpp"
 
 // Apparition

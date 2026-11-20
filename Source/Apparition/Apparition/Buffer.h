@@ -23,7 +23,6 @@ struct AptnBufferCreationParams
 };
 
 HANDLE_TYPE(AptnBuffer)
-// TODO - Think about if this needs to be a handle or just a value
 using AptnBufferAddress = u64;
 
 namespace Apparition

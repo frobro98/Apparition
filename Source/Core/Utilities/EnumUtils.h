@@ -29,3 +29,10 @@ constexpr bool HasAnyEnumFlags(Enum e, Enum flag)
 {
     return ((__underlying_type(Enum))e & (__underlying_type(Enum))flag) != 0;
 }
+
+template<is_enum Enum>
+constexpr auto EnumAsUnderlyingValue(Enum e)
+{
+    return ((__underlying_type(Enum))e);
+}
+
